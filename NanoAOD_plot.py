@@ -6,7 +6,7 @@ import numpy as np
 import os
 import random
 
-from wremnants import muon_selections
+# from wremnants.muon_selections import *
 
 
 if len(sys.argv) < 2:
@@ -30,18 +30,18 @@ events = file.Get("Events")
 
 variables = {
     'predefined_variables': {
-        # 'pt': '$p_\\mathrm{T}\\,\\mathrm{[GeV]}$',
-        # 'eta': '$\\eta$',
-        # 'phi': '$\\phi$',
-        # 'mass': '$m\\,\\mathrm{[GeV]}$',
-        # 'pvAssocQuality': 'PV association quality',
-        # 'N': 'Number of PF candidates',
+        'pt': '$p_\\mathrm{T}\\,\\mathrm{[GeV]}$',
+        'eta': '$\\eta$',
+        'phi': '$\\phi$',
+        'mass': '$m\\,\\mathrm{[GeV]}$',
+        'pvAssocQuality': 'PV association quality',
+        'N': 'Number of PF candidates',
         },
     'calculated_variables': {
         'Ht': '$H_\\mathrm{T}\\,\\mathrm{[GeV]}$',
-        # 'Pt2sum': '$\\sum_\mathrm{cands} p^2_{T}\\,\\mathrm{[GeV^2]}$',
-        # 'Psum': '$\\sum_\mathrm{cands} p\\,\\mathrm{[GeV]}$',
-        # 'P2sum': '$\\sum_\mathrm{cands} p^2\\,\\mathrm{[GeV^2]}$',
+        'Pt2sum': '$\\sum_\mathrm{cands} p^2_{T}\\,\\mathrm{[GeV^2]}$',
+        'Psum': '$\\sum_\mathrm{cands} p\\,\\mathrm{[GeV]}$',
+        'P2sum': '$\\sum_\mathrm{cands} p^2\\,\\mathrm{[GeV^2]}$',
     },
 }
 
@@ -78,6 +78,14 @@ def vectdeltaR2(eta1, phi1, eta2, phi2):
         vect.append(deltaR2(eta1[i], phi1[i], eta2[i], phi2[i]))
     return vect
 
+def hasTriggerMatch(eta, phi, TrigObj_eta, TrigObj_phi):
+  
+  for jtrig in range(TrigObj_eta.size()):  
+    if deltaR2(eta, phi, TrigObj_eta[jtrig], TrigObj_phi[jtrig]) < 0.09:
+      return True  
+  
+  return False
+
 
 
 
@@ -100,17 +108,28 @@ for eleccharge in [
             selected_pf_cands = 0
 
             total_events = events.GetEntries()
+            # print(f"Total number of events in the file: {total_events}")
             selected_events = 0
 
-
-            # for entryNum in range(events.GetEntries()):
-            for entryNum in range(NEvents):
+            
+            for entryNum in range(events.GetEntries()):
+            # for entryNum in range(NEvents):
                 events.GetEntry(entryNum)
 
-                corrected_pt = getattr(events, "Muon_cvhPt")
-                print(f"Entry {entryNum}: correctedPt = {corrected_pt}")
+                nMuons = getattr(events, 'nMuon')
+                muon0_counter = 0
+                muon1_counter = 0
+                muon2_counter = 0
 
-                
+                if nMuons == 0:
+                    muon0_counter += 1
+                elif nMuons == 1:
+                    muon1_counter += 1
+                elif nMuons == 2:
+                    muon2_counter += 1
+
+           
+
 
                 if trigger == 'SingleMuon':
                     # Cuts for Global Muons to be defined as Veto Muons
@@ -128,8 +147,8 @@ for eleccharge in [
                         continue
 
                     # inner and outer tracks must be matched within a cone size of DeltaR = 0.3
-                    if not any(v < 0.9 for v in vectdeltaR2(standalone_eta, standalone_phi, corrected_eta, corrected_phi)):
-                        continue
+                    # if not any(v < 0.9 for v in vectdeltaR2(standalone_eta, standalone_phi, corrected_eta, corrected_phi)):
+                    #     continue
 
                     # inner track must pass the high-purity flag
                     highPurity = list(getattr(events, "Muon_highPurity"))
@@ -141,7 +160,83 @@ for eleccharge in [
                     if not any(n >= 1 for n in standaloneNumberOfValidHits):
                         continue
 
-                    # p_T > 15 GeV and |eta| < 2.5 cuts on the standalone muon
+                    # p_T > 15 GeV (tracker p_T?)
+                    # pt = list(getattr(events, "Muon_pt"))
+                    # if not any(momT > 15 for momT in pt):
+                    #     continue
+
+                    # # |eta| < 2.5 (tracker eta?)
+                    # eta = list(getattr(events, "Muon_eta"))
+                    # if not any(abs(eta) < 2.5 for e in eta):
+                    #     continue
+
+                    # Muons POG ID
+                    looseID = list(getattr(events, "Muon_looseId"))
+                    if not any(looseID):
+                        continue
+
+
+                    # dxybs < 0.05 cm
+                    dxybs = list(getattr(events, "Muon_dxybs"))
+                    if any (abs(d) > 0.05 for d in dxybs):
+                        continue
+
+
+
+                    # veto muons
+                    pt = list(getattr(events, "Muon_pt"))
+                    if not any(mom > 26 for mom in pt):
+                        continue
+
+                    e = list(getattr(events, "Muon_eta"))
+                    if not any (abs(eta) < 2.4 for eta in e):
+                        continue
+
+                    # medium ID
+                    # mediumID = list(getattr(events, "Muon_mediumID"))
+                    # if not any(mediumID):
+                    #     continue
+
+
+# ----------------------------------------------------------------------------------------------
+                    # Di-Muon selection
+
+                    # Requiring exactly two muons per event
+                    nMuons = getattr(events, "nMuon")
+                    # print(f"Number of muons in event {entryNum}: {nMuons}")
+                    if nMuons != 2:
+                        continue
+
+                    # Requiring opposite charge for the two muons
+                    charge = list(getattr(events, "Muon_charge"))
+                    muon1_charge = charge[0]
+                    muon2_charge = charge[1]
+                    if not (muon1_charge * muon2_charge < 0):
+                        continue
+
+                    # invariant mass of the two muons must be between 60 and 120 GeV
+                    # muon1 = ROOT.TLorentzVector()
+                    # muon2 = ROOT.TLorentzVector()
+
+                    # pt = list(getattr(events, "Muon_pt"))
+                    # eta = list(getattr(events, "Muon_eta"))
+                    # phi = list(getattr(events, "Muon_phi"))
+
+                    # muon1.SetPtEtaPhiM(pt[0],
+                    #                    eta[0],
+                    #                    phi[0],
+                    #                    getattr(events, "Muon_mass")[0]
+                    #                    )
+                    # muon2.SetPtEtaPhiM(pt[1],
+                    #                    eta[1],
+                    #                    phi[1],
+                    #                    getattr(events, "Muon_mass")[1]
+                    #                    )
+                    
+                    # dilepton_mass = (muon1 + muon2).M()
+                    # if not (60 < dilepton_mass < 120):
+                    #     continue
+
 
 
 
@@ -414,6 +509,9 @@ for eleccharge in [
                             print(f"Warning: Length of PFCands_pt and charges do not match for entry {entryNum}.")
                             continue
 
+            print(f"\n\n\nNumber of events with exactly 0 muon: {muon0_counter} out of {entryNum+1} events processed.\n")
+            print(f"Number of events with exactly 1 muon: {muon1_counter} out of {entryNum+1} events processed.\n")
+            print(f"Number of events with exactly 2 muon: {muon2_counter} out of {entryNum+1} events processed.\n\n\n")
 
             figure = plt.figure(figsize=(9, 6))
             bins = binning[var] if var in binning.keys() else None
@@ -440,6 +538,8 @@ for eleccharge in [
                 zorder=6
             )
             # plt.hist(values_list, bins=binning[var] if var in binning.keys() else None, histtype='stepfilled', color='purple', linewidth=2, label=f'{eleccharge} PFCands', density=True if var == 'N' and var == 'Ht' else False, zorder=6)
+            print(f"Selected events: {selected_events} out of {total_events} total events.")
+
             plt.legend(loc='upper right', frameon=True, fontsize=10, title=f"{trigger} Trigger\n\n{selected_events} selected Events\n{(selected_events/total_events)*100:.2f}% efficiency Events\n{selected_pf_cands} selected PF Candidates\n{(selected_pf_cands/total_pf_cands)*100:.2f}% efficiency PF Candidates", facecolor='white')
             leg = plt.gca().get_legend()
             leg._legend_box.align = "left"
@@ -451,7 +551,7 @@ for eleccharge in [
             plt.yscale('log' if var == 'N' or var == 'P2sum' or var == 'Pt2sum' or var == 'Psum' or var == 'Ht' else 'linear')
             # plt.savefig(f'/eos/user/z/zoghafoo/www/PF/{trigger}/PFCands_{trigger}_{var}{output_suffix}.pdf')
             # plt.savefig(f'/home/z/zoghafoo/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/plots/{trigger}/PFCands_{trigger}_{var}{output_suffix}_100000EventsPVSelectionPTEtaCut.pdf')
-            # plt.savefig(f'PFCandsTEST_{trigger}_{var}{output_suffix}_{NEvents}EventsPVSelection.pdf')
+            plt.savefig(f'plots/{trigger}/PFCands_{trigger}_{var}{output_suffix}_{total_events}.pdf')
             print(f"Plot for variable '{var}' saved as '/eos/user/z/zoghafoo/www/PF/{trigger}/PFCands_{trigger}_{var}{output_suffix}.pdf'.")
             plt.clf()
 
