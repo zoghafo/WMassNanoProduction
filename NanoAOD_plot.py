@@ -12,40 +12,44 @@ import random
 ROOT.gStyle.SetOptStat(0)
 
 
-if len(sys.argv) < 2:
+if len(sys.argv) < 1:
     print(f"USAGE: {sys.argv[0]} <TRIGGER> <NUMBER_OF_EVENTS_IN_FILE (100 OR 100000)> <NUMBER_OF_EVENTS_TO_PROCESS>")
     sys.exit(1)
 
-trigger = sys.argv[1]
+# trigger = sys.argv[1]
 
-file_NEvents = sys.argv[2] if len(sys.argv) > 2 else 100000
-if file_NEvents not in ['100', '100000']:
-    print(f"Invalid value for NUMBER_OF_EVENTS_IN_FILE. Please use '100' or '100000'.")
-    sys.exit(1)
-else:
-    fileName = '/home/z/zoghafoo/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/myFiles/NanoV9DataPostVFP_PF_'+ trigger +'_' + file_NEvents + 'Events.root'
+# file_NEvents = sys.argv[2] if len(sys.argv) > 2 else 100000
+# if file_NEvents not in ['100', '100000']:
+#     print(f"Invalid value for NUMBER_OF_EVENTS_IN_FILE. Please use '100' or '100000'.")
+#     sys.exit(1)
+# else:
+fileName_SingleMuon = '/home/z/zoghafoo/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/myFiles/NanoV9DataPostVFP_PF_SingleMuon_100000Events.root'
+fileName_MinBias = '/home/z/zoghafoo/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/myFiles/NanoV9DataPostVFP_PF_ZeroBias_100000Events.root'
 
-NEvents = int(sys.argv[3] if len(sys.argv) > 3 else 100000)
+# NEvents = int(sys.argv[3] if len(sys.argv) > 3 else 100000)
 
 
-file = ROOT.TFile.Open(fileName, "READ")
-events = file.Get("Events")
+file_SingleMuon = ROOT.TFile.Open(fileName_SingleMuon, "READ")
+file_MinBias = ROOT.TFile.Open(fileName_MinBias, "READ")
+events_SingleMuon = file_SingleMuon.Get("Events")
+events_MinBias = file_MinBias.Get("Events")
 
-df = ROOT.RDataFrame("Events", file)
-columns = df.GetColumnNames()
+df_SingleMuon = ROOT.RDataFrame("Events", file_SingleMuon)
+df_MinBias = ROOT.RDataFrame("Events", file_MinBias)
+# columns = df_SingleMuon.GetColumnNames()
 
 
 variables = {
     'predefined_variables': {
-        'pt': '$p_\\mathrm{T}\\,\\mathrm{[GeV]}$',
-        'eta': '$\\eta$',
-        'phi': '$\\phi$',
-        # 'mass': '$m\\,\\mathrm{[GeV]}$',
-        # 'pvAssocQuality': 'PV association quality',
-        # 'N': 'Number of PF candidates',
+        'PFCands_pt': 'p_{T} [GeV]',
+        # 'PFCands_eta': '\\eta',
+        # 'PFCands_phi': '\\phi',
+        # 'PFCands_mass': 'm [GeV]',
+        # 'PFCands_pvAssocQuality': 'PV association quality',
+        # 'nPFCands': 'Number of PF candidates',
         },
     'calculated_variables': {
-        # 'Ht': '$H_\\mathrm{T}\\,\\mathrm{[GeV]}$',
+        # 'PFCands_pt': 'H_{T} [GeV]',
         # 'Pt2sum': '$\\sum_\mathrm{cands} p^2_{T}\\,\\mathrm{[GeV^2]}$',
         # 'Psum': '$\\sum_\mathrm{cands} p\\,\\mathrm{[GeV]}$',
         # 'P2sum': '$\\sum_\mathrm{cands} p^2\\,\\mathrm{[GeV^2]}$',
@@ -53,13 +57,13 @@ variables = {
 }
 
 binning = {
-    'pt': [10, 0, 10],
-    'eta': [50, -2.5, 2.5],
-    'phi': [50, -3.14, 3.14],
-    'mass': [0,2,5,10,15,20,25,35,45,60,80,120,160,200,300,400],
-    'mass': [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3],
-    'pvAssocQuality': [8, -0.5, 7.5],
-    'N': [3.0, 5.0, 8.0, 11.0, 15.0, 20.0, 27.0, 34.0, 43.0, 54.0, 65.0, 90.0, 130., 160.],
+    'PFCands_pt': [10, 0, 10],
+    'PFCands_eta': [50, -2.5, 2.5],
+    'PFCands_phi': [10, -3.14, 3.14],
+    'PFCands_mass': [0,2,5,10,15,20,25,35,45,60,80,120,160,200,300,400],
+    'PFCands_mass': [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3],
+    'PFCands_pvAssocQuality': [7, 0, 7],
+    'nPFCands': [3.0, 5.0, 8.0, 11.0, 15.0, 20.0, 27.0, 34.0, 43.0, 54.0, 65.0, 90.0, 130., 160.],
     'Ht': [0, 5, 10, 15, 20, 30, 50, 70, 90, 110, 130 ],
     'Pt2sum': [ 0., 10, 20, 30, 40, 50, 70, 90, 120, 140, 160, 200, 300],
     'Psum': [0, 10, 20, 30, 40, 50, 60, 70, 100, 150, 200, 250],
@@ -86,13 +90,14 @@ def vectdeltaR2(eta1, phi1, eta2, phi2):
     return vect
 
 def hasTriggerMatch(eta, phi, TrigObj_eta, TrigObj_phi):
-  
   for jtrig in range(TrigObj_eta.size()):  
     if deltaR2(eta, phi, TrigObj_eta[jtrig], TrigObj_phi[jtrig]) < 0.09:
       return True  
   
   return False
 
+
+#---------- Muon Selection ----------
 
 def VetoMuons(df):
     df = df.Define("Muon_veto",
@@ -106,7 +111,6 @@ def VetoMuons(df):
     #                     }
     #                     return mask;
     #                     """)
-    
     
     return df
 
@@ -131,10 +135,10 @@ def diMuonSelection(df):
     
     return df
 
-if trigger == 'SingleMuon':
-    df = VetoMuons(df)
-    df = GoodMuons(df)
-    df = diMuonSelection(df)
+
+df_SingleMuon = VetoMuons(df_SingleMuon)
+df_SingleMuon = GoodMuons(df_SingleMuon)
+df_SingleMuon = diMuonSelection(df_SingleMuon)
 
 
 # df.Display(["Muon_veto", "Muon_vetoSelection", "Muon_good", "Muon_goodSelection", "Muon_charge"], 20).Print()
@@ -151,15 +155,28 @@ if trigger == 'SingleMuon':
 
 
 
-
-df = df.Define("PFCands_vertexRefUnique",
+df_SingleMuon = df_SingleMuon.Define("PFCands_vertexRefUnique",
                 """
                 std::set<int> sorted_unique(PFCands_vertexRef.begin(), PFCands_vertexRef.end());
                 return ROOT::VecOps::RVec<int>(sorted_unique.begin(), sorted_unique.end());
                 """
                 )
 
-df = df.Define("PFCands_vertexRefRandom",
+df_SingleMuon = df_SingleMuon.Define("PFCands_vertexRefRandom",
+                """
+                if (PFCands_vertexRefUnique.size() == 0) return -1;
+                return PFCands_vertexRefUnique[gRandom->Integer(PFCands_vertexRefUnique.size())];
+                """
+                )
+
+df_MinBias = df_MinBias.Define("PFCands_vertexRefUnique",
+                """
+                std::set<int> sorted_unique(PFCands_vertexRef.begin(), PFCands_vertexRef.end());
+                return ROOT::VecOps::RVec<int>(sorted_unique.begin(), sorted_unique.end());
+                """
+                )
+
+df_MinBias = df_MinBias.Define("PFCands_vertexRefRandom",
                 """
                 if (PFCands_vertexRefUnique.size() == 0) return -1;
                 return PFCands_vertexRefUnique[gRandom->Integer(PFCands_vertexRefUnique.size())];
@@ -169,20 +186,25 @@ df = df.Define("PFCands_vertexRefRandom",
 # df.Display(["PFCands_vertexRefUnique", "PFCands_vertexRefRandom"], 20).Print()
 
 
-def PFCandidateSelection(df, PFCands_obs, eleccharge = -1):
+def PFCandidateSelection(df, var, eleccharge = -1):
 
-    df = df.Define("PFSelection",
+    if var == "nPFCands":
+        return df
+
+    df = df.Define(f"Selection_{var}",
                     f"""
-                    ROOT::VecOps::Where(
-                        (PFCands_charge != {eleccharge}) &&
-                        (PFCands_vertexRef == PFCands_vertexRefRandom) &&
-                        ((PFCands_pvAssocQuality == 6) || (PFCands_pvAssocQuality == 7)),
-                        {PFCands_obs},
-                        -999.f
-                    )
+                    ROOT::VecOps::RVec<float> out;
+                    for (size_t i = 0; i < {var}.size(); ++i) {{
+                        if ((PFCands_charge[i] != {eleccharge}) &&
+                            (PFCands_vertexRef[i] == PFCands_vertexRefRandom) &&
+                            ((PFCands_pvAssocQuality[i] == 6) || (PFCands_pvAssocQuality[i] == 7))) {{
+                            out.push_back(static_cast<float>({var}[i]));
+                        }}
+                    }}
+                    return out;
                     """
                 )
-    df = df.Filter("ROOT::VecOps::Sum(PFSelection != -999.f) >= 2")
+    df = df.Filter(f"Selection_{var}.size() >= 2")
 
     return df
 
@@ -191,7 +213,7 @@ def PFCandidateSelection(df, PFCands_obs, eleccharge = -1):
 
 # df = PFCandidateSelection(df, "PFCands_pt", -1)
 
-# df.Display(["PFSelection"], 10).Print()
+# df.Display(["Selection_PFCands_pt"], 10).Print()
 
 
 
@@ -214,25 +236,59 @@ for groupvar, grouplabel in variables.items():
         # Assuming pt is always available for counting total PF candidates
         # total_pf_cands += len(getattr(events, "PFCands_pt"))  
         
-        df = PFCandidateSelection(df, f"PFCands_{var}", -1)
+        df_SingleMuon = PFCandidateSelection(df_SingleMuon, var, -1)
+        df_MinBias = PFCandidateSelection(df_MinBias, var, -1)
 
         bins = binning[var] if len(binning[var]) == 3 else [len(binning[var]) - 1, binning[var][0], binning[var][-1]]
 
-        h = df.Histo1D((f"PFCands_{var}", f"; {label}; Number of PF Candidates per Unit", bins[0], bins[1], bins[2]), f"PFCands_{var}")
+        h_SingleMuon = df_SingleMuon.Histo1D((f"h_SingleMuon_{var}", f"; {label}; Number of PF Candidates per Unit", bins[0], bins[1], bins[2]), var)
+        h_MinBias = df_MinBias.Histo1D((f"h_MinBias_{var}", f"; {label}; Number of PF Candidates per Unit", bins[0], bins[1], bins[2]), var)
 
-        hist = h.GetValue()
-        hist.Scale(1.0, "width")
-        hist.SetStats(0)
+        hist_SingleMuon = h_SingleMuon.GetValue()
+        hist_SingleMuon.Scale(1.0, "width")
+        hist_SingleMuon.SetStats(0)
 
-        c = ROOT.TCanvas("c")
-        hist.Draw("hist")
-        hist.SetLineColor(ROOT.kViolet-6)
-        hist.SetLineWidth(2)
+        hist_MinBias = h_MinBias.GetValue()
+        hist_MinBias.Scale(1.0, "width")
+        hist_MinBias.SetStats(0)
 
-        c.SaveAs(f"PFCands_{var}.pdf")
+        canvas = ROOT.TCanvas("c")
+        pad1 = ROOT.TPad("pad1", "pad1", 0, 0.3, 1, 1)
+        pad1.Draw()
+        pad1.cd()
+        hist_SingleMuon.Draw("hist")
+        hist_SingleMuon.SetLineColor(ROOT.kViolet-6)
+        hist_SingleMuon.SetLineWidth(2)
 
-        c.Close()
-        
+        hist_MinBias.Draw("hist same")
+        hist_MinBias.SetLineColor(ROOT.kAzure+10)
+        hist_MinBias.SetLineWidth(2)
+
+        hist_SingleMuon.SetMaximum(max(hist_SingleMuon.GetMaximum(), hist_MinBias.GetMaximum()) * 1.3)
+
+        legend = ROOT.TLegend(0.65, 0.7, 0.9, 0.9)
+        legend.SetBorderSize(0)
+        legend.SetFillStyle(0)
+        legend.SetTextSize(0.03)
+        legend.AddEntry(hist_SingleMuon, "SingleMuon Trigger", "l")
+        legend.AddEntry(hist_MinBias, "ZeroBias Trigger", "l")
+        legend.Draw()
+
+        canvas.cd()
+
+        pad2 = ROOT.TPad("pad2", "pad2", 0, 0.05, 1, 0.3)
+        pad2.Draw()
+        pad2.cd()
+        ratio = hist_SingleMuon.Clone("ratio")
+        ratio.Divide(hist_MinBias)
+        ratio.SetLineColor(ROOT.kBlack)
+        ratio.SetMarkerStyle(20)
+        ratio.GetYaxis().SetTitle("SingleMuon / ZeroBias")
+        ratio.Draw("pe")
+
+
+        canvas.SaveAs(f"{var}.pdf")
+        canvas.Close()
 
 
 
