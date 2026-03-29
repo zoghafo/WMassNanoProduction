@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import random
+import array
 
 ROOT.gStyle.SetOptStat(0)
 
@@ -34,6 +35,11 @@ totalNumberOfEvents_SingleMuon = df_SingleMuon.Count().GetValue()
 print(f"Total number of events in SingleMuon file: {totalNumberOfEvents_SingleMuon}")
 totalNumberOfEvents_MinBias = df_MinBias.Count().GetValue()
 print(f"Total number of events in MinBias file: {totalNumberOfEvents_MinBias}")
+
+totalNumberOfPFCands_SingleMuon = df_SingleMuon.Sum("nPFCands").GetValue()
+print(f"Total number of PF Candidates in SingleMuon file: {totalNumberOfPFCands_SingleMuon}")
+totalNumberOfPFCands_MinBias = df_MinBias.Sum("nPFCands").GetValue()
+print(f"Total number of PF Candidates in MinBias file: {totalNumberOfPFCands_MinBias}")
 
 
 variables = {
@@ -172,6 +178,10 @@ def PFCandidateSelection(df, eleccharge):
     df = df.Filter(f"ROOT::VecOps::Sum(PF != 0.f) >= 2")
     df = df.Define(f"PFSelection_idx", "ROOT::VecOps::Nonzero(PF)")
 
+
+    #For the calculation of the PF candidates seelction efficiency
+    df = df.Define("nPFSelection", "PFSelection_idx.size()")
+
     return df
 
 
@@ -180,7 +190,17 @@ def PFCandidateSelection(df, eleccharge):
 df_SingleMuon = PFCandidateSelection(df_SingleMuon, 1)
 df_MinBias = PFCandidateSelection(df_MinBias, 1)
 
-# df_SingleMuon.Display(["PFCands_pt", "PF", "PFSelection_idx"], 50).Print()
+selectedEvents_SingleMuon = df_SingleMuon.Count().GetValue()
+selectedEvents_MinBias = df_MinBias.Count().GetValue()
+print(f"Number of selected events in SingleMuon file: {selectedEvents_SingleMuon}")
+print(f"Number of selected events in MinBias file: {selectedEvents_MinBias}")
+
+selectedPFCands_SingleMuon = df_SingleMuon.Sum("nPFSelection").GetValue()
+selectedPFCands_MinBias = df_MinBias.Sum("nPFSelection").GetValue()
+print(f"Number of selected PF candidates in SingleMuon file: {selectedPFCands_SingleMuon}")
+print(f"Number of selected PF candidates in MinBias file: {selectedPFCands_MinBias}")
+
+# df_SingleMuon.Display(["PFCands_pt", "PF", "PFSelection_idx"], 50).Print(§)
 
 
 
@@ -207,6 +227,8 @@ for var, label in variables.items():
     elif var == 'PFCands_P2sum':
         df_SingleMuon = df_SingleMuon.Define(f"PFSelection_{var}", "ROOT::VecOps::Sum(Take(PFCands_p * PFCands_p, PFSelection_idx))")
         df_MinBias = df_MinBias.Define(f"PFSelection_{var}", "ROOT::VecOps::Sum(Take(PFCands_p * PFCands_p, PFSelection_idx))")
+
+
 
     bins = binning[var]
 
@@ -267,6 +289,7 @@ for var, label in variables.items():
     pad1.Draw()
     pad1.cd()
     pad1.SetBottomMargin(0.05)
+    pad1.SetRightMargin(0.32)
     pad1.SetLogy()
     hist_SingleMuon.GetXaxis().SetLabelSize(0)
     hist_SingleMuon.Draw("hist")
@@ -284,13 +307,18 @@ for var, label in variables.items():
 
     hist_SingleMuon.SetMaximum(max(hist_SingleMuon.GetMaximum(), hist_MinBias.GetMaximum()) * 1.3)
 
-    legend = ROOT.TLegend(0.68, 0.75, 0.87, 0.87)
+    legend = ROOT.TLegend(0.68, 0.58, 1, 0.87)
+    dummy = ROOT.TObject()
     legend.SetBorderSize(0)
     legend.SetFillStyle(0)
     legend.SetTextSize(0.04)
     legend.SetMargin(0.2)
     legend.AddEntry(hist_SingleMuon, "SingleMuon Trigger", "l")
+    legend.AddEntry(dummy, f"{(selectedEvents_SingleMuon/totalNumberOfEvents_SingleMuon)*100:.2f}% selected Events", "")
+    legend.AddEntry(dummy, f"{(selectedPFCands_SingleMuon/totalNumberOfPFCands_SingleMuon)*100:.2f}% selected PF Candidates", "")
     legend.AddEntry(hist_MinBias, "ZeroBias Trigger", "l")
+    legend.AddEntry(dummy, f"{(selectedEvents_MinBias/totalNumberOfEvents_MinBias)*100:.2f}% selected Events", "")
+    legend.AddEntry(dummy, f"{(selectedPFCands_MinBias/totalNumberOfPFCands_MinBias)*100:.2f}% selected PF Candidates", "")
     legend.Draw()
 
     canvas.cd()
@@ -300,6 +328,7 @@ for var, label in variables.items():
     pad2.cd()
     pad2.SetTopMargin(0.05)
     pad2.SetBottomMargin(0.35)
+    pad2.SetRightMargin(0.32)
     ratio = hist_SingleMuon.Clone("ratio")
     ratio.Divide(hist_MinBias)
     ratio.SetLineColor(ROOT.kBlack)
@@ -330,7 +359,7 @@ for var, label in variables.items():
     gPad.SetLineStyle(2)
     gPad.SetLineWidth(1)
     gPad.SetLineColor(15)
-    legend_ratio = ROOT.TLegend(0.84, 0.4, 0.895, 0.5)
+    legend_ratio = ROOT.TLegend(0.62, 0.4, 0.675, 0.5)
     legend_ratio.SetBorderSize(0)
     # legend_ratio.SetFillStyle(0)
     legend_ratio.SetTextSize(0.08)
