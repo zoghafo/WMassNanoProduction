@@ -3,16 +3,20 @@ import sys
 
 trigger = sys.argv[1]
 
-if trigger == "SingleMuon":
+if trigger == "Data_SingleMuon":
     dirs = [
         "/eos/cms/store/data/Run2016F/SingleMuon/MINIAOD/21Feb2020_UL2016_WMass_MiniAODv2-v1/260000/",
         "/eos/cms/store/data/Run2016F/SingleMuon/MINIAOD/21Feb2020_UL2016_WMass_MiniAODv2-v1/270000/",
         "/eos/cms/store/data/Run2016G/SingleMuon/MINIAOD/21Feb2020_UL2016_WMass_MiniAODv2-v1/260000/",
         "/eos/cms/store/data/Run2016G/SingleMuon/MINIAOD/21Feb2020_UL2016_WMass_MiniAODv2-v1/270000/",
     ]
-elif trigger == "ZeroBias":
+elif trigger == "Data_ZeroBias":
     dirs = [
         "/eos/cms/store/data/Run2016G/ZeroBias/MINIAOD/UL2016_MiniAODv2-v1/2530000/",
+    ]
+elif trigger == "MC_DYJetsToMuMu":
+    dirs = [
+        "/eos/cms/store/mc/RunIISummer20UL16MiniAODv2/DYJetsToMuMu_H2ErratumFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/MINIAODSIM/106X_mcRun2_asymptotic_v17-v2/2830000/",
     ]
 else:
     print(f"Unknown trigger {trigger}")

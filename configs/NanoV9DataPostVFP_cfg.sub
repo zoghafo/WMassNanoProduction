@@ -1,0 +1,27 @@
+executable = NanoV9DataPostVFP_cfg.sh
+arguments = $(TRIGGER) $(NEVENTS) $(SKIP)
+
+output = NanoV9DataPostVFP_PF_$(trigger)_$(SKIP)SkipEvents-$(NEvents)Events.out
+error = NanoV9DataPostVFP_PF_$(trigger)_$(SKIP)SkipEvents-$(NEvents)Events.err
+log = NanoV9DataPostVFP_PF_$(trigger)_$(SKIP)SkipEvents-$(NEvents)Events.log
+
+should_transfer_files = Yes
+transfer_input_files = NanoV9DataPostVFP_cfg.sh, NanoV9DataPostVFP_cfg.py
+when_to_transfer_output = ON_EXIT
+
+request_cpus = 1
+request_memory = 8GB
+request_disk = 6G
+
+notify_user = zobeyer.ghafoor@cern.ch
+
+# Options: NEVER, ALWAYS, COMPLETE, ERROR, DONE
+notification = ALWAYS
+
+queue trigger, NEvents, skip from (
+  SingleMuon 100000 0
+  SingleMuon 100000 100000
+  SingleMuon 100000 200000
+  SingleMuon 100000 300000
+  SingleMuon 100000 400000
+)
