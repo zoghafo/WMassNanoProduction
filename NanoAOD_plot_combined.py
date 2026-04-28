@@ -788,19 +788,19 @@ def QuantilePerObservable(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias ,
         plot_xlabel = f"1 - F_{{MB}}({label})"
 
         h_MinBias_ptr = df_MinBias_q.Histo1D(
-            (f"h_MinBias_{var}_quantile", f"; {plot_xlabel}; {y_title}", 10, 0, 1),
+            (f"h_MinBias_{var}_quantile", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
             plot_column,
         )
         h_SingleMuon_ptr = df_SingleMuon_q.Histo1D(
-            (f"h_SingleMuon_{var}_quantile", f"; {plot_xlabel}; {y_title}", 10, 0, 1),
+            (f"h_SingleMuon_{var}_quantile", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
             plot_column,
         )
         h_MCDYJets_ptr = df_MCDYJets_q.Histo1D(
-            (f"h_MCDYJets_{var}_quantile", f"; {plot_xlabel}; {y_title}", 10, 0, 1),
+            (f"h_MCDYJets_{var}_quantile", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
             plot_column,
         )
         h_MCMinBias_ptr = df_MCMinBias_q.Histo1D(
-            (f"h_MCMinBias_{var}_quantile", f"; {plot_xlabel}; {y_title}", 10, 0, 1),
+            (f"h_MCMinBias_{var}_quantile", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
             plot_column,
         )
 
@@ -1004,11 +1004,11 @@ def Quantile_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, v
 
 
         h_MinBias_ptr = df_MinBias_q.Histo1D(
-            (f"h_MinBias_{var}_quantile_ptscan", f"; {plot_xlabel}; DY/ZeroBias", 10, 0, 1),
+            (f"h_MinBias_{var}_quantile_ptscan", f"; {plot_xlabel}; DY/ZeroBias", 5, 0, 1),
             plot_column,
         )
         h_MCMinBias_ptr = df_MCMinBias_q.Histo1D(
-            (f"h_MCMinBias_{var}_quantile_ptscan", f"; {plot_xlabel}; DY/ZeroBias", 10, 0, 1),
+            (f"h_MCMinBias_{var}_quantile_ptscan", f"; {plot_xlabel}; DY/ZeroBias", 5, 0, 1),
             plot_column,
         )
 
@@ -1057,11 +1057,11 @@ def Quantile_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, v
             selected_PFCands_MCDYJets = df_MCDYJets_cut.Sum("nPFSelection").GetValue()
 
             h_SingleMuon_ptr = df_SingleMuon_cut.Histo1D(
-                (f"h_SingleMuon_{var}_quantile_{pt_cut}GeV", f"; {plot_xlabel}; DY/ZeroBias", 10, 0, 1),
+                (f"h_SingleMuon_{var}_quantile_{pt_cut}GeV", f"; {plot_xlabel}; DY/ZeroBias", 5, 0, 1),
                 plot_column,
             )
             h_MCDYJets_ptr = df_MCDYJets_cut.Histo1D(
-                (f"h_MCDYJets_{var}_quantile_{pt_cut}GeV", f"; {plot_xlabel}; DY/ZeroBias", 10, 0, 1),
+                (f"h_MCDYJets_{var}_quantile_{pt_cut}GeV", f"; {plot_xlabel}; DY/ZeroBias", 5, 0, 1),
                 plot_column,
             )
 
@@ -1278,19 +1278,19 @@ def Quantile_AllTogether(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, v
         plot_xlabel = "1 - F_{MB}(x)"
 
         h_MinBias_ptr = df_MinBias_q.Histo1D(
-            (f"h_MinBias_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", 10, 0, 1),
+            (f"h_MinBias_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
             plot_column,
         )
         h_SingleMuon_ptr = df_SingleMuon_q.Histo1D(
-            (f"h_SingleMuon_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", 10, 0, 1),
+            (f"h_SingleMuon_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
             plot_column,
         )
         h_MCDYJets_ptr = df_MCDYJets_q.Histo1D(
-            (f"h_MCDYJets_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", 10, 0, 1),
+            (f"h_MCDYJets_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
             plot_column,
         )
         h_MCMinBias_ptr = df_MCMinBias_q.Histo1D(
-            (f"h_MCMinBias_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", 10, 0, 1),
+            (f"h_MCMinBias_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
             plot_column,
         )
 
@@ -1538,19 +1538,19 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_
             plot_xlabel = "1 - F_{MB}(x)"
 
             h_MinBias_ptr = df_MinBias_q.Histo1D(
-                (f"h_MinBias_{var}_quantile_all_ptscan", f"; {plot_xlabel}; {y_title}", 10, 0, 1),
+                (f"h_MinBias_{var}_quantile_all_ptscan", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
                 plot_column,
             )
             h_SingleMuon_ptr = df_SingleMuon_q.Histo1D(
-                (f"h_SingleMuon_{var}_quantile_all_ptscan_{pt_index}", f"; {plot_xlabel}; {y_title}", 10, 0, 1),
+                (f"h_SingleMuon_{var}_quantile_all_ptscan_{pt_index}", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
                 plot_column,
             )
             h_MCDYJets_ptr = df_MCDYJets_q.Histo1D(
-                (f"h_MCDYJets_{var}_quantile_all_ptscan_{pt_index}", f"; {plot_xlabel}; {y_title}", 10, 0, 1),
+                (f"h_MCDYJets_{var}_quantile_all_ptscan_{pt_index}", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
                 plot_column,
             )
             h_MCMinBias_ptr = df_MCMinBias_q.Histo1D(
-                (f"h_MCMinBias_{var}_quantile_all_ptscan_{pt_index}", f"; {plot_xlabel}; {y_title}", 10, 0, 1),
+                (f"h_MCMinBias_{var}_quantile_all_ptscan_{pt_index}", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
                 plot_column,
             )
 
