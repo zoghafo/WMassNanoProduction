@@ -1779,7 +1779,7 @@ def main():
             df_MCMinBias.Snapshot("Events","MCMinBias.root")
 
     else:
-        df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias = MakeDataframes(args.maxevents, ["SingleMuon.txt"],["MinBias.root"],["MCDYJets.root"],["MCMinBias.root"] )
+        df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias = MakeDataframes(args.maxevents, ["SingleMuon.root"],["MinBias.root"],["MCDYJets.root"],["MCMinBias.root"] )
 
 
     total_events = PrintDatasetCounts(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias)
