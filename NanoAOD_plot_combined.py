@@ -59,7 +59,7 @@ BINNING = {
 }
 
 
-def MakeDataframes(maxevents=None, sm=FILES_NAMES_SINGLMUONE, mb=FILE_NAMES_ZEROBIAS, dy=FILE_NAMES_MCDYJETS,mcmb=FILE_NAMES_MCZEROBIAS):
+def MakeDataframes(maxevents=None, sm=FILE_NAMES_SINGLEMUON, mb=FILE_NAMES_ZEROBIAS, dy=FILE_NAMES_MCDYJETS,mcmb=FILE_NAMES_MCZEROBIAS):
     df_SingleMuon = ROOT.RDataFrame("Events", set(sm))
     df_MinBias = ROOT.RDataFrame("Events", set(mb))
     df_MCDYJets = ROOT.RDataFrame("Events", set(dy))
