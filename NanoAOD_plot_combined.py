@@ -59,11 +59,11 @@ BINNING = {
 }
 
 
-def MakeDataframes(maxevents=None):
-    df_SingleMuon = ROOT.RDataFrame("Events", set(FILE_NAMES_SINGLEMUON))
-    df_MinBias = ROOT.RDataFrame("Events", set(FILE_NAMES_ZEROBIAS))
-    df_MCDYJets = ROOT.RDataFrame("Events", set(FILE_NAMES_MCDYJETS))
-    df_MCMinBias = ROOT.RDataFrame("Events", set(FILE_NAMES_MCZEROBIAS))
+def MakeDataframes(maxevents=None, sm=FILE_NAMES_SINGLEMUON, mb=FILE_NAMES_ZEROBIAS, dy=FILE_NAMES_MCDYJETS,mcmb=FILE_NAMES_MCZEROBIAS):
+    df_SingleMuon = ROOT.RDataFrame("Events", set(sm))
+    df_MinBias = ROOT.RDataFrame("Events", set(mb))
+    df_MCDYJets = ROOT.RDataFrame("Events", set(dy))
+    df_MCMinBias = ROOT.RDataFrame("Events", set(mcmb))
 
     if maxevents is not None:
         print(f"Processing only the first {maxevents} Events from each file.")
@@ -1415,11 +1415,13 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_
 
     colours = [ROOT.kViolet - 6, ROOT.kBlue - 4, ROOT.kGreen + 3, ROOT.kOrange + 5, ROOT.kRed + 1, ROOT.kCyan + 2]
 
-    for pt_index, pt_cut in enumerate(pt_cuts):
-        selected_events_SingleMuon = DiMuonPtCut(df_SingleMuon, pt_cut).Count().GetValue()
-        selected_events_MCDYJets = DiMuonPtCut(df_MCDYJets, pt_cut).Count().GetValue()
-        selected_PFCands_SingleMuon = DiMuonPtCut(df_SingleMuon, pt_cut).Sum("nPFSelection").GetValue()
-        selected_PFCands_MCDYJets = DiMuonPtCut(df_MCDYJets, pt_cut).Sum("nPFSelection").GetValue()
+    for pt_index, pt_cut in enumerate(sorted(pt_cuts, reverse=True)):
+        df_SingleMuon = DiMuonPtCut(df_SingleMuon, pt_cut)
+        df_MCDYJets = DiMuonPtCut(df_MCDYJets, pt_cut)
+        selected_events_SingleMuon = df_SingleMuon.Count().GetValue()
+        selected_events_MCDYJets = df_MCDYJets.Count().GetValue()
+        selected_PFCands_SingleMuon = df_SingleMuon.Sum("nPFSelection").GetValue()
+        selected_PFCands_MCDYJets = df_MCDYJets.Sum("nPFSelection").GetValue()
 
         ratio_data_hists = []
         ratio_mc_hists = []
@@ -1431,7 +1433,7 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_
             label = VARIABLES[var]
             bins = BINNING[var]
 
-            df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, y_title = ObservablesCalculation(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, var)
+            df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, y_title = (df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, var)
 
             h_tmp_ptr = MakeHist(df_MinBias_var, var, label, y_title, bins, f"h_MinBias_{var}_quantile_all_ptscan_tmp")
             h_tmp = h_tmp_ptr.GetValue()
@@ -1524,7 +1526,6 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_
                 }}
                 """
             )
-
 
             df_MinBias_q = df_MinBias_var.Define(f"{var}_invQ_all_pt", f"1.0 - {var}InvQMapAllTogetherPtCut{pt_index}::eval(PFSelection_{var})")
             df_SingleMuon_q = df_SingleMuon_var.Define(f"{var}_invQ_all_pt", f"1.0 - {var}InvQMapAllTogetherPtCut{pt_index}::eval(PFSelection_{var})")
@@ -1674,6 +1675,16 @@ def parse_args():
         help="If set, process only the first N Events from each dataframe",
     )
     parser.add_argument(
+        "--from-scratch",
+        action="store_true",
+        help="Rerun from original files (need to recompute, filter etc...)",
+    )
+    parser.add_argument(
+        "--save-files",
+        action="store_true",
+        help="Save output event-level root files with filters and calculations",
+    )
+    parser.add_argument(
         "--no-plot",
         action="store_true",
         help="Run selections and print counts without producing plots",
@@ -1727,30 +1738,51 @@ def parse_args():
     return parser.parse_args()
 
 
+
 def main():
     args = parse_args()
 
-    df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias = MakeDataframes(args.maxevents)
+    
+    df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias = None, None, None, None
+    if args.from_scratch:
+        df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias = MakeDataframes(args.maxevents)
+
+        df_SingleMuon = VetoMuons(df_SingleMuon)
+        df_SingleMuon = GoodMuons(df_SingleMuon)
+        df_SingleMuon = DiMuonSelection(df_SingleMuon)
+
+        df_MCDYJets = VetoMuons(df_MCDYJets)
+        df_MCDYJets = GoodMuons(df_MCDYJets)
+        df_MCDYJets = DiMuonSelection(df_MCDYJets)
+
+        df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias = PVSelection(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias)
+        df_SingleMuon = PFCandidateSelection(df_SingleMuon, args.charge)
+        df_MinBias = PFCandidateSelection(df_MinBias, args.charge)
+        df_MCDYJets = PFCandidateSelection(df_MCDYJets, args.charge)
+        df_MCMinBias = PFCandidateSelection(df_MCMinBias, args.charge)
+
+        df_SingleMuon = addInvariantMass(df_SingleMuon)
+        df_MinBias = addInvariantMass(df_MinBias)
+        df_MCDYJets = addInvariantMass(df_MCDYJets)
+        df_MCMinBias = addInvariantMass(df_MCMinBias)
+
+
+
+        for var in args.quantile_ptscan_vars:
+            df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, y_title = ObservablesCalculation(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, var)
+        print("Done Selection!")
+
+        if args.save_files:
+            df_SingleMuon.Snapshot("Events","SingleMuon.root")
+            df_MinBias.Snapshot("Events","MinBias.root")
+            df_MCDYJets.Snapshot("Events","MCDYJets.root")
+            df_MCMinBias.Snapshot("Events","MCMinBias.root")
+
+    else:
+        df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias = MakeDataframes(args.maxevents, ["SingleMuon.root"],["MinBias.root"],["MCDYJets.root"],["MCMinBias.root"] )
+
+
     total_events = PrintDatasetCounts(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias)
-
-    df_SingleMuon = VetoMuons(df_SingleMuon)
-    df_SingleMuon = GoodMuons(df_SingleMuon)
-    df_SingleMuon = DiMuonSelection(df_SingleMuon)
-
-    df_MCDYJets = VetoMuons(df_MCDYJets)
-    df_MCDYJets = GoodMuons(df_MCDYJets)
-    df_MCDYJets = DiMuonSelection(df_MCDYJets)
-
-    df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias = PVSelection(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias)
-    df_SingleMuon = PFCandidateSelection(df_SingleMuon, args.charge)
-    df_MinBias = PFCandidateSelection(df_MinBias, args.charge)
-    df_MCDYJets = PFCandidateSelection(df_MCDYJets, args.charge)
-    df_MCMinBias = PFCandidateSelection(df_MCMinBias, args.charge)
-
-    df_SingleMuon = addInvariantMass(df_SingleMuon)
-    df_MinBias = addInvariantMass(df_MinBias)
-    df_MCDYJets = addInvariantMass(df_MCDYJets)
-    df_MCMinBias = addInvariantMass(df_MCMinBias)
 
 
     if args.no_plot:
