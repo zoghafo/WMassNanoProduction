@@ -19,7 +19,7 @@ process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.Geometry.GeometrySimDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
-process.load('PhysicsTools.NanoAOD.nano_cff')
+process.load('PhysicsTools.NanoAOD.nanoPF_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
@@ -1806,19 +1806,19 @@ from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
 #Setup FWK for multithreaded
-process.options.numberOfThreads=cms.untracked.uint32(2)
-process.options.numberOfStreams=cms.untracked.uint32(0)
-process.options.numberOfConcurrentLuminosityBlocks=cms.untracked.uint32(1)
+# process.options.numberOfThreads=cms.untracked.uint32(4)
+# process.options.numberOfStreams=cms.untracked.uint32(0)
+# process.options.numberOfConcurrentLuminosityBlocks=cms.untracked.uint32(1)
 
 # customisation of the process.
 
-# Automatic addition of the customisation function from PhysicsTools.NanoAOD.nano_cff
-from PhysicsTools.NanoAOD.nano_cff import nanoAOD_customizeMC,nanoGenWmassCustomize 
+# Automatic addition of the customisation function from PhysicsTools.NanoAOD.nanoPF_cff
+from PhysicsTools.NanoAOD.nanoPF_cff import nanoAOD_customizeMC,nanoGenWmassCustomize 
 
-#call to customisation function nanoAOD_customizeMC imported from PhysicsTools.NanoAOD.nano_cff
+#call to customisation function nanoAOD_customizeMC imported from PhysicsTools.NanoAOD.nanoPF_cff
 process = nanoAOD_customizeMC(process)
 
-#call to customisation function nanoGenWmassCustomize imported from PhysicsTools.NanoAOD.nano_cff
+#call to customisation function nanoGenWmassCustomize imported from PhysicsTools.NanoAOD.nanoPF_cff
 process = nanoGenWmassCustomize(process)
 
 # Automatic addition of the customisation function from Configuration.DataProcessing.Utils
