@@ -3,6 +3,7 @@ import array
 import ROOT
 import glob
 import pandas as pd
+import os
 
 path = "/home/z/zoghafoo/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/selEvents"
 
@@ -88,7 +89,7 @@ def SelectedEvents(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias):
         "MCMinBias": [selectedEvents[3], selectedPFCands[3]]
     })
 
-    print(pd_selectedEvents, "\n")
+    print(pd_selectedEvents)
 
     return {"SingleMuon": [selectedEvents[0], selectedPFCands[0]],
             "MinBias": [selectedEvents[1], selectedPFCands[1]],
@@ -419,17 +420,17 @@ def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMi
         canvas.SaveAs(output_name)
         canvas.Close()
 
-def QuantilePerObservable(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, out_suffix, totalEvents, selectedEvents):
+def QuantilePerObservable(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, out_suffix, totalEvents, selectedEvents, bins):
 
     for var in variables:
         if var in ["PFCands_pt", "PFCands_eta", "PFCands_phi", "PFCands_pvAssocQuality"]:
             continue
 
         label = VARIABLES[var]
-        bins = BINNING[var]
+        binning = BINNING[var]
         y_title = "Cumulative Distribution Function (CDF)"
 
-        h_tmp_ptr = MakeHist(df_MinBias_var, var, label, y_title, bins, f"h_MinBias_{var}_quantile_tmp")
+        h_tmp_ptr = MakeHist(df_MinBias_var, var, label, y_title, binning, f"h_MinBias_{var}_quantile_tmp")
         h_tmp = h_tmp_ptr.GetValue()
         total = h_tmp.Integral()
         if total <= 0:
@@ -476,7 +477,7 @@ def QuantilePerObservable(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df
         )
 
 
-        h_MCtmp_ptr = MakeHist(df_MCMinBias_var, var, label, y_title, bins, f"h_MCMinBias_{var}_quantile_tmp")
+        h_MCtmp_ptr = MakeHist(df_MCMinBias_var, var, label, y_title, binning, f"h_MCMinBias_{var}_quantile_tmp")
         h_MCtmp = h_MCtmp_ptr.GetValue()
         total_MC = h_MCtmp.Integral()
         if total_MC <= 0:
@@ -529,20 +530,22 @@ def QuantilePerObservable(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df
         plot_column = f"{var}_invQ"
         plot_xlabel = f"1 - F_{{MB}}({label})"
 
+        edges = array.array("d", bins)
+
         h_MinBias_ptr = df_MinBias_q.Histo1D(
-            (f"h_MinBias_{var}_quantile", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
+            (f"h_MinBias_{var}_quantile", f"; {plot_xlabel}; {y_title}", len(edges) - 1, edges),
             plot_column,
         )
         h_SingleMuon_ptr = df_SingleMuon_q.Histo1D(
-            (f"h_SingleMuon_{var}_quantile", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
+            (f"h_SingleMuon_{var}_quantile", f"; {plot_xlabel}; {y_title}", len(edges) - 1, edges),
             plot_column,
         )
         h_MCDYJets_ptr = df_MCDYJets_q.Histo1D(
-            (f"h_MCDYJets_{var}_quantile", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
+            (f"h_MCDYJets_{var}_quantile", f"; {plot_xlabel}; {y_title}", len(edges) - 1, edges),
             plot_column,
         )
         h_MCMinBias_ptr = df_MCMinBias_q.Histo1D(
-            (f"h_MCMinBias_{var}_quantile", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
+            (f"h_MCMinBias_{var}_quantile", f"; {plot_xlabel}; {y_title}", len(edges) - 1, edges),
             plot_column,
         )
 
@@ -614,12 +617,16 @@ def QuantilePerObservable(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df
 
         legend.Draw()
 
-        output_name = f"new_plots/{var}_Quantile{out_suffix}.pdf"
+        output_dir = f"new_plots/quantile_binning/{bins}"
+        os.makedirs(output_dir, exist_ok=True)
+
+        output_name = f"{output_dir}/{var}_Quantile{out_suffix}.pdf"
         canvas.SaveAs(output_name)
+
         canvas.Close()
 
 
-def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, totalEvents, selectedEvents):
+def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, totalEvents, selectedEvents, bins):
 
     colours = [ROOT.kViolet - 6, ROOT.kBlue - 4, ROOT.kGreen + 3, ROOT.kOrange + 5, ROOT.kRed + 1]
 
@@ -628,11 +635,11 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
             continue
 
         label = VARIABLES[var]
-        bins = BINNING[var]
+        binning = BINNING[var]
         y_title = "Cumulative Distribution Function (CDF)"
 
 
-        h_tmp_ptr = MakeHist(df_MinBias_var, var, label, y_title, bins, f"h_MinBias_{var}_quantile_ptscan_tmp")
+        h_tmp_ptr = MakeHist(df_MinBias_var, var, label, y_title, binning, f"h_MinBias_{var}_quantile_ptscan_tmp")
         h_tmp = h_tmp_ptr.GetValue()
         total = h_tmp.Integral()
         if total <= 0:
@@ -678,7 +685,7 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
             """
         )
 
-        h_MCtmp_ptr = MakeHist(df_MCMinBias_var, var, label, y_title, bins, f"h_MCMinBias_{var}_quantile_ptscan_tmp")
+        h_MCtmp_ptr = MakeHist(df_MCMinBias_var, var, label, y_title, binning, f"h_MCMinBias_{var}_quantile_ptscan_tmp")
         h_MCtmp = h_MCtmp_ptr.GetValue()
         total_MC = h_MCtmp.Integral()
         if total_MC <= 0:
@@ -734,13 +741,15 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
         plot_column = f"{var}_invQ"
         plot_xlabel = f"1 - F_{{MB}}({label})"
 
+        edges = array.array("d", bins)
+
 
         h_MinBias_ptr = df_MinBias_q.Histo1D(
-            (f"h_MinBias_{var}_quantile_ptscan", f"; {plot_xlabel}; DY/ZeroBias", 5, 0, 1),
+            (f"h_MinBias_{var}_quantile_ptscan", f"; {plot_xlabel}; DY/ZeroBias", len(edges) - 1, edges),
             plot_column,
         )
         h_MCMinBias_ptr = df_MCMinBias_q.Histo1D(
-            (f"h_MCMinBias_{var}_quantile_ptscan", f"; {plot_xlabel}; DY/ZeroBias", 5, 0, 1),
+            (f"h_MCMinBias_{var}_quantile_ptscan", f"; {plot_xlabel}; DY/ZeroBias", len(edges) - 1, edges),
             plot_column,
         )
 
@@ -792,11 +801,11 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
             selectedEvents['MCDYJets'][1] = df_MCDYJets_cut.Sum("PFSelection_nPFCands").GetValue()
 
             h_SingleMuon_ptr = df_SingleMuon_cut.Histo1D(
-                (f"h_SingleMuon_{var}_quantile_{pt_cut}GeV", f"; {plot_xlabel}; DY/ZeroBias", 5, 0, 1),
+                (f"h_SingleMuon_{var}_quantile_{pt_cut}GeV", f"; {plot_xlabel}; DY/ZeroBias", len(edges) - 1, edges),
                 plot_column,
             )
             h_MCDYJets_ptr = df_MCDYJets_cut.Histo1D(
-                (f"h_MCDYJets_{var}_quantile_{pt_cut}GeV", f"; {plot_xlabel}; DY/ZeroBias", 5, 0, 1),
+                (f"h_MCDYJets_{var}_quantile_{pt_cut}GeV", f"; {plot_xlabel}; DY/ZeroBias", len(edges) - 1, edges),
                 plot_column,
             )
 
@@ -879,12 +888,16 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
         legend_col0.SetTextSize(0.02)
         legend_col0.Draw()
 
-        output_name = f"new_plots/{var}_QuantilePtScan{out_suffix}.pdf"
+        output_dir = f"new_plots/quantile_binning/{bins}"
+        os.makedirs(output_dir, exist_ok=True)
+
+        output_name = f"{output_dir}/{var}_QuantilePtScan{out_suffix}.pdf"
         canvas.SaveAs(output_name)
+
         canvas.Close()
 
 
-def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, out_suffix, totalEvents, selectedEvents):
+def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, out_suffix, totalEvents, selectedEvents, bins):
 
     colours = [ROOT.kViolet - 6, ROOT.kBlue - 4, ROOT.kGreen + 3, ROOT.kOrange + 5, ROOT.kRed + 1, ROOT.kCyan + 2]
     ratio_data_hists = []
@@ -895,10 +908,10 @@ def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
             continue
 
         label = VARIABLES[var]
-        bins = BINNING[var]
+        binning = BINNING[var]
         y_title = "Arbitrary Units"
 
-        h_tmp_ptr = MakeHist(df_MinBias_var, var, label, y_title, bins, f"h_MinBias_{var}_quantile_all_tmp")
+        h_tmp_ptr = MakeHist(df_MinBias_var, var, label, y_title, binning, f"h_MinBias_{var}_quantile_all_tmp")
         h_tmp = h_tmp_ptr.GetValue()
         total = h_tmp.Integral()
         if total <= 0:
@@ -944,7 +957,7 @@ def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
             """
         )
 
-        h_MCtmp_ptr = MakeHist(df_MCMinBias_var, var, label, y_title, bins, f"h_MCMinBias_{var}_quantile_ptscan_tmp")
+        h_MCtmp_ptr = MakeHist(df_MCMinBias_var, var, label, y_title, binning, f"h_MCMinBias_{var}_quantile_ptscan_tmp")
         h_MCtmp = h_MCtmp_ptr.GetValue()
         total_MC = h_MCtmp.Integral()
         if total_MC <= 0:
@@ -999,20 +1012,22 @@ def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
         plot_column = f"{var}_invQ_all"
         plot_xlabel = "1 - F_{MB}(x)"
 
+        edges = array.array("d", bins)
+
         h_MinBias_ptr = df_MinBias_q.Histo1D(
-            (f"h_MinBias_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
+            (f"h_MinBias_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", len(edges) - 1, edges),
             plot_column,
         )
         h_SingleMuon_ptr = df_SingleMuon_q.Histo1D(
-            (f"h_SingleMuon_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
+            (f"h_SingleMuon_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", len(edges) - 1, edges),
             plot_column,
         )
         h_MCDYJets_ptr = df_MCDYJets_q.Histo1D(
-            (f"h_MCDYJets_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
+            (f"h_MCDYJets_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", len(edges) - 1, edges),
             plot_column,
         )
         h_MCMinBias_ptr = df_MCMinBias_q.Histo1D(
-            (f"h_MCMinBias_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
+            (f"h_MCMinBias_{var}_quantile_all", f"; {plot_xlabel}; {y_title}", len(edges) - 1, edges),
             plot_column,
         )
 
@@ -1119,17 +1134,23 @@ def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
     legendVars.Draw()
     legendStats.Draw()
 
-    output_name = f"new_plots/AllVariables_QuantileAllTogether{out_suffix}.pdf"
+    # output_name = f"new_plots/AllVariables_QuantileAllTogether{out_suffix}.pdf"
+    # canvas.SaveAs(output_name)
+
+    output_dir = f"new_plots/quantile_binning/{bins}"
+    os.makedirs(output_dir, exist_ok=True)
+
+    output_name = f"{output_dir}/AllVariables_QuantileAllTogether{out_suffix}.pdf"
     canvas.SaveAs(output_name)
     canvas.Close()
 
 
-def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, totalEvents, selectedEvents):
+def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, totalEvents, selectedEvents, bins):
 
     colours = [ROOT.kViolet - 6, ROOT.kBlue - 4, ROOT.kGreen + 3, ROOT.kOrange + 5, ROOT.kRed + 1, ROOT.kCyan + 2]
 
     for pt_index, pt_cut in enumerate(pt_cuts):
-        print(f"Applying diMuon pT cut: {pt_cut} GeV for all-together quantile plot...")
+        print(f"\nApplying diMuon pT cut: {pt_cut} GeV for all-together quantile plot...")
 
 
         ratio_data_hists = []
@@ -1140,10 +1161,10 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJ
                 continue
 
             label = VARIABLES[var]
-            bins = BINNING[var]
+            binning = BINNING[var]
             y_title = "Number Of Events (normalised)"
 
-            h_tmp_ptr = MakeHist(df_MinBias_var, var, label, y_title, bins, f"h_MinBias_{var}_quantile_all_ptscan_tmp")
+            h_tmp_ptr = MakeHist(df_MinBias_var, var, label, y_title, binning, f"h_MinBias_{var}_quantile_all_ptscan_tmp")
             h_tmp = h_tmp_ptr.GetValue()
             total = h_tmp.Integral()
             if total <= 0:
@@ -1189,7 +1210,7 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJ
                 """
             )
 
-            h_MCtmp_ptr = MakeHist(df_MCMinBias_var, var, label, y_title, bins, f"h_MCMinBias_{var}_quantile_ptscan_tmp")
+            h_MCtmp_ptr = MakeHist(df_MCMinBias_var, var, label, y_title, binning, f"h_MCMinBias_{var}_quantile_ptscan_tmp")
             h_MCtmp = h_MCtmp_ptr.GetValue()
             total_MC = h_MCtmp.Integral()
             if total_MC <= 0:
@@ -1253,20 +1274,22 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJ
             plot_column = f"{var}_invQ_all_pt"
             plot_xlabel = "1 - F_{MB}(x)"
 
+            edges = array.array("d", bins)
+
             h_MinBias_ptr = df_MinBias_q.Histo1D(
-                (f"h_MinBias_{var}_quantile_all_ptscan", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
+                (f"h_MinBias_{var}_quantile_all_ptscan", f"; {plot_xlabel}; {y_title}", len(edges) - 1, edges),
                 plot_column,
             )
             h_SingleMuon_ptr = df_SingleMuon_q.Histo1D(
-                (f"h_SingleMuon_{var}_quantile_all_ptscan_{pt_index}", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
+                (f"h_SingleMuon_{var}_quantile_all_ptscan_{pt_index}", f"; {plot_xlabel}; {y_title}", len(edges) - 1, edges),
                 plot_column,
             )
             h_MCDYJets_ptr = df_MCDYJets_q.Histo1D(
-                (f"h_MCDYJets_{var}_quantile_all_ptscan_{pt_index}", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
+                (f"h_MCDYJets_{var}_quantile_all_ptscan_{pt_index}", f"; {plot_xlabel}; {y_title}", len(edges) - 1, edges),
                 plot_column,
             )
             h_MCMinBias_ptr = df_MCMinBias_q.Histo1D(
-                (f"h_MCMinBias_{var}_quantile_all_ptscan_{pt_index}", f"; {plot_xlabel}; {y_title}", 5, 0, 1),
+                (f"h_MCMinBias_{var}_quantile_all_ptscan_{pt_index}", f"; {plot_xlabel}; {y_title}", len(edges) - 1, edges),
                 plot_column,
             )
 
@@ -1378,7 +1401,13 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJ
         legendVars.Draw()
         legendStats.Draw()
 
-        output_name = f"new_plots/AllVariables_QuantileAllTogether_ZpT{pt_cut}GeV{out_suffix}.pdf"
+        # output_name = f"new_plots/AllVariables_QuantileAllTogether_ZpT{pt_cut}GeV{out_suffix}.pdf"
+        # canvas.SaveAs(output_name)
+
+        output_dir = f"new_plots/quantile_binning/{bins}"
+        os.makedirs(output_dir, exist_ok=True)
+
+        output_name = f"{output_dir}/AllVariables_QuantileAllTogether_ZpT{pt_cut}GeV{out_suffix}.pdf"
         canvas.SaveAs(output_name)
         canvas.Close()
 
@@ -1450,6 +1479,13 @@ def parse_args():
         default="",
         help="Optional suffix appended to output plot filenames",
     )
+    parser.add_argument(
+        "--quantile-bins",
+        type=float,
+        nargs="+",
+        default=[0, 0.25, 0.5, 0.75, 1],
+        help="Custom bin edges for quantile histograms",
+    )
     return parser.parse_args()
 
 
@@ -1473,16 +1509,16 @@ def main():
         Plot_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.ptscan_vars, args.pt_cuts, args.output_suffix, totalEvents, selectedEvents)
 
     if args.mode in ["quantile", "all"]:
-        QuantilePerObservable(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.quantile_vars, args.output_suffix, totalEvents, selectedEvents)
+        QuantilePerObservable(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.quantile_vars, args.output_suffix, totalEvents, selectedEvents, args.quantile_bins)
 
     if args.mode in ["quantile-ptscan", "all"]:
-        Quantile_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.quantile_ptscan_vars, args.pt_cuts, args.output_suffix, totalEvents, selectedEvents)
+        Quantile_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.quantile_ptscan_vars, args.pt_cuts, args.output_suffix, totalEvents, selectedEvents, args.quantile_bins)
 
     if args.mode in ["quantile-all", "all"]:
-        Quantile_AllTogether(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.quantile_vars, args.output_suffix, totalEvents, selectedEvents)
+        Quantile_AllTogether(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.quantile_vars, args.output_suffix, totalEvents, selectedEvents, args.quantile_bins)
 
     if args.mode in ["quantile-all-ptscan", "all"]:
-        Quantile_AllTogether_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.quantile_ptscan_vars, args.pt_cuts, args.output_suffix, totalEvents, selectedEvents)
+        Quantile_AllTogether_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.quantile_ptscan_vars, args.pt_cuts, args.output_suffix, totalEvents, selectedEvents, args.quantile_bins)
 
 if __name__ == "__main__":
     main()

@@ -7,12 +7,6 @@ import csv
 
 ROOT.gStyle.SetOptStat(0)
 
-# FILE_NAMES_SINGLEMUON = [
-#     "/home/z/zoghafoo/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/NanoV9DataPostVFP_PF_SingleMuon_100000Events_skip0.root",
-#     "/home/z/zoghafoo/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/NanoV9DataPostVFP_PF_SingleMuon_100000Events_skip100000.root",
-#     "/home/z/zoghafoo/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/NanoV9DataPostVFP_PF_SingleMuon_100000Events_skip200000.root",
-#     "/home/z/zoghafoo/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/NanoV9DataPostVFP_PF_SingleMuon_100000Events_skip300000.root",
-# ]
 
 FILE_NAMES_SINGLEMUON = glob.glob("/eos/user/z/zoghafoo/crabsubmission_files/SingleMuon/*/*/*/*.root")
 print(f"\nNumber of SingleMuon files: {len(FILE_NAMES_SINGLEMUON)}\n")
@@ -20,13 +14,15 @@ print(f"\nNumber of SingleMuon files: {len(FILE_NAMES_SINGLEMUON)}\n")
 FILE_NAMES_ZEROBIAS = glob.glob("/eos/user/z/zoghafoo/crabsubmission_files/ZeroBias/NanoV9Run2016FDataPostVFP_MinBias_02052026/260502_160901/*/*.root")
 print(f"Number of ZeroBias files: {len(FILE_NAMES_ZEROBIAS)}\n")
 
+
+
 FILE_NAMES_MCDYJETS = [
     "/home/z/zoghafoo/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/NanoV9MCPostVFP_PF_DYJetsToMuMu_100000Events.root",
 ]
 
-FILE_NAMES_MCZEROBIAS = [
-    "/home/z/zoghafoo/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/NanoV9MCPostVFP_PF_ZeroBias_100000Events.root",
-]
+FILE_NAMES_MCZEROBIAS = glob.glob("/eos/user/z/zoghafoo/crabsubmission_files/MC_MinBias/NanoV9MCPostVFP_ZeroBias_02052026/*/*/*.root")
+print(f"Number of MC_ZeroBias files: {len(FILE_NAMES_MCZEROBIAS)}\n")
+
 
 VARIABLES = {
     "PFCands_pt": "p_{T} [GeV]",
@@ -282,12 +278,10 @@ def ObservablesCalculation(df):
 
 def SaveSelectedEvents(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, out_path=""):
 
-    # variables_list = list(VARIABLES.keys())
     
     variables_list_MinBias = [f"PFSelection_{var}" for var in VARIABLES.keys()]
     variables_list_SingleMuon = ["diMuon_pT"] + variables_list_MinBias
 
-    # print(f"Saving selected events to {output_root}")
 
     df_SingleMuon.Snapshot("Events", f"{out_path}/Data_SingleMuon_SelectedEvents.root", variables_list_SingleMuon)
     df_MinBias.Snapshot("Events", f"{out_path}/Data_MinBias_SelectedEvents.root", variables_list_MinBias)
@@ -350,8 +344,6 @@ def main():
     df_MCDYJets = PFCandidateSelection(df_MCDYJets, args.charge)
     df_MCMinBias = PFCandidateSelection(df_MCMinBias, args.charge)
 
-    # df_SingleMuon = DiMuonPtCut(df_SingleMuon, 20)
-    # df_MCDYJets = DiMuonPtCut(df_MCDYJets, 20)
 
 
     df_SingleMuon = addInvariantMass(df_SingleMuon)
@@ -363,9 +355,6 @@ def main():
     df_MinBias = ObservablesCalculation(df_MinBias)
     df_MCDYJets = ObservablesCalculation(df_MCDYJets)
     df_MCMinBias = ObservablesCalculation(df_MCMinBias)
-
-    # df_SingleMuon.Display(["PFCands_pt", "PFCands_Ht", "PFSelection_PFCands_Ht"]).Print()
-    # df_SingleMuon.Display(["PFCands_pt", "PFSelection_PFCands_Pt2sum"]).Print()
 
     SaveSelectedEvents(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, out_path=args.output_dir)
 
