@@ -1,0 +1,4 @@
+/store/data/Run2016F/SingleMuon/MINIAOD/21Feb2020_UL2016_WMass_MiniAODv2-v1/260000/*
+/store/data/Run2016F/SingleMuon/MINIAOD/21Feb2020_UL2016_WMass_MiniAODv2-v1/270000/*
+/store/data/Run2016G/SingleMuon/MINIAOD/21Feb2020_UL2016_WMass_MiniAODv2-v1/260000/*
+/store/data/Run2016G/SingleMuon/MINIAOD/21Feb2020_UL2016_WMass_MiniAODv2-v1/270000/*
