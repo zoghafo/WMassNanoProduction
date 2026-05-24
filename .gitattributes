@@ -1,4 +1,0 @@
-selEvents/*.root filter=lfs diff=lfs merge=lfs -text
-crab_projects/*/* filter=lfs diff=lfs merge=lfs -text
-crab_projects/*/*.tgz filter=lfs diff=lfs merge=lfs -text
-crab_projects/*/*/*.tgz filter=lfs diff=lfs merge=lfs -text
