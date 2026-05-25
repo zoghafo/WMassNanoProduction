@@ -8,20 +8,27 @@ import csv
 ROOT.gStyle.SetOptStat(0)
 
 
-FILE_NAMES_SINGLEMUON = glob.glob("/eos/user/z/zoghafoo/crabsubmission_files/SingleMuon/*/*/*/*.root")
+FILE_NAMES_SINGLEMUON = glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/SingleMuon/NanoV9Run2016FDataPostVFP_24042026/260424_103158/0000/*.root") + glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/SingleMuon/NanoV9Run2016FDataPostVFP_24042026_Resubmission/260522_135137/0000/*.root")
 print(f"\nNumber of SingleMuon files: {len(FILE_NAMES_SINGLEMUON)}\n")
 
-FILE_NAMES_ZEROBIAS = glob.glob("/eos/user/z/zoghafoo/crabsubmission_files/ZeroBias/NanoV9Run2016FDataPostVFP_MinBias_02052026/260502_160901/*/*.root")
+FILE_NAMES_ZEROBIAS = glob.glob("/eos/user/z/zoghafoo/crabsubmission_files/ZeroBias/NanoV9Run2016FDataPostVFP_MinBias_02052026/260502_160901/*/*.root") + glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/ZeroBias/NanoV9Run2016FDataPostVFP_MinBias_02052026_Resubmission/260522_135745/0000/*.root")
 print(f"Number of ZeroBias files: {len(FILE_NAMES_ZEROBIAS)}\n")
 
 
 
-FILE_NAMES_MCDYJETS = [
-    "/home/z/zoghafoo/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/NanoV9MCPostVFP_PF_DYJetsToMuMu_100000Events.root",
-]
+FILE_NAMES_MCDY = glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/DYJetsToMuMu_H2ErratumFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/NanoV9MCPostVFP_DY_18052026/260518_072416/*/*.root")
+print(f"Number of MC_DYJets files: {len(FILE_NAMES_MCDY)}\n")
 
-FILE_NAMES_MCZEROBIAS = glob.glob("/eos/user/z/zoghafoo/crabsubmission_files/MC_MinBias/NanoV9MCPostVFP_ZeroBias_02052026/*/*/*.root")
+FILE_NAMES_MCZEROBIAS = glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/MinBias_TuneCP5_13TeV-pythia8/NanoV9MCPostVFP_ZeroBias_18052026/260518_072813/*/*.root")
 print(f"Number of MC_ZeroBias files: {len(FILE_NAMES_MCZEROBIAS)}\n")
+
+
+DATASET_FILES = {
+    "SingleMuon": FILE_NAMES_SINGLEMUON,
+    "MinBias": FILE_NAMES_ZEROBIAS,
+    "MCDY": FILE_NAMES_MCDY,
+    "MCMinBias": FILE_NAMES_MCZEROBIAS,
+}
 
 
 VARIABLES = {
@@ -51,73 +58,52 @@ BINNING = {
 }
 
 
-def MakeDataframes(maxevents=None):
-    df_SingleMuon = ROOT.RDataFrame("Events", list(FILE_NAMES_SINGLEMUON))
-    df_MinBias = ROOT.RDataFrame("Events", list(FILE_NAMES_ZEROBIAS))
-    df_MCDYJets = ROOT.RDataFrame("Events", list(FILE_NAMES_MCDYJETS))
-    df_MCMinBias = ROOT.RDataFrame("Events", list(FILE_NAMES_MCZEROBIAS))
+def MakeDataframes(dataset="all", maxevents=None):
+    if dataset == "all":
+        selected_datasets = DATASET_FILES.keys()
+    else:
+        selected_datasets = [dataset]
+
+    dataframes = {}
+    for name in selected_datasets:
+        dataframes[name] = ROOT.RDataFrame("Events", list(DATASET_FILES[name]))
+        if maxevents is not None:
+            dataframes[name] = dataframes[name].Range(maxevents)
 
     if maxevents is not None:
-        print(f"Processing only the first {maxevents} Events from each file.")
-        df_SingleMuon = df_SingleMuon.Range(maxevents)
-        df_MinBias = df_MinBias.Range(maxevents)
-        df_MCDYJets = df_MCDYJets.Range(maxevents)
-        df_MCMinBias = df_MCMinBias.Range(maxevents)
+        print(f"Processing only the first {maxevents} Events from each selected dataset.")
 
-    return df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias
+    return dataframes
 
 
-def PrintDatasetCounts(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias):
-    total_events_SingleMuon= df_SingleMuon.Count().GetValue()
-    total_events_MinBias = df_MinBias.Count().GetValue()
-    total_events_MCDYJets = df_MCDYJets.Count().GetValue()
-    total_events_MCMinBias = df_MCMinBias.Count().GetValue()
-    print(f"\nTotal number of Events in SingleMuon file: {total_events_SingleMuon}")
-    print(f"Total number of Events in MinBias file: {total_events_MinBias}")
-    print(f"Total number of Events in MCDYJets file: {total_events_MCDYJets}")
-    print(f"Total number of Events in MCMinBias file: {total_events_MCMinBias}\n")
+def PrintDatasetCounts(dataframes):
+    counts = {}
 
-    total_PFCands_SingleMuon= df_SingleMuon.Sum("nPFCands").GetValue()
-    total_PFCands_MinBias = df_MinBias.Sum("nPFCands").GetValue()
-    total_PFCands_MCDYJets = df_MCDYJets.Sum("nPFCands").GetValue()
-    total_PFCands_MCMinBias = df_MCMinBias.Sum("nPFCands").GetValue()
-    print(f"\nTotal number of PFCands in SingleMuon file: {total_PFCands_SingleMuon}")
-    print(f"Total number of PFCands in MinBias file: {total_PFCands_MinBias}")
-    print(f"Total number of PFCands in MCDYJets file: {total_PFCands_MCDYJets}")
-    print(f"Total number of PFCands in MCMinBias file: {total_PFCands_MCMinBias}\n")
+    for dataset_name, dataframe in dataframes.items():
 
-    return {
-        "total_events_SingleMuon": total_events_SingleMuon,
-        "total_events_MinBias": total_events_MinBias,
-        "total_events_MCDYJets": total_events_MCDYJets,
-        "total_events_MCMinBias": total_events_MCMinBias,
-        "total_PFCands_SingleMuon": total_PFCands_SingleMuon,
-        "total_PFCands_MinBias": total_PFCands_MinBias,
-        "total_PFCands_MCDYJets": total_PFCands_MCDYJets,
-        "total_PFCands_MCMinBias": total_PFCands_MCMinBias,
-    }
+        total_events = dataframe.Count().GetValue()
+        total_PFcands = dataframe.Sum("nPFCands").GetValue()
+
+        print(f"\nTotal number of Events in {dataset_name} file: {total_events}")
+        print(f"Total number of PFCands in {dataset_name} file: {total_PFcands}")
+
+        counts[f"total_events_{dataset_name}"] = total_events
+        counts[f"total_PFCands_{dataset_name}"] = total_PFcands
+
+    print()
+    
+    return counts
 
 
-def SaveCountsToTXT(counts_dict, out_dir="selEvents", filename="totalEvents.txt"):
+def SaveCountsToTXT(counts_dict, dataset, out_dir="selEvents_tier3"):
     out_dir = os.path.expanduser(out_dir)
     os.makedirs(out_dir, exist_ok=True)
-    filepath = os.path.join(out_dir, filename)
+    filepath = os.path.join(out_dir, f"{dataset}_totalEvents.txt")
 
-    header = "\t".join(["", "SingleMuon", "MinBias", "MCDYJets", "MCMinBias"]) + "\n"
-    events_row = "\t".join([
-        "total_events",
-        str(counts_dict.get("total_events_SingleMuon", "")),
-        str(counts_dict.get("total_events_MinBias", "")),
-        str(counts_dict.get("total_events_MCDYJets", "")),
-        str(counts_dict.get("total_events_MCMinBias", "")),
-    ]) + "\n"
-    pfcands_row = "\t".join([
-        "total_PFCands",
-        str(counts_dict.get("total_PFCands_SingleMuon", "")),
-        str(counts_dict.get("total_PFCands_MinBias", "")),
-        str(counts_dict.get("total_PFCands_MCDYJets", "")),
-        str(counts_dict.get("total_PFCands_MCMinBias", "")),
-    ]) + "\n"
+    dataset_names = sorted({key.rsplit("_", 1)[-1] for key in counts_dict if key.startswith("total_events_")})
+    header = "\t".join([""] + dataset_names) + "\n"
+    events_row = "\t".join(["total_events"] + [str(counts_dict.get(f"total_events_{name}", "")) for name in dataset_names]) + "\n"
+    pfcands_row = "\t".join(["total_PFCands"] + [str(counts_dict.get(f"total_PFCands_{name}", "")) for name in dataset_names]) + "\n"
 
     with open(filepath, "w") as f:
         f.write(header)
@@ -155,66 +141,33 @@ def DiMuonSelection(df):
     return df
 
 
-def PVSelection(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias):
-    df_SingleMuon = df_SingleMuon.Define(
+def PVSelection(df, dataset_name):
+    df = df.Define(
         "PFCands_vertexRefUnique",
         """
         std::set<int> sorted_unique(PFCands_vertexRef.begin(), PFCands_vertexRef.end());
         return ROOT::VecOps::RVec<int>(sorted_unique.begin(), sorted_unique.end());
-        """,
-    )
-    df_SingleMuon = df_SingleMuon.Define(
-        "PFCands_vertexRefRandom",
-        """
-        if (PFCands_vertexRefUnique.size() == 0) return -1;
-        return PFCands_vertexRefUnique[0];
-        """,
-    )
-    df_MinBias = df_MinBias.Define(
-        "PFCands_vertexRefUnique",
-        """
-        std::set<int> sorted_unique(PFCands_vertexRef.begin(), PFCands_vertexRef.end());
-        return ROOT::VecOps::RVec<int>(sorted_unique.begin(), sorted_unique.end());
-        """,
-    )
-    df_MinBias = df_MinBias.Define(
-        "PFCands_vertexRefRandom",
-        """
-        if (PFCands_vertexRefUnique.size() == 0) return -1;
-        return PFCands_vertexRefUnique[gRandom->Integer(PFCands_vertexRefUnique.size())];
         """,
     )
 
-    df_MCDYJets = df_MCDYJets.Define(
-        "PFCands_vertexRefUnique",
-        """
-        std::set<int> sorted_unique(PFCands_vertexRef.begin(), PFCands_vertexRef.end());
-        return ROOT::VecOps::RVec<int>(sorted_unique.begin(), sorted_unique.end());
-        """,
-    )
-    df_MCDYJets = df_MCDYJets.Define(
-        "PFCands_vertexRefRandom",
-        """
-        if (PFCands_vertexRefUnique.size() == 0) return -1;
-        return PFCands_vertexRefUnique[0];
-        """,
-    )
-    df_MCMinBias = df_MCMinBias.Define(
-        "PFCands_vertexRefUnique",
-        """
-        std::set<int> sorted_unique(PFCands_vertexRef.begin(), PFCands_vertexRef.end());
-        return ROOT::VecOps::RVec<int>(sorted_unique.begin(), sorted_unique.end());
-        """,
-    )
-    df_MCMinBias = df_MCMinBias.Define(
-        "PFCands_vertexRefRandom",
-        """
-        if (PFCands_vertexRefUnique.size() == 0) return -1;
-        return PFCands_vertexRefUnique[gRandom->Integer(PFCands_vertexRefUnique.size())];
-        """,
-    )
+    if dataset_name in {"SingleMuon", "MCDY"}:
+        df = df.Define(
+            "PFCands_vertexRefRandom",
+            """
+            if (PFCands_vertexRefUnique.size() == 0) return -1;
+            return PFCands_vertexRefUnique[0];
+            """,
+        )
+    else:
+        df = df.Define(
+            "PFCands_vertexRefRandom",
+            """
+            if (PFCands_vertexRefUnique.size() == 0) return -1;
+            return PFCands_vertexRefUnique[gRandom->Integer(PFCands_vertexRefUnique.size())];
+            """,
+        )
 
-    return df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias
+    return df
 
 
 def PFCandidateSelection(df, elec_charge):
@@ -276,7 +229,7 @@ def ObservablesCalculation(df):
     return df
 
 
-def SaveSelectedEvents(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, out_path=""):
+def SaveSelectedEvents(df_SingleMuon, df_MinBias, df_MCDY, df_MCMinBias, out_path=""):
 
     
     variables_list_MinBias = [f"PFSelection_{var}" for var in VARIABLES.keys()]
@@ -285,8 +238,14 @@ def SaveSelectedEvents(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, out
 
     df_SingleMuon.Snapshot("Events", f"{out_path}/Data_SingleMuon_SelectedEvents.root", variables_list_SingleMuon)
     df_MinBias.Snapshot("Events", f"{out_path}/Data_MinBias_SelectedEvents.root", variables_list_MinBias)
-    df_MCDYJets.Snapshot("Events", f"{out_path}/MC_DYJets_SelectedEvents.root", variables_list_SingleMuon)
+    df_MCDY.Snapshot("Events", f"{out_path}/MC_DY_SelectedEvents.root", variables_list_SingleMuon)
     df_MCMinBias.Snapshot("Events", f"{out_path}/MC_MinBias_SelectedEvents.root", variables_list_MinBias)
+
+def SnapshotColumns(dataset_name):
+    variables_list_minbias = [f"PFSelection_{var}" for var in VARIABLES.keys()]
+    if dataset_name in {"SingleMuon", "MCDY"}:
+        return ["diMuon_pT"] + variables_list_minbias
+    return variables_list_minbias
 
 
 def parse_args():
@@ -317,8 +276,14 @@ def parse_args():
     )
     parser.add_argument(
         "--output-dir",
-        default="",
-        help="Directory where output plots will be saved (default: 'plots')",
+        default="/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents/",
+        help="Directory where output plots will be saved (default: '/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents/')",
+    )
+    parser.add_argument(
+        "--dataset",
+        default="all",
+        choices=["all"] + sorted(DATASET_FILES.keys()),
+        help="Process only one dataset instead of all four",
     )
     return parser.parse_args()
 
@@ -326,37 +291,34 @@ def parse_args():
 def main():
     args = parse_args()
 
-    df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias = MakeDataframes(args.maxevents)
+    dataframes = MakeDataframes(args.dataset, args.maxevents)
+    SaveCountsToTXT(PrintDatasetCounts(dataframes), args.dataset, out_dir=args.output_dir)
 
-    SaveCountsToTXT(PrintDatasetCounts(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias), out_dir=args.output_dir)
+    processed_dataframes = {}
+    for dataset_name, dataframe in dataframes.items():
+        if dataset_name in {"SingleMuon", "MCDY"}:
+            dataframe = VetoMuons(dataframe)
+            dataframe = GoodMuons(dataframe)
+            dataframe = DiMuonSelection(dataframe)
 
-    df_SingleMuon = VetoMuons(df_SingleMuon)
-    df_SingleMuon = GoodMuons(df_SingleMuon)
-    df_SingleMuon = DiMuonSelection(df_SingleMuon)
+        dataframe = PVSelection(dataframe, dataset_name)
+        dataframe = PFCandidateSelection(dataframe, args.charge)
+        dataframe = addInvariantMass(dataframe)
+        dataframe = ObservablesCalculation(dataframe)
+        processed_dataframes[dataset_name] = dataframe
 
-    df_MCDYJets = VetoMuons(df_MCDYJets)
-    df_MCDYJets = GoodMuons(df_MCDYJets)
-    df_MCDYJets = DiMuonSelection(df_MCDYJets)
-
-    df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias = PVSelection(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias)
-    df_SingleMuon = PFCandidateSelection(df_SingleMuon, args.charge)
-    df_MinBias = PFCandidateSelection(df_MinBias, args.charge)
-    df_MCDYJets = PFCandidateSelection(df_MCDYJets, args.charge)
-    df_MCMinBias = PFCandidateSelection(df_MCMinBias, args.charge)
-
-
-
-    df_SingleMuon = addInvariantMass(df_SingleMuon)
-    df_MinBias = addInvariantMass(df_MinBias)
-    df_MCDYJets = addInvariantMass(df_MCDYJets)
-    df_MCMinBias = addInvariantMass(df_MCMinBias)
-
-    df_SingleMuon = ObservablesCalculation(df_SingleMuon)
-    df_MinBias = ObservablesCalculation(df_MinBias)
-    df_MCDYJets = ObservablesCalculation(df_MCDYJets)
-    df_MCMinBias = ObservablesCalculation(df_MCMinBias)
-
-    SaveSelectedEvents(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, out_path=args.output_dir)
+    if args.dataset == "all":
+        SaveSelectedEvents(
+            processed_dataframes["SingleMuon"],
+            processed_dataframes["MinBias"],
+            processed_dataframes["MCDY"],
+            processed_dataframes["MCMinBias"],
+            out_path=args.output_dir,
+        )
+    else:
+        dataset_name = args.dataset
+        output_file = os.path.join(args.output_dir, f"{dataset_name}_SelectedEvents.root")
+        processed_dataframes[dataset_name].Snapshot("Events", output_file, SnapshotColumns(dataset_name))
 
 
     if args.no_plot:
