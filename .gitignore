@@ -1,7 +1,6 @@
 *.pyc
 crab.log
 *.root
-*~old_plots/
 crab_projects/
 oldold_plots/
 new_plotsOld/
