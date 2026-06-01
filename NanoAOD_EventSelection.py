@@ -11,7 +11,7 @@ ROOT.gStyle.SetOptStat(0)
 FILE_NAMES_SINGLEMUON = glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/SingleMuon/NanoV9Run2016FDataPostVFP_24042026/260424_103158/0000/*.root") + glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/SingleMuon/NanoV9Run2016FDataPostVFP_24042026_Resubmission/260522_135137/0000/*.root")
 print(f"\nNumber of SingleMuon files: {len(FILE_NAMES_SINGLEMUON)}\n")
 
-FILE_NAMES_ZEROBIAS = glob.glob("/eos/user/z/zoghafoo/crabsubmission_files/ZeroBias/NanoV9Run2016FDataPostVFP_MinBias_02052026/260502_160901/*/*.root") + glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/ZeroBias/NanoV9Run2016FDataPostVFP_MinBias_02052026_Resubmission/260522_135745/0000/*.root")
+FILE_NAMES_ZEROBIAS = glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/ZeroBias/NanoV9Run2016FDataPostVFP_MinBias_02052026/260502_160901/0000/*.root") + glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/ZeroBias/NanoV9Run2016FDataPostVFP_MinBias_02052026_Resubmission/260522_135745/0000/*.root")
 print(f"Number of ZeroBias files: {len(FILE_NAMES_ZEROBIAS)}\n")
 
 
@@ -95,10 +95,10 @@ def PrintDatasetCounts(dataframes):
     return counts
 
 
-def SaveCountsToTXT(counts_dict, dataset, out_dir="selEvents_tier3"):
+def SaveCountsToTXT(counts_dict, dataset, out_dir):
     out_dir = os.path.expanduser(out_dir)
     os.makedirs(out_dir, exist_ok=True)
-    filepath = os.path.join(out_dir, f"{dataset}_totalEvents.txt")
+    filepath = os.path.join(out_dir, f"{dataset}_TotalEvents.txt")
 
     dataset_names = sorted({key.rsplit("_", 1)[-1] for key in counts_dict if key.startswith("total_events_")})
     header = "\t".join([""] + dataset_names) + "\n"
@@ -231,7 +231,6 @@ def ObservablesCalculation(df):
 
 def SaveSelectedEvents(df_SingleMuon, df_MinBias, df_MCDY, df_MCMinBias, out_path=""):
 
-    
     variables_list_MinBias = [f"PFSelection_{var}" for var in VARIABLES.keys()]
     variables_list_SingleMuon = ["diMuon_pT"] + variables_list_MinBias
 
@@ -259,9 +258,9 @@ def parse_args():
         help="If set, process only the first N Events from each dataframe",
     )
     parser.add_argument(
-        "--no-plot",
+        "--no-selection",
         action="store_true",
-        help="Run selections and print counts without producing plots",
+        help="Print counts only",
     )
     parser.add_argument(
         "--charge",
@@ -291,8 +290,15 @@ def parse_args():
 def main():
     args = parse_args()
 
+    print("Selected dataset:", args.dataset)
+    print("Output directory:", args.output_dir, "\n")
+
     dataframes = MakeDataframes(args.dataset, args.maxevents)
-    SaveCountsToTXT(PrintDatasetCounts(dataframes), args.dataset, out_dir=args.output_dir)
+    SaveCountsToTXT(PrintDatasetCounts(dataframes), args.dataset, args.output_dir)
+
+    if args.no_selection:
+        print("Selections skipped by --no-selection.")
+        return
 
     processed_dataframes = {}
     for dataset_name, dataframe in dataframes.items():
@@ -319,11 +325,6 @@ def main():
         dataset_name = args.dataset
         output_file = os.path.join(args.output_dir, f"{dataset_name}_SelectedEvents.root")
         processed_dataframes[dataset_name].Snapshot("Events", output_file, SnapshotColumns(dataset_name))
-
-
-    if args.no_plot:
-        print("Selections finished. Plotting disabled by --no-plot.")
-        return
 
 
 if __name__ == "__main__":
