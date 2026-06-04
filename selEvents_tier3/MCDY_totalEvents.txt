@@ -1,3 +1,0 @@
-	MCMinBias
-total_events	498034100
-total_PFCands	52775078657.0
