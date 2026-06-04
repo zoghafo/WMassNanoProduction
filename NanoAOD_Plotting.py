@@ -859,10 +859,10 @@ def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMi
             h_MCDYJets_ptr = MakeHist(df_MCDYJets_cut, var, label, y_title, bins, f"h_MCDYJets_{var}_{pt_cut}GeV")
 
             h_SingleMuon= h_SingleMuon_ptr.GetValue()
-            NormaliseHist(h_SingleMuon, True)
+            NormaliseHist(h_SingleMuon)
 
             h_MCDYJets= h_MCDYJets_ptr.GetValue()
-            NormaliseHist(h_MCDYJets, True)
+            NormaliseHist(h_MCDYJets)
 
             ratio_SingleMuon = h_SingleMuon.Clone(f"ratio_SingleMuon_{var}_{pt_cut}GeV")
             ratio_SingleMuon.Divide(h_MinBias)
