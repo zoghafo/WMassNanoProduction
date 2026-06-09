@@ -1,0 +1,34 @@
+Before starting the python:
+Dataset: SingleMuon
+Output suffix: RunII2016FGH
+Number of threads: 16
+
+Number of SingleMuon files: 10895
+
+Number of ZeroBias files: 10214
+
+Number of MC_DYJets files: 1731
+
+Number of MC_ZeroBias files: 776
+
+Number of threads: 16 
+
+Selected dataset: SingleMuon
+Output directory: /scratch/zoghafoo 
+
+
+Total number of Events in SingleMuon file: 317494717
+Total number of PFCands in SingleMuon file: 481589284679.0
+
+Saved dataset counts (txt) to /scratch/zoghafoo/SingleMuon_TotalEvents_RunII2016FGH.txt
+
+Going to copy
+From /scratch/zoghafoo/SingleMuon_SelectedEvents_RunII2016FGH.root
+To root://t3dcachedb03.psi.ch:1094///pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents_new
+Analyze scratch
+/scratch
+fameng
+fstager
+pahwagne
+zoghafoo
+Job finished in 08:57:00 (hh:mm:ss)

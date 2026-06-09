@@ -1,0 +1,197 @@
+/t3home/zoghafoo/WMassNanoProduction
+Plotting...
+Number of threads: 32 
+
+{'charge': 1,
+ 'maxevents': None,
+ 'mode': 'compare-quantilebinning',
+ 'no_plot': False,
+ 'nthreads': 32,
+ 'output_suffix': '',
+ 'pt_cuts': [1, 4, 10, 20],
+ 'quantile_bins': [0.0,
+                   0.02,
+                   0.04,
+                   0.06,
+                   0.08,
+                   0.1,
+                   0.12,
+                   0.14,
+                   0.16,
+                   0.18,
+                   0.2,
+                   0.25,
+                   0.3,
+                   0.35,
+                   0.4,
+                   0.45,
+                   0.5,
+                   0.6,
+                   0.7,
+                   0.8,
+                   0.9,
+                   1.0],
+ 'quantile_reference': 'both',
+ 'save_event_counts': False,
+ 'vars': dict_keys(['PFCands_pt', 'PFCands_eta', 'PFCands_phi', 'PFCands_pvAssocQuality', 'nPFCands', 'PFCands_Ht', 'PFCands_Pt2sum', 'PFCands_Psum', 'PFCands_P2sum', 'PFCands_InvariantMass']),
+ 'zoomxmax': 70.0}
+------------------------
+Reading total events and PF candidates from text files...
+
+       Event Type  Data_SingleMuon  Data_MinBias         MC_DY   MC_MinBias
+0    Total Events        317494717      69205921      96424820    499907600
+1  Total PF Cands     481589284679   80429995602  134047192083  52973764700
+
+Total events and PF candidates summary written to '/scratch/zoghafoo/TotalEvents_RunII2016FGH.txt'!
+
+------------------------
+------------------------
+
+Calculating selected events and PF candidates from NanoAODs...
+
+          Event Type  Data_SingleMuon  Data_MinBias       MC_DY  MC_MinBias
+0    Selected Events         10142965      57671894    29672721   414040967
+1  Selected PF Cands        361604529    1004173250  1131468878  7118133993
+
+Selected events and PF candidates summary written to '/scratch/zoghafoo/SelectedEvents_RunII2016FGH.txt'!
+
+------------------------
+Quantile numeric ranges for nPFCands from the normal distributions (both reference):
+  [0.000, 0.020] -> Data SingleMuon 56.8642 - 160, Data MinBias 44.6967 - 160; MCDY 58.5948 - 160, MCMinBias 47.0449 - 160
+  [0.020, 0.040] -> Data SingleMuon 51.7947 - 56.8642, Data MinBias 39.1313 - 44.6967; MCDY 53.7128 - 58.5948, MCMinBias 40.1813 - 47.0449
+  [0.040, 0.060] -> Data SingleMuon 49.0789 - 51.7947, Data MinBias 36.1725 - 39.1313; MCDY 51.0866 - 53.7128, MCMinBias 36.8428 - 40.1813
+  [0.060, 0.080] -> Data SingleMuon 46.6724 - 49.0789, Data MinBias 33.8779 - 36.1725; MCDY 48.9287 - 51.0866, MCMinBias 34.0561 - 36.8428
+  [0.080, 0.100] -> Data SingleMuon 44.5433 - 46.6724, Data MinBias 32.2697 - 33.8779; MCDY 46.9297 - 48.9287, MCMinBias 32.1325 - 34.0561
+  [0.100, 0.120] -> Data SingleMuon 42.55 - 44.5433, Data MinBias 31.0303 - 32.2697; MCDY 45.1068 - 46.9297, MCMinBias 30.3053 - 32.1325
+  [0.120, 0.140] -> Data SingleMuon 41.0896 - 42.55, Data MinBias 28.8567 - 31.0303; MCDY 43.2839 - 45.1068, MCMinBias 27.4392 - 30.3053
+  [0.140, 0.160] -> Data SingleMuon 39.8085 - 41.0896, Data MinBias 26.6797 - 28.8567; MCDY 41.8429 - 43.2839, MCMinBias 24.8494 - 27.4392
+  [0.160, 0.180] -> Data SingleMuon 38.8979 - 39.8085, Data MinBias 24.8059 - 26.6797; MCDY 40.5225 - 41.8429, MCMinBias 22.7719 - 24.8494
+  [0.180, 0.200] -> Data SingleMuon 37.9873 - 38.8979, Data MinBias 23.2589 - 24.8059; MCDY 39.5208 - 40.5225, MCMinBias 21.089 - 22.7719
+  [0.200, 0.250] -> Data SingleMuon 35.8244 - 37.9873, Data MinBias 20.0542 - 23.2589; MCDY 37.3845 - 39.5208, MCMinBias 17.8441 - 21.089
+  [0.250, 0.300] -> Data SingleMuon 33.9491 - 35.8244, Data MinBias 17.8339 - 20.0542; MCDY 35.2946 - 37.3845, MCMinBias 15.4741 - 17.8441
+  [0.300, 0.350] -> Data SingleMuon 32.4579 - 33.9491, Data MinBias 15.9226 - 17.8339; MCDY 33.5406 - 35.2946, MCMinBias 14.05 - 15.4741
+  [0.350, 0.400] -> Data SingleMuon 31.2772 - 32.4579, Data MinBias 14.6721 - 15.9226; MCDY 32.1034 - 33.5406, MCMinBias 11.7236 - 14.05
+  [0.400, 0.450] -> Data SingleMuon 29.3069 - 31.2772, Data MinBias 13.2454 - 14.6721; MCDY 30.7957 - 32.1034, MCMinBias 9.80011 - 11.7236
+  [0.450, 0.500] -> Data SingleMuon 26.8054 - 29.3069, Data MinBias 11.2208 - 13.2454; MCDY 28.2127 - 30.7957, MCMinBias 8.32062 - 9.80011
+  [0.500, 0.600] -> Data SingleMuon 22.2979 - 26.8054, Data MinBias 8.27609 - 11.2208; MCDY 23.0077 - 28.2127, MCMinBias 6.65793 - 8.32062
+  [0.600, 0.700] -> Data SingleMuon 18.3513 - 22.2979, Data MinBias 6.53552 - 8.27609; MCDY 18.4994 - 23.0077, MCMinBias 5.56419 - 6.65793
+  [0.700, 0.800] -> Data SingleMuon 14.9096 - 18.3513, Data MinBias 5.23805 - 6.53552; MCDY 14.7625 - 18.4994, MCMinBias 4.56441 - 5.56419
+  [0.800, 0.900] -> Data SingleMuon 9.62653 - 14.9096, Data MinBias 4.07297 - 5.23805; MCDY 9.0425 - 14.7625, MCMinBias 3.78221 - 4.56441
+  [0.900, 1.000] -> Data SingleMuon 3 - 9.62653, Data MinBias 3 - 4.07297; MCDY 3 - 9.0425, MCMinBias 3 - 3.78221
+Quantile numeric ranges for PFCands_Ht from the normal distributions (both reference):
+  [0.000, 0.020] -> Data SingleMuon 52.9334 - 370, Data MinBias 38.421 - 370; MCDY 53.5978 - 370, MCMinBias 38.9972 - 370
+  [0.020, 0.040] -> Data SingleMuon 47.3525 - 52.9334, Data MinBias 31.3178 - 38.421; MCDY 47.7577 - 53.5978, MCMinBias 30.7476 - 38.9972
+  [0.040, 0.060] -> Data SingleMuon 45.1374 - 47.3525, Data MinBias 28.438 - 31.3178; MCDY 45.7279 - 47.7577, MCMinBias 27.7186 - 30.7476
+  [0.060, 0.080] -> Data SingleMuon 43.0404 - 45.1374, Data MinBias 26.6354 - 28.438; MCDY 43.7132 - 45.7279, MCMinBias 25.4037 - 27.7186
+  [0.080, 0.100] -> Data SingleMuon 41.1101 - 43.0404, Data MinBias 25.0152 - 26.6354; MCDY 41.8971 - 43.7132, MCMinBias 23.3146 - 25.4037
+  [0.100, 0.120] -> Data SingleMuon 39.2115 - 41.1101, Data MinBias 23.5633 - 25.0152; MCDY 40.081 - 41.8971, MCMinBias 19.4266 - 23.3146
+  [0.120, 0.140] -> Data SingleMuon 37.4981 - 39.2115, Data MinBias 21.1407 - 23.5633; MCDY 38.3686 - 40.081, MCMinBias 17.1509 - 19.4266
+  [0.140, 0.160] -> Data SingleMuon 35.7847 - 37.4981, Data MinBias 18.8213 - 21.1407; MCDY 36.7097 - 38.3686, MCMinBias 15.3918 - 17.1509
+  [0.160, 0.180] -> Data SingleMuon 34.1702 - 35.7847, Data MinBias 17.3371 - 18.8213; MCDY 35.0529 - 36.7097, MCMinBias 13.9361 - 15.3918
+  [0.180, 0.200] -> Data SingleMuon 32.6245 - 34.1702, Data MinBias 16.0499 - 17.3371; MCDY 33.5042 - 35.0529, MCMinBias 12.8778 - 13.9361
+  [0.200, 0.250] -> Data SingleMuon 29.7945 - 32.6245, Data MinBias 13.638 - 16.0499; MCDY 30.1886 - 33.5042, MCMinBias 10.5854 - 12.8778
+  [0.250, 0.300] -> Data SingleMuon 28.1038 - 29.7945, Data MinBias 11.8992 - 13.638; MCDY 28.3675 - 30.1886, MCMinBias 9.23165 - 10.5854
+  [0.300, 0.350] -> Data SingleMuon 26.6912 - 28.1038, Data MinBias 10.3983 - 11.8992; MCDY 26.8848 - 28.3675, MCMinBias 7.49773 - 9.23165
+  [0.350, 0.400] -> Data SingleMuon 25.301 - 26.6912, Data MinBias 9.43549 - 10.3983; MCDY 25.4179 - 26.8848, MCMinBias 6.14843 - 7.49773
+  [0.400, 0.450] -> Data SingleMuon 23.9347 - 25.301, Data MinBias 8.18431 - 9.43549; MCDY 23.9573 - 25.4179, MCMinBias 5.02025 - 6.14843
+  [0.450, 0.500] -> Data SingleMuon 21.7587 - 23.9347, Data MinBias 6.83498 - 8.18431; MCDY 21.5681 - 23.9573, MCMinBias 4.35019 - 5.02025
+  [0.500, 0.600] -> Data SingleMuon 16.8112 - 21.7587, Data MinBias 4.8692 - 6.83498; MCDY 16.3433 - 21.5681, MCMinBias 3.33469 - 4.35019
+  [0.600, 0.700] -> Data SingleMuon 13.2552 - 16.8112, Data MinBias 3.711 - 4.8692; MCDY 12.6765 - 16.3433, MCMinBias 2.61966 - 3.33469
+  [0.700, 0.800] -> Data SingleMuon 10.1575 - 13.2552, Data MinBias 2.70129 - 3.711; MCDY 9.63376 - 12.6765, MCMinBias 1.9714 - 2.61966
+  [0.800, 0.900] -> Data SingleMuon 6.32982 - 10.1575, Data MinBias 1.78055 - 2.70129; MCDY 5.50684 - 9.63376, MCMinBias 1.13429 - 1.9714
+  [0.900, 1.000] -> Data SingleMuon 0 - 6.32982, Data MinBias 0 - 1.78055; MCDY 0 - 5.50684, MCMinBias 0 - 1.13429
+Quantile numeric ranges for PFCands_Pt2sum from the normal distributions (both reference):
+  [0.000, 0.020] -> Data SingleMuon 76.8406 - 400, Data MinBias 45.4396 - 400; MCDY 76.6253 - 400, MCMinBias 43.8974 - 400
+  [0.020, 0.040] -> Data SingleMuon 66.1742 - 76.8406, Data MinBias 37.1842 - 45.4396; MCDY 66.1996 - 76.6253, MCMinBias 34.8028 - 43.8974
+  [0.040, 0.060] -> Data SingleMuon 59.2488 - 66.1742, Data MinBias 32.4694 - 37.1842; MCDY 59.2945 - 66.1996, MCMinBias 29.3661 - 34.8028
+  [0.060, 0.080] -> Data SingleMuon 53.6192 - 59.2488, Data MinBias 29.1728 - 32.4694; MCDY 53.6496 - 59.2945, MCMinBias 23.4713 - 29.3661
+  [0.080, 0.100] -> Data SingleMuon 49.8945 - 53.6192, Data MinBias 25.4284 - 29.1728; MCDY 49.8578 - 53.6496, MCMinBias 18.8184 - 23.4713
+  [0.100, 0.120] -> Data SingleMuon 46.6761 - 49.8945, Data MinBias 21.625 - 25.4284; MCDY 46.5728 - 49.8578, MCMinBias 16.3566 - 18.8184
+  [0.120, 0.140] -> Data SingleMuon 44.132 - 46.6761, Data MinBias 18.782 - 21.625; MCDY 43.9654 - 46.5728, MCMinBias 14.2852 - 16.3566
+  [0.140, 0.160] -> Data SingleMuon 41.7383 - 44.132, Data MinBias 17.2115 - 18.782; MCDY 41.4749 - 43.9654, MCMinBias 12.4853 - 14.2852
+  [0.160, 0.180] -> Data SingleMuon 39.8717 - 41.7383, Data MinBias 15.7209 - 17.2115; MCDY 39.6234 - 41.4749, MCMinBias 10.8838 - 12.4853
+  [0.180, 0.200] -> Data SingleMuon 38.3274 - 39.8717, Data MinBias 14.4195 - 15.7209; MCDY 37.9951 - 39.6234, MCMinBias 10.0778 - 10.8838
+  [0.200, 0.250] -> Data SingleMuon 34.826 - 38.3274, Data MinBias 11.5827 - 14.4195; MCDY 34.3208 - 37.9951, MCMinBias 8.42329 - 10.0778
+  [0.250, 0.300] -> Data SingleMuon 31.5941 - 34.826, Data MinBias 9.93139 - 11.5827; MCDY 30.8746 - 34.3208, MCMinBias 6.83464 - 8.42329
+  [0.300, 0.350] -> Data SingleMuon 29.1512 - 31.5941, Data MinBias 8.81241 - 9.93139; MCDY 28.5284 - 30.8746, MCMinBias 5.52093 - 6.83464
+  [0.350, 0.400] -> Data SingleMuon 25.8709 - 29.1512, Data MinBias 7.55844 - 8.81241; MCDY 24.0865 - 28.5284, MCMinBias 4.63012 - 5.52093
+  [0.400, 0.450] -> Data SingleMuon 21.791 - 25.8709, Data MinBias 6.5254 - 7.55844; MCDY 20.0835 - 24.0865, MCMinBias 3.73931 - 4.63012
+  [0.450, 0.500] -> Data SingleMuon 18.5366 - 21.791, Data MinBias 5.53078 - 6.5254; MCDY 17.2261 - 20.0835, MCMinBias 3.26352 - 3.73931
+  [0.500, 0.600] -> Data SingleMuon 14.1226 - 18.5366, Data MinBias 4.01628 - 5.53078; MCDY 12.4851 - 17.2261, MCMinBias 2.34388 - 3.26352
+  [0.600, 0.700] -> Data SingleMuon 10.1529 - 14.1226, Data MinBias 2.8814 - 4.01628; MCDY 9.31571 - 12.4851, MCMinBias 1.60382 - 2.34388
+  [0.700, 0.800] -> Data SingleMuon 7.48589 - 10.1529, Data MinBias 1.8452 - 2.8814; MCDY 6.37364 - 9.31571, MCMinBias 1.06921 - 1.60382
+  [0.800, 0.900] -> Data SingleMuon 4.2384 - 7.48589, Data MinBias 0.922602 - 1.8452; MCDY 3.48155 - 6.37364, MCMinBias 0.534606 - 1.06921
+  [0.900, 1.000] -> Data SingleMuon 0 - 4.2384, Data MinBias 0 - 0.922602; MCDY 0 - 3.48155, MCMinBias 0 - 0.534606
+Quantile numeric ranges for PFCands_Psum from the normal distributions (both reference):
+  [0.000, 0.020] -> Data SingleMuon 114.846 - 400, Data MinBias 81.2891 - 400; MCDY 117.391 - 400, MCMinBias 83.2844 - 400
+  [0.020, 0.040] -> Data SingleMuon 99.2885 - 114.846, Data MinBias 68.7367 - 81.2891; MCDY 100.569 - 117.391, MCMinBias 68.4671 - 83.2844
+  [0.040, 0.060] -> Data SingleMuon 94.2892 - 99.2885, Data MinBias 62.028 - 68.7367; MCDY 96.0736 - 100.569, MCMinBias 60.461 - 68.4671
+  [0.060, 0.080] -> Data SingleMuon 89.6176 - 94.2892, Data MinBias 57.6089 - 62.028; MCDY 91.5785 - 96.0736, MCMinBias 55.3187 - 60.461
+  [0.080, 0.100] -> Data SingleMuon 85.579 - 89.6176, Data MinBias 54.075 - 57.6089; MCDY 87.7327 - 91.5785, MCMinBias 50.9868 - 55.3187
+  [0.100, 0.120] -> Data SingleMuon 81.5561 - 85.579, Data MinBias 51.0493 - 54.075; MCDY 83.9837 - 87.7327, MCMinBias 45.4583 - 50.9868
+  [0.120, 0.140] -> Data SingleMuon 77.9826 - 81.5561, Data MinBias 47.6041 - 51.0493; MCDY 80.3493 - 83.9837, MCMinBias 39.7317 - 45.4583
+  [0.140, 0.160] -> Data SingleMuon 74.4091 - 77.9826, Data MinBias 42.8756 - 47.6041; MCDY 76.8979 - 80.3493, MCMinBias 35.4302 - 39.7317
+  [0.160, 0.180] -> Data SingleMuon 71.4143 - 74.4091, Data MinBias 39.4781 - 42.8756; MCDY 73.4466 - 76.8979, MCMinBias 31.9929 - 35.4302
+  [0.180, 0.200] -> Data SingleMuon 69.198 - 71.4143, Data MinBias 36.3928 - 39.4781; MCDY 70.8397 - 73.4466, MCMinBias 29.4599 - 31.9929
+  [0.200, 0.250] -> Data SingleMuon 64.1532 - 69.198, Data MinBias 30.698 - 36.3928; MCDY 65.4389 - 70.8397, MCMinBias 24.7152 - 29.4599
+  [0.250, 0.300] -> Data SingleMuon 60.0096 - 64.1532, Data MinBias 26.994 - 30.698; MCDY 60.9293 - 65.4389, MCMinBias 21.0342 - 24.7152
+  [0.300, 0.350] -> Data SingleMuon 56.6846 - 60.0096, Data MinBias 24.018 - 26.994; MCDY 57.4228 - 60.9293, MCMinBias 17.5992 - 21.0342
+  [0.350, 0.400] -> Data SingleMuon 53.6013 - 56.6846, Data MinBias 21.4091 - 24.018; MCDY 54.1106 - 57.4228, MCMinBias 14.5407 - 17.5992
+  [0.400, 0.450] -> Data SingleMuon 50.7261 - 53.6013, Data MinBias 18.8246 - 21.4091; MCDY 50.9978 - 54.1106, MCMinBias 12.165 - 14.5407
+  [0.450, 0.500] -> Data SingleMuon 46.702 - 50.7261, Data MinBias 16.1548 - 18.8246; MCDY 46.8035 - 50.9978, MCMinBias 10.29 - 12.165
+  [0.500, 0.600] -> Data SingleMuon 36.8695 - 46.702, Data MinBias 11.7792 - 16.1548; MCDY 36.1706 - 46.8035, MCMinBias 7.82118 - 10.29
+  [0.600, 0.700] -> Data SingleMuon 29.0696 - 36.8695, Data MinBias 8.69579 - 11.7792; MCDY 28.0875 - 36.1706, MCMinBias 5.99657 - 7.82118
+  [0.700, 0.800] -> Data SingleMuon 22.6745 - 29.0696, Data MinBias 6.12979 - 8.69579; MCDY 21.4689 - 28.0875, MCMinBias 4.43765 - 5.99657
+  [0.800, 0.900] -> Data SingleMuon 14.3056 - 22.6745, Data MinBias 3.82526 - 6.12979; MCDY 12.7585 - 21.4689, MCMinBias 2.48143 - 4.43765
+  [0.900, 1.000] -> Data SingleMuon 0 - 14.3056, Data MinBias 0 - 3.82526; MCDY 0 - 12.7585, MCMinBias 0 - 2.48143
+Quantile numeric ranges for PFCands_P2sum from the normal distributions (both reference):
+  [0.000, 0.020] -> Data SingleMuon 440.226 - 4000, Data MinBias 257.324 - 4000; MCDY 444.041 - 4000, MCMinBias 240.815 - 4000
+  [0.020, 0.040] -> Data SingleMuon 373.34 - 440.226, Data MinBias 207.548 - 257.324; MCDY 380.402 - 444.041, MCMinBias 186.112 - 240.815
+  [0.040, 0.060] -> Data SingleMuon 334.072 - 373.34, Data MinBias 178.791 - 207.548; MCDY 339.182 - 380.402, MCMinBias 149.12 - 186.112
+  [0.060, 0.080] -> Data SingleMuon 303.294 - 334.072, Data MinBias 158.038 - 178.791; MCDY 306.72 - 339.182, MCMinBias 112.084 - 149.12
+  [0.080, 0.100] -> Data SingleMuon 281.488 - 303.294, Data MinBias 129.439 - 158.038; MCDY 284.989 - 306.72, MCMinBias 91.4489 - 112.084
+  [0.100, 0.120] -> Data SingleMuon 263.797 - 281.488, Data MinBias 111.323 - 129.439; MCDY 266.181 - 284.989, MCMinBias 78.1363 - 91.4489
+  [0.120, 0.140] -> Data SingleMuon 248.601 - 263.797, Data MinBias 98.8633 - 111.323; MCDY 250.801 - 266.181, MCMinBias 68.2226 - 78.1363
+  [0.140, 0.160] -> Data SingleMuon 236.134 - 248.601, Data MinBias 88.1918 - 98.8633; MCDY 237.429 - 250.801, MCMinBias 60.1629 - 68.2226
+  [0.160, 0.180] -> Data SingleMuon 225.593 - 236.134, Data MinBias 80.5958 - 88.1918; MCDY 226.529 - 237.429, MCMinBias 54.9063 - 60.1629
+  [0.180, 0.200] -> Data SingleMuon 215.488 - 225.593, Data MinBias 73.383 - 80.5958; MCDY 215.951 - 226.529, MCMinBias 49.3364 - 54.9063
+  [0.200, 0.250] -> Data SingleMuon 193.341 - 215.488, Data MinBias 60.4261 - 73.383; MCDY 192.779 - 215.951, MCMinBias 34.2955 - 49.3364
+  [0.250, 0.300] -> Data SingleMuon 176.607 - 193.341, Data MinBias 51.9978 - 60.4261; MCDY 175.257 - 192.779, MCMinBias 26.9875 - 34.2955
+  [0.300, 0.350] -> Data SingleMuon 162.252 - 176.607, Data MinBias 41.2193 - 51.9978; MCDY 157.695 - 175.257, MCMinBias 21.2892 - 26.9875
+  [0.350, 0.400] -> Data SingleMuon 135.841 - 162.252, Data MinBias 32.2886 - 41.2193; MCDY 129.9 - 157.695, MCMinBias 18.4003 - 21.2892
+  [0.400, 0.450] -> Data SingleMuon 115.805 - 135.841, Data MinBias 26.1973 - 32.2886; MCDY 109.056 - 129.9, MCMinBias 15.5114 - 18.4003
+  [0.450, 0.500] -> Data SingleMuon 99.5482 - 115.805, Data MinBias 21.2551 - 26.1973; MCDY 93.0797 - 109.056, MCMinBias 13.3491 - 15.5114
+  [0.500, 0.600] -> Data SingleMuon 74.282 - 99.5482, Data MinBias 15.3345 - 21.2551; MCDY 68.4584 - 93.0797, MCMinBias 10.1991 - 13.3491
+  [0.600, 0.700] -> Data SingleMuon 56.074 - 74.282, Data MinBias 10.9736 - 15.3345; MCDY 51.108 - 68.4584, MCMinBias 7.06441 - 10.1991
+  [0.700, 0.800] -> Data SingleMuon 34.1018 - 56.074, Data MinBias 6.9914 - 10.9736; MCDY 28.2698 - 51.108, MCMinBias 4.70961 - 7.06441
+  [0.800, 0.900] -> Data SingleMuon 16.0801 - 34.1018, Data MinBias 3.4957 - 6.9914; MCDY 13.751 - 28.2698, MCMinBias 2.3548 - 4.70961
+  [0.900, 1.000] -> Data SingleMuon 0 - 16.0801, Data MinBias 0 - 3.4957; MCDY 0 - 13.751, MCMinBias 0 - 2.3548
+Quantile numeric ranges for PFCands_InvariantMass from the normal distributions (both reference):
+  [0.000, 0.020] -> Data SingleMuon 110.406 - 400, Data MinBias 75.7409 - 400; MCDY 111.983 - 400, MCMinBias 76.7331 - 400
+  [0.020, 0.040] -> Data SingleMuon 100.285 - 110.406, Data MinBias 65.3335 - 75.7409; MCDY 102.757 - 111.983, MCMinBias 64.5332 - 76.7331
+  [0.040, 0.060] -> Data SingleMuon 91.8111 - 100.285, Data MinBias 58.3556 - 65.3335; MCDY 95.2681 - 102.757, MCMinBias 56.7839 - 64.5332
+  [0.060, 0.080] -> Data SingleMuon 85.2672 - 91.8111, Data MinBias 54.3261 - 58.3556; MCDY 87.835 - 95.2681, MCMinBias 51.5891 - 56.7839
+  [0.080, 0.100] -> Data SingleMuon 80.3602 - 85.2672, Data MinBias 50.717 - 54.3261; MCDY 83.271 - 87.835, MCMinBias 46.926 - 51.5891
+  [0.100, 0.120] -> Data SingleMuon 76.1053 - 80.3602, Data MinBias 47.5002 - 50.717; MCDY 78.707 - 83.271, MCMinBias 39.6105 - 46.926
+  [0.120, 0.140] -> Data SingleMuon 73.5631 - 76.1053, Data MinBias 42.7717 - 47.5002; MCDY 75.3734 - 78.707, MCMinBias 34.482 - 39.6105
+  [0.140, 0.160] -> Data SingleMuon 71.0208 - 73.5631, Data MinBias 38.3843 - 42.7717; MCDY 72.9178 - 75.3734, MCMinBias 30.9464 - 34.482
+  [0.160, 0.180] -> Data SingleMuon 68.6141 - 71.0208, Data MinBias 34.9433 - 38.3843; MCDY 70.4622 - 72.9178, MCMinBias 27.9496 - 30.9464
+  [0.180, 0.200] -> Data SingleMuon 66.2582 - 68.6141, Data MinBias 32.3139 - 34.9433; MCDY 68.0989 - 70.4622, MCMinBias 25.3024 - 27.9496
+  [0.200, 0.250] -> Data SingleMuon 61.1066 - 66.2582, Data MinBias 27.2014 - 32.3139; MCDY 62.5176 - 68.0989, MCMinBias 20.9106 - 25.3024
+  [0.250, 0.300] -> Data SingleMuon 57.0915 - 61.1066, Data MinBias 23.321 - 27.2014; MCDY 57.9573 - 62.5176, MCMinBias 17.791 - 20.9106
+  [0.300, 0.350] -> Data SingleMuon 53.9349 - 57.0915, Data MinBias 20.5239 - 23.321; MCDY 54.6286 - 57.9573, MCMinBias 13.9362 - 17.791
+  [0.350, 0.400] -> Data SingleMuon 50.8368 - 53.9349, Data MinBias 18.2776 - 20.5239; MCDY 51.3369 - 54.6286, MCMinBias 11.4874 - 13.9362
+  [0.400, 0.450] -> Data SingleMuon 47.8019 - 50.8368, Data MinBias 15.2843 - 18.2776; MCDY 48.0637 - 51.3369, MCMinBias 9.40363 - 11.4874
+  [0.450, 0.500] -> Data SingleMuon 42.9556 - 47.8019, Data MinBias 12.5794 - 15.2843; MCDY 42.9581 - 48.0637, MCMinBias 8.18692 - 9.40363
+  [0.500, 0.600] -> Data SingleMuon 33.2198 - 42.9556, Data MinBias 8.92652 - 12.5794; MCDY 32.5413 - 42.9581, MCMinBias 5.97826 - 8.18692
+  [0.600, 0.700] -> Data SingleMuon 25.7799 - 33.2198, Data MinBias 6.46706 - 8.92652; MCDY 24.566 - 32.5413, MCMinBias 4.56298 - 5.97826
+  [0.700, 0.800] -> Data SingleMuon 19.6145 - 25.7799, Data MinBias 4.45156 - 6.46706; MCDY 18.5926 - 24.566, MCMinBias 3.14706 - 4.56298
+  [0.800, 0.900] -> Data SingleMuon 10.8882 - 19.6145, Data MinBias 2.38851 - 4.45156; MCDY 9.63577 - 18.5926, MCMinBias 1.57353 - 3.14706
+  [0.900, 1.000] -> Data SingleMuon 0 - 10.8882, Data MinBias 0 - 2.38851; MCDY 0 - 9.63577, MCMinBias 0 - 1.57353
+Saving the plots in /t3home/zoghafoo/WMassNanoProduction
+Analyze scratch:
+/scratch/zoghafoo
+SelectedEvents_RunII2016FGH.txt
+tmp
+TotalEvents_RunII2016FGH.txt
+Job finished in 00:06:17 (hh:mm:ss)

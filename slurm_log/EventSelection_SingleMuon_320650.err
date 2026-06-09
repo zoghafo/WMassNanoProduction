@@ -1,0 +1,33 @@
+++ date +%s
++ start_time=1780839668
++ source_dir=/scratch/zoghafoo
++ DESTDIR=/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents_new
++ DATASET=SingleMuon
++ OUTPUTSUFFIX=RunII2016FGH
++ NTHREADS=16
++ mkdir -p /scratch/zoghafoo
++ echo 'Before starting the python:'
++ echo 'Dataset: SingleMuon'
++ echo 'Output suffix: RunII2016FGH'
++ echo 'Number of threads: 16'
++ python3 NanoAOD_EventSelection.py --dataset SingleMuon --output-dir /scratch/zoghafoo --output-suffix RunII2016FGH --nthreads 16
+Warning in <TClass::Init>: no dictionary for class edm::Hash<1> is available
+Warning in <TClass::Init>: no dictionary for class edm::ParameterSetBlob is available
+Warning in <TClass::Init>: no dictionary for class edm::ProcessHistory is available
+Warning in <TClass::Init>: no dictionary for class edm::ProcessConfiguration is available
+Warning in <TClass::Init>: no dictionary for class pair<edm::Hash<1>,edm::ParameterSetBlob> is available
++ echo 'Going to copy'
++ echo 'From /scratch/zoghafoo/SingleMuon_SelectedEvents_RunII2016FGH.root'
++ echo 'To root://t3dcachedb03.psi.ch:1094///pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents_new'
++ echo 'Analyze scratch'
++ cd /scratch
++ pwd
++ ls
++ xrdcp -f -N /scratch/zoghafoo/SingleMuon_SelectedEvents_RunII2016FGH.root root://t3dcachedb03.psi.ch:1094///pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents_new
++ xrdcp -f -N /scratch/zoghafoo/SingleMuon_TotalEvents_RunII2016FGH.txt root://t3dcachedb03.psi.ch:1094///pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents_new
++ rm /scratch/zoghafoo/SingleMuon_SelectedEvents_RunII2016FGH.root
++ rm /scratch/zoghafoo/SingleMuon_TotalEvents_RunII2016FGH.txt
+++ date +%s
++ end_time=1780871888
++ elapsed=32220
++ printf 'Job finished in %02d:%02d:%02d (hh:mm:ss)\n' 8 57 0

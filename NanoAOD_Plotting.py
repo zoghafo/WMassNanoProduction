@@ -5,8 +5,14 @@ import glob
 import pandas as pd
 import os
 import pprint
+import time
+
+
 
 path = "/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents"
+
+scratch_path = "/scratch/zoghafoo"
+
 
 DATASETS = [
             "SingleMuon",
@@ -16,8 +22,8 @@ DATASETS = [
            ]
 
 FILES = [
-         f"{path}/SingleMuon_SelectedEvents.root",
-         f"{path}/MinBias_SelectedEvents.root",
+         f"{path}/SingleMuon_SelectedEvents_RunII2016FGH.root",
+         f"{path}/MinBias_SelectedEvents_RunII2016FGH.root",
          f"{path}/MCDY_SelectedEvents.root",
          f"{path}/MCMinBias_SelectedEvents.root"
         ]
@@ -70,17 +76,19 @@ def TotalEvents():
     print("------------------------")
     print(f"Reading total events and PF candidates from text files...")
 
-
     event_dict = {"SingleMuon": [], "MinBias": [], "MCDY": [], "MCMinBias": {}}
 
     for dataset in DATASETS:
-        txt_file = f"{path}/{dataset}_TotalEvents.txt"
+        if dataset in ["SingleMuon", "MinBias"]:
+            txt_file = f"{path}/{dataset}_TotalEvents_RunII2016FGH.txt"
+        else:
+            txt_file = f"{path}/{dataset}_TotalEvents.txt"
         pd_totalEvents = pd.read_csv(txt_file, delimiter="\t")
         event_dict[dataset] = [int(pd_totalEvents.iloc[0, 1]), int(pd_totalEvents.iloc[1, 1])]
 
 
-    tmp_path = f"{path}/tmp/TotalEvents.txt"
-    final_path = f"{path}/TotalEvents.txt"
+    tmp_path = f"{scratch_path}/tmp/TotalEvents_RunII2016FGH.txt"
+    final_path = f"{scratch_path}/TotalEvents_RunII2016FGH.txt"
 
     with open(tmp_path, "w") as summary_file:
         summary_file.write("Event Type\tData_SingleMuon\tData_MinBias\tMC_DY\tMC_MinBias\n")
@@ -120,8 +128,8 @@ def SelectedEvents(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias):
                   [int(df_MCMinBias.Count().GetValue()), int(df_MCMinBias.Sum("PFSelection_nPFCands").GetValue())]
                   }
 
-    tmp_path = f"{path}/tmp/SelectedEvents.txt"
-    final_path = f"{path}/SelectedEvents.txt"
+    tmp_path = f"{scratch_path}/tmp/SelectedEvents_RunII2016FGH.txt"
+    final_path = f"{scratch_path}/SelectedEvents_RunII2016FGH.txt"
 
     with open(tmp_path, "w") as summary_file:
         summary_file.write("Event Type\tData_SingleMuon\tData_MinBias\tMC_DY\tMC_MinBias\n")
@@ -501,8 +509,6 @@ def Plot_CompareTriggers_QuantileBinning(df_SingleMuon_var, df_MinBias_var, df_M
         canvas.SetGridy(1)
         canvas.SetTicky(0)
 
-        
-
         pad1 = ROOT.TPad("pad1", "pad1", 0, 0.32, 1, 1)
         pad1.Draw()
         pad1.cd()
@@ -660,6 +666,7 @@ def Plot_CompareTriggers_QuantileBinning(df_SingleMuon_var, df_MinBias_var, df_M
 
             ratio_MCDYJets.SetMinimum(min_val)
             ratio_MCDYJets.SetMaximum(max_val)
+
 
         # add small inset zoom (bottom-right) for HT variable
         canvas.cd()
@@ -2193,7 +2200,7 @@ def parse_args():
     )
     parser.add_argument(
         "--mode",
-        choices=["compare", "compare-quantilebinning", "ptscan", "quantile", "quantile-ptscan", "quantile-all", "quantile-all-ptscan", "quantiles", "all"],
+        choices=["compare", "compare-quantilebinning", "ptscan", "ptscan-quantilebinning", "quantile", "quantile-ptscan", "quantile-all", "quantile-all-ptscan", "quantiles", "all"],
         default="all",
         help="Run compare plots, diMuon pT scan plots, quantile plots, quantile pT scan plots, all-together quantile plots, all-together quantile pT-cut plots, or all",
     )
@@ -2257,11 +2264,27 @@ def parse_args():
         default=140,
         help='Maximum x-axis value for the zoomed-in plot in compare-quantilebinning mode',
     )
+    parser.add_argument(
+        "--nthreads",
+        type=int,
+        default=1,
+        help="Number of threads for RDataFrame processing (default: 1, set >1 to enable multithreading)",
+    )
     return parser.parse_args()
     
 
 def main():
+
     args = parse_args()
+
+    if args.nthreads > 1:
+        if args.maxevents is not None:
+            print("WARNING: --maxevents uses RDataFrame.Range(), which is incompatible with EnableImplicitMT.")
+            print("Running single-threaded for this test job.")
+        else:
+            ROOT.ROOT.EnableImplicitMT(args.nthreads)
+            print("Number of threads:", args.nthreads, "\n")
+
 
     pprint.pprint(vars(args))
 
@@ -2295,6 +2318,25 @@ def main():
 
     if args.mode in ["ptscan", "all"]:
         Plot_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, totalEvents, selectedEvents)
+
+    if args.mode in ["ptscan-quantilebinning", "all"]:
+        Plot_DiMuonPtCut_QuantileBinning(
+            df_SingleMuon,
+            df_MinBias,
+            df_MCDYJets,
+            df_MCMinBias,
+            args.vars,
+            args.pt_cuts,
+            args.output_suffix,
+            totalEvents,
+            selectedEvents,
+            args.quantile_bins,
+            args.quantile_reference,
+            args.zoomxmax,
+        )
+
+    if args.mode in ["quantile-ptscan", "all"]:
+        Quantile_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, totalEvents, selectedEvents, args.quantile_bins)
 
     if args.mode in ["quantile", "quantiles", "all"]:
         QuantilePerObservable(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix, totalEvents, selectedEvents, args.quantile_bins)

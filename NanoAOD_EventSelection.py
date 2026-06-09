@@ -8,10 +8,10 @@ import csv
 ROOT.gStyle.SetOptStat(0)
 
 
-FILE_NAMES_SINGLEMUON = glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/SingleMuon/NanoV9Run2016FDataPostVFP_24042026/260424_103158/0000/*.root") + glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/SingleMuon/NanoV9Run2016FDataPostVFP_24042026_Resubmission/260522_135137/0000/*.root")
+FILE_NAMES_SINGLEMUON = glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/SingleMuon/NanoV9Run2016*DataPostVFP*/*/*/*.root")
 print(f"\nNumber of SingleMuon files: {len(FILE_NAMES_SINGLEMUON)}\n")
 
-FILE_NAMES_ZEROBIAS = glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/ZeroBias/NanoV9Run2016FDataPostVFP_MinBias_02052026/260502_160901/0000/*.root") + glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/ZeroBias/NanoV9Run2016FDataPostVFP_MinBias_02052026_Resubmission/260522_135745/0000/*.root")
+FILE_NAMES_ZEROBIAS = glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/ZeroBias/NanoV9Run2016*DataPostVFP_MinBias*/*/*/*.root")
 print(f"Number of ZeroBias files: {len(FILE_NAMES_ZEROBIAS)}\n")
 
 
@@ -95,10 +95,10 @@ def PrintDatasetCounts(dataframes):
     return counts
 
 
-def SaveCountsToTXT(counts_dict, dataset, out_dir):
+def SaveCountsToTXT(counts_dict, dataset, out_dir, output_suffix=""):
     out_dir = os.path.expanduser(out_dir)
     os.makedirs(out_dir, exist_ok=True)
-    filepath = os.path.join(out_dir, f"{dataset}_TotalEvents.txt")
+    filepath = os.path.join(out_dir, f"{dataset}_TotalEvents_{output_suffix}.txt")
 
     dataset_names = sorted({key.rsplit("_", 1)[-1] for key in counts_dict if key.startswith("total_events_")})
     header = "\t".join([""] + dataset_names) + "\n"
@@ -229,16 +229,16 @@ def ObservablesCalculation(df):
     return df
 
 
-def SaveSelectedEvents(df_SingleMuon, df_MinBias, df_MCDY, df_MCMinBias, out_path=""):
+def SaveSelectedEvents(df_SingleMuon, df_MinBias, df_MCDY, df_MCMinBias, out_path="", output_suffix=""):
 
     variables_list_MinBias = [f"PFSelection_{var}" for var in VARIABLES.keys()]
     variables_list_SingleMuon = ["diMuon_pT"] + variables_list_MinBias
 
 
-    df_SingleMuon.Snapshot("Events", f"{out_path}/Data_SingleMuon_SelectedEvents.root", variables_list_SingleMuon)
-    df_MinBias.Snapshot("Events", f"{out_path}/Data_MinBias_SelectedEvents.root", variables_list_MinBias)
-    df_MCDY.Snapshot("Events", f"{out_path}/MC_DY_SelectedEvents.root", variables_list_SingleMuon)
-    df_MCMinBias.Snapshot("Events", f"{out_path}/MC_MinBias_SelectedEvents.root", variables_list_MinBias)
+    df_SingleMuon.Snapshot("Events", f"{out_path}/Data_SingleMuon_SelectedEvents_{output_suffix}.root", variables_list_SingleMuon)
+    df_MinBias.Snapshot("Events", f"{out_path}/Data_MinBias_SelectedEvents_{output_suffix}.root", variables_list_MinBias)
+    df_MCDY.Snapshot("Events", f"{out_path}/MC_DY_SelectedEvents_{output_suffix}.root", variables_list_SingleMuon)
+    df_MCMinBias.Snapshot("Events", f"{out_path}/MC_MinBias_SelectedEvents_{output_suffix}.root", variables_list_MinBias)
 
 def SnapshotColumns(dataset_name):
     variables_list_minbias = [f"PFSelection_{var}" for var in VARIABLES.keys()]
@@ -284,17 +284,31 @@ def parse_args():
         choices=["all"] + sorted(DATASET_FILES.keys()),
         help="Process only one dataset instead of all four",
     )
+    parser.add_argument(
+        "--nthreads",
+        type=int,
+        default=1
+    )
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
 
+    if args.nthreads > 1:
+        if args.maxevents is not None:
+            print("WARNING: --maxevents uses RDataFrame.Range(), which is incompatible with EnableImplicitMT.")
+            print("Running single-threaded for this test job.")
+        else:
+            ROOT.ROOT.EnableImplicitMT(args.nthreads)
+            print("Number of threads:", args.nthreads, "\n")
+
+
     print("Selected dataset:", args.dataset)
     print("Output directory:", args.output_dir, "\n")
 
     dataframes = MakeDataframes(args.dataset, args.maxevents)
-    SaveCountsToTXT(PrintDatasetCounts(dataframes), args.dataset, args.output_dir)
+    SaveCountsToTXT(PrintDatasetCounts(dataframes), args.dataset, args.output_dir, args.output_suffix)
 
     if args.no_selection:
         print("Selections skipped by --no-selection.")
@@ -320,10 +334,11 @@ def main():
             processed_dataframes["MCDY"],
             processed_dataframes["MCMinBias"],
             out_path=args.output_dir,
+            output_suffix=args.output_suffix,
         )
     else:
         dataset_name = args.dataset
-        output_file = os.path.join(args.output_dir, f"{dataset_name}_SelectedEvents.root")
+        output_file = os.path.join(args.output_dir, f"{dataset_name}_SelectedEvents_{args.output_suffix}.root")
         processed_dataframes[dataset_name].Snapshot("Events", output_file, SnapshotColumns(dataset_name))
 
 
