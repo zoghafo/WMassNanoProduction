@@ -24,8 +24,11 @@ cd $DIRECTORY
 pwd
 echo "Plotting..."
 
-python3 NanoAOD_Plotting.py --mode compare --nthreads 32 --slurm True
+# python3 NanoAOD_Plotting.py --mode compare --nthreads 32 --slurm True
 
+# python3 NanoAOD_Plotting.py --mode quantile-ptscan --nthreads 32 --slurm True --quantile-bins 0 0.02 0.04 0.06 0.08 0.1 0.12 0.14 0.16 0.18 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.6 0.7 0.8 0.9 1
+
+python3 NanoAOD_Plotting.py "$@"
 
 # python3 NanoAOD_Plotting.py --mode ptscan-quantilebinning --quantile-bins 0 0.02 0.04 0.06 0.08 0.1 0.12 0.14 0.16 0.18 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.6 0.7 0.8 0.9 1 --zoomxmax 100 --vars PFCands_Ht --pt-cuts 1 2 --nthreads 32 --slurm True
 

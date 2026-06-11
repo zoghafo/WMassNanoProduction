@@ -1,0 +1,24 @@
+++ date +%s
++ start_time=1781181728
++ DIRECTORY=/t3home/zoghafoo/WMassNanoProduction
++ source_dir=/scratch/zoghafoo
++ PNFS_DESTDIR=/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents
++ mkdir -p /scratch/zoghafoo
++ mkdir -p /scratch/zoghafoo/tmp
++ cd /t3home/zoghafoo/WMassNanoProduction
++ pwd
++ echo Plotting...
++ python3 NanoAOD_Plotting.py --mode ptscan --nthreads 32 --slurm True --pt-cuts 1 5 10 20 --vars PFCands_Ht --output-suffix ChoosenPtCuts
+Info in <TCanvas::Print>: pdf file new_plots/PFCands_Ht_pTscanChoosenPtCuts.pdf has been created
++ echo 'Saving the plots in /t3home/zoghafoo/WMassNanoProduction'
++ echo 'Analyze scratch:'
++ cd /scratch/zoghafoo
++ pwd
++ ls
++ xrdcp -f -N /scratch/zoghafoo/SelectedEvents_RunII2016FGH.txt /scratch/zoghafoo/TotalEvents_RunII2016FGH.txt root://t3dcachedb03.psi.ch:1094///pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents/
+Multiple sources were given but target is not a directory.
++ rm -r /scratch/zoghafoo
+++ date +%s
++ end_time=1781181766
++ elapsed=38
++ printf 'Job finished in %02d:%02d:%02d (hh:mm:ss)\n' 0 0 38

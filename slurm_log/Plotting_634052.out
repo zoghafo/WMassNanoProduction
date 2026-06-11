@@ -1,0 +1,800 @@
+/t3home/zoghafoo/WMassNanoProduction
+Plotting...
+Number of threads: 32 
+
+{'charge': 1,
+ 'maxevents': None,
+ 'mode': 'quantile-ptscan',
+ 'no_plot': False,
+ 'nthreads': 32,
+ 'output_suffix': '',
+ 'pt_cuts': [1.0,
+             2.0,
+             3.0,
+             4.0,
+             5.0,
+             6.0,
+             7.0,
+             8.0,
+             9.0,
+             10.0,
+             12.0,
+             14.0,
+             16.0,
+             18.0,
+             20.0],
+ 'quantile_bins': [0.0,
+                   0.02,
+                   0.04,
+                   0.06,
+                   0.08,
+                   0.1,
+                   0.12,
+                   0.14,
+                   0.16,
+                   0.18,
+                   0.2,
+                   0.25,
+                   0.3,
+                   0.35,
+                   0.4,
+                   0.45,
+                   0.5,
+                   0.6,
+                   0.7,
+                   0.8,
+                   0.9,
+                   1.0],
+ 'quantile_reference': 'both',
+ 'save_event_counts': False,
+ 'slurm': True,
+ 'vars': dict_keys(['PFCands_pt', 'PFCands_eta', 'PFCands_phi', 'PFCands_pvAssocQuality', 'nPFCands', 'PFCands_Ht', 'PFCands_Pt2sum', 'PFCands_Psum', 'PFCands_P2sum', 'PFCands_InvariantMass']),
+ 'zoomxmax': 140}
+------------------------
+Reading total events and PF candidates from text files...
+
+       Event Type  Data_SingleMuon  Data_MinBias         MC_DY   MC_MinBias
+0    Total Events        317494717      69205921      96424820    499907600
+1  Total PF Cands     481589284679   80429995602  134047192083  52973764700
+
+Total events and PF candidates summary written to '/scratch/zoghafoo/TotalEvents_RunII2016FGH.txt'!
+
+------------------------
+------------------------
+
+Calculating selected events and PF candidates from NanoAODs...
+
+          Event Type  Data_SingleMuon  Data_MinBias       MC_DY  MC_MinBias
+0    Selected Events         10142965      57671894    29672721   414040967
+1  Selected PF Cands        361604529    1004173250  1131468878  7118133993
+
+Selected events and PF candidates summary written to '/scratch/zoghafoo/SelectedEvents_RunII2016FGH.txt'!
+
+------------------------
+Applying diMuon pT cut: 1.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 1.0 GeV!
+
+Applying diMuon pT cut: 2.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 2.0 GeV!
+
+Applying diMuon pT cut: 3.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 3.0 GeV!
+
+Applying diMuon pT cut: 4.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 4.0 GeV!
+
+Applying diMuon pT cut: 5.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 5.0 GeV!
+
+Applying diMuon pT cut: 6.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 6.0 GeV!
+
+Applying diMuon pT cut: 7.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 7.0 GeV!
+
+Applying diMuon pT cut: 8.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 8.0 GeV!
+
+Applying diMuon pT cut: 9.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 9.0 GeV!
+
+Applying diMuon pT cut: 10.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 10.0 GeV!
+
+Applying diMuon pT cut: 12.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 12.0 GeV!
+
+Applying diMuon pT cut: 14.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 14.0 GeV!
+
+Applying diMuon pT cut: 16.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 16.0 GeV!
+
+Applying diMuon pT cut: 18.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 18.0 GeV!
+
+Applying diMuon pT cut: 20.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 20.0 GeV!
+
+Applying diMuon pT cut: 1.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 1.0 GeV!
+
+Applying diMuon pT cut: 2.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 2.0 GeV!
+
+Applying diMuon pT cut: 3.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 3.0 GeV!
+
+Applying diMuon pT cut: 4.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 4.0 GeV!
+
+Applying diMuon pT cut: 5.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 5.0 GeV!
+
+Applying diMuon pT cut: 6.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 6.0 GeV!
+
+Applying diMuon pT cut: 7.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 7.0 GeV!
+
+Applying diMuon pT cut: 8.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 8.0 GeV!
+
+Applying diMuon pT cut: 9.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 9.0 GeV!
+
+Applying diMuon pT cut: 10.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 10.0 GeV!
+
+Applying diMuon pT cut: 12.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 12.0 GeV!
+
+Applying diMuon pT cut: 14.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 14.0 GeV!
+
+Applying diMuon pT cut: 16.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 16.0 GeV!
+
+Applying diMuon pT cut: 18.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 18.0 GeV!
+
+Applying diMuon pT cut: 20.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 20.0 GeV!
+
+Applying diMuon pT cut: 1.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 1.0 GeV!
+
+Applying diMuon pT cut: 2.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 2.0 GeV!
+
+Applying diMuon pT cut: 3.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 3.0 GeV!
+
+Applying diMuon pT cut: 4.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 4.0 GeV!
+
+Applying diMuon pT cut: 5.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 5.0 GeV!
+
+Applying diMuon pT cut: 6.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 6.0 GeV!
+
+Applying diMuon pT cut: 7.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 7.0 GeV!
+
+Applying diMuon pT cut: 8.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 8.0 GeV!
+
+Applying diMuon pT cut: 9.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 9.0 GeV!
+
+Applying diMuon pT cut: 10.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 10.0 GeV!
+
+Applying diMuon pT cut: 12.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 12.0 GeV!
+
+Applying diMuon pT cut: 14.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 14.0 GeV!
+
+Applying diMuon pT cut: 16.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 16.0 GeV!
+
+Applying diMuon pT cut: 18.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 18.0 GeV!
+
+Applying diMuon pT cut: 20.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 20.0 GeV!
+
+Applying diMuon pT cut: 1.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 1.0 GeV!
+
+Applying diMuon pT cut: 2.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 2.0 GeV!
+
+Applying diMuon pT cut: 3.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 3.0 GeV!
+
+Applying diMuon pT cut: 4.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 4.0 GeV!
+
+Applying diMuon pT cut: 5.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 5.0 GeV!
+
+Applying diMuon pT cut: 6.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 6.0 GeV!
+
+Applying diMuon pT cut: 7.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 7.0 GeV!
+
+Applying diMuon pT cut: 8.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 8.0 GeV!
+
+Applying diMuon pT cut: 9.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 9.0 GeV!
+
+Applying diMuon pT cut: 10.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 10.0 GeV!
+
+Applying diMuon pT cut: 12.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 12.0 GeV!
+
+Applying diMuon pT cut: 14.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 14.0 GeV!
+
+Applying diMuon pT cut: 16.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 16.0 GeV!
+
+Applying diMuon pT cut: 18.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 18.0 GeV!
+
+Applying diMuon pT cut: 20.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 20.0 GeV!
+
+Applying diMuon pT cut: 1.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 1.0 GeV!
+
+Applying diMuon pT cut: 2.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 2.0 GeV!
+
+Applying diMuon pT cut: 3.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 3.0 GeV!
+
+Applying diMuon pT cut: 4.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 4.0 GeV!
+
+Applying diMuon pT cut: 5.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 5.0 GeV!
+
+Applying diMuon pT cut: 6.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 6.0 GeV!
+
+Applying diMuon pT cut: 7.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 7.0 GeV!
+
+Applying diMuon pT cut: 8.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 8.0 GeV!
+
+Applying diMuon pT cut: 9.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 9.0 GeV!
+
+Applying diMuon pT cut: 10.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 10.0 GeV!
+
+Applying diMuon pT cut: 12.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 12.0 GeV!
+
+Applying diMuon pT cut: 14.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 14.0 GeV!
+
+Applying diMuon pT cut: 16.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 16.0 GeV!
+
+Applying diMuon pT cut: 18.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 18.0 GeV!
+
+Applying diMuon pT cut: 20.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 20.0 GeV!
+
+Applying diMuon pT cut: 1.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 1.0 GeV!
+
+Applying diMuon pT cut: 2.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 2.0 GeV!
+
+Applying diMuon pT cut: 3.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 3.0 GeV!
+
+Applying diMuon pT cut: 4.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 4.0 GeV!
+
+Applying diMuon pT cut: 5.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 5.0 GeV!
+
+Applying diMuon pT cut: 6.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 6.0 GeV!
+
+Applying diMuon pT cut: 7.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 7.0 GeV!
+
+Applying diMuon pT cut: 8.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 8.0 GeV!
+
+Applying diMuon pT cut: 9.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 9.0 GeV!
+
+Applying diMuon pT cut: 10.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 10.0 GeV!
+
+Applying diMuon pT cut: 12.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 12.0 GeV!
+
+Applying diMuon pT cut: 14.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 14.0 GeV!
+
+Applying diMuon pT cut: 16.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 16.0 GeV!
+
+Applying diMuon pT cut: 18.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 18.0 GeV!
+
+Applying diMuon pT cut: 20.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 20.0 GeV!
+
+Applying diMuon pT cut: 1.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 1.0 GeV!
+
+Applying diMuon pT cut: 2.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 2.0 GeV!
+
+Applying diMuon pT cut: 3.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 3.0 GeV!
+
+Applying diMuon pT cut: 4.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 4.0 GeV!
+
+Applying diMuon pT cut: 5.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 5.0 GeV!
+
+Applying diMuon pT cut: 6.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 6.0 GeV!
+
+Applying diMuon pT cut: 7.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 7.0 GeV!
+
+Applying diMuon pT cut: 8.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 8.0 GeV!
+
+Applying diMuon pT cut: 9.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 9.0 GeV!
+
+Applying diMuon pT cut: 10.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 10.0 GeV!
+
+Applying diMuon pT cut: 12.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 12.0 GeV!
+
+Applying diMuon pT cut: 14.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 14.0 GeV!
+
+Applying diMuon pT cut: 16.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 16.0 GeV!
+
+Applying diMuon pT cut: 18.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 18.0 GeV!
+
+Applying diMuon pT cut: 20.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 20.0 GeV!
+
+Applying diMuon pT cut: 1.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 1.0 GeV!
+
+Applying diMuon pT cut: 2.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 2.0 GeV!
+
+Applying diMuon pT cut: 3.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 3.0 GeV!
+
+Applying diMuon pT cut: 4.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 4.0 GeV!
+
+Applying diMuon pT cut: 5.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 5.0 GeV!
+
+Applying diMuon pT cut: 6.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 6.0 GeV!
+
+Applying diMuon pT cut: 7.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 7.0 GeV!
+
+Applying diMuon pT cut: 8.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 8.0 GeV!
+
+Applying diMuon pT cut: 9.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 9.0 GeV!
+
+Applying diMuon pT cut: 10.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 10.0 GeV!
+
+Applying diMuon pT cut: 12.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 12.0 GeV!
+
+Applying diMuon pT cut: 14.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 14.0 GeV!
+
+Applying diMuon pT cut: 16.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 16.0 GeV!
+
+Applying diMuon pT cut: 18.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 18.0 GeV!
+
+Applying diMuon pT cut: 20.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 20.0 GeV!
+
+Applying diMuon pT cut: 1.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 1.0 GeV!
+
+Applying diMuon pT cut: 2.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 2.0 GeV!
+
+Applying diMuon pT cut: 3.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 3.0 GeV!
+
+Applying diMuon pT cut: 4.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 4.0 GeV!
+
+Applying diMuon pT cut: 5.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 5.0 GeV!
+
+Applying diMuon pT cut: 6.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 6.0 GeV!
+
+Applying diMuon pT cut: 7.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 7.0 GeV!
+
+Applying diMuon pT cut: 8.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 8.0 GeV!
+
+Applying diMuon pT cut: 9.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 9.0 GeV!
+
+Applying diMuon pT cut: 10.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 10.0 GeV!
+
+Applying diMuon pT cut: 12.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 12.0 GeV!
+
+Applying diMuon pT cut: 14.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 14.0 GeV!
+
+Applying diMuon pT cut: 16.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 16.0 GeV!
+
+Applying diMuon pT cut: 18.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 18.0 GeV!
+
+Applying diMuon pT cut: 20.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 20.0 GeV!
+
+Applying diMuon pT cut: 1.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 1.0 GeV!
+
+Applying diMuon pT cut: 2.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 2.0 GeV!
+
+Applying diMuon pT cut: 3.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 3.0 GeV!
+
+Applying diMuon pT cut: 4.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 4.0 GeV!
+
+Applying diMuon pT cut: 5.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 5.0 GeV!
+
+Applying diMuon pT cut: 6.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 6.0 GeV!
+
+Applying diMuon pT cut: 7.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 7.0 GeV!
+
+Applying diMuon pT cut: 8.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 8.0 GeV!
+
+Applying diMuon pT cut: 9.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 9.0 GeV!
+
+Applying diMuon pT cut: 10.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 10.0 GeV!
+
+Applying diMuon pT cut: 12.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 12.0 GeV!
+
+Applying diMuon pT cut: 14.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 14.0 GeV!
+
+Applying diMuon pT cut: 16.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 16.0 GeV!
+
+Applying diMuon pT cut: 18.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 18.0 GeV!
+
+Applying diMuon pT cut: 20.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 20.0 GeV!
+
+Applying diMuon pT cut: 1.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 1.0 GeV!
+
+Applying diMuon pT cut: 2.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 2.0 GeV!
+
+Applying diMuon pT cut: 3.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 3.0 GeV!
+
+Applying diMuon pT cut: 4.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 4.0 GeV!
+
+Applying diMuon pT cut: 5.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 5.0 GeV!
+
+Applying diMuon pT cut: 6.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 6.0 GeV!
+
+Applying diMuon pT cut: 7.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 7.0 GeV!
+
+Applying diMuon pT cut: 8.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 8.0 GeV!
+
+Applying diMuon pT cut: 9.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 9.0 GeV!
+
+Applying diMuon pT cut: 10.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 10.0 GeV!
+
+Applying diMuon pT cut: 12.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 12.0 GeV!
+
+Applying diMuon pT cut: 14.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 14.0 GeV!
+
+Applying diMuon pT cut: 16.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 16.0 GeV!
+
+Applying diMuon pT cut: 18.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 18.0 GeV!
+
+Applying diMuon pT cut: 20.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 20.0 GeV!
+
+Applying diMuon pT cut: 1.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 1.0 GeV!
+
+Applying diMuon pT cut: 2.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 2.0 GeV!
+
+Applying diMuon pT cut: 3.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 3.0 GeV!
+
+Applying diMuon pT cut: 4.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 4.0 GeV!
+
+Applying diMuon pT cut: 5.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 5.0 GeV!
+
+Applying diMuon pT cut: 6.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 6.0 GeV!
+
+Applying diMuon pT cut: 7.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 7.0 GeV!
+
+Applying diMuon pT cut: 8.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 8.0 GeV!
+
+Applying diMuon pT cut: 9.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 9.0 GeV!
+
+Applying diMuon pT cut: 10.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 10.0 GeV!
+
+Applying diMuon pT cut: 12.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 12.0 GeV!
+
+Applying diMuon pT cut: 14.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 14.0 GeV!
+
+Applying diMuon pT cut: 16.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 16.0 GeV!
+
+Applying diMuon pT cut: 18.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 18.0 GeV!
+
+Applying diMuon pT cut: 20.0 GeV...
+Setting legend y1 to: (0.03500000000000004, 105, 0.009, 0.945)
+Finished processing diMuon pT cut: 20.0 GeV!
+
+Saving the plots in /t3home/zoghafoo/WMassNanoProduction
+Analyze scratch:
+/scratch/zoghafoo
+SelectedEvents_RunII2016FGH.txt
+tmp
+TotalEvents_RunII2016FGH.txt
+Job finished in 00:15:36 (hh:mm:ss)

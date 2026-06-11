@@ -1,0 +1,11 @@
+++ date +%s
++ start_time=1781181834
++ DIRECTORY=/t3home/zoghafoo/WMassNanoProduction
++ source_dir=/scratch/zoghafoo
++ PNFS_DESTDIR=/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents
++ mkdir -p /scratch/zoghafoo
++ mkdir -p /scratch/zoghafoo/tmp
++ cd /t3home/zoghafoo/WMassNanoProduction
++ pwd
++ echo Plotting...
++ python3 NanoAOD_Plotting.py --mode ptscan --nthreads 32 --slurm True --pt-cuts 1 5 10 20 --vars PFCands_Ht --output-suffix ChoosenPtCuts

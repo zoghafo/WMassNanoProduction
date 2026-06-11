@@ -1,0 +1,251 @@
+++ date +%s
++ start_time=1781178502
++ DIRECTORY=/t3home/zoghafoo/WMassNanoProduction
++ source_dir=/scratch/zoghafoo
++ PNFS_DESTDIR=/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents
++ mkdir -p /scratch/zoghafoo
++ mkdir -p /scratch/zoghafoo/tmp
++ cd /t3home/zoghafoo/WMassNanoProduction
++ pwd
++ echo Plotting...
++ python3 NanoAOD_Plotting.py --mode quantile-ptscan --nthreads 32 --slurm True --quantile-bins 0 0.02 0.04 0.06 0.08 0.1 0.12 0.14 0.16 0.18 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.6 0.7 0.8 0.9 1 --pt-cuts 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/nPFCands_QuantilePtScan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/PFCands_Ht_QuantilePtScan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/PFCands_Pt2sum_QuantilePtScan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/PFCands_Psum_QuantilePtScan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/PFCands_P2sum_QuantilePtScan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/PFCands_InvariantMass_QuantilePtScan.pdf has been created
+input_line_576:3:46: error: redefinition of 'edges'
+            static const std::vector<double> edges = {3, 5, 8, 11, 15, 20, 27, 34, 43, 54, 65, 90, 130, 160};
+                                             ^
+input_line_88:3:46: note: previous definition is here
+            static const std::vector<double> edges = {3, 5, 8, 11, 15, 20, 27, 34, 43, 54, 65, 90, 130, 160};
+                                             ^
+input_line_576:4:46: error: redefinition of 'cdf'
+            static const std::vector<double> cdf = {0, 0.11739273458090085, 0.27920865286828034, 0.40591258037470945, 0.53495985540923596, 0.65528740064126445, 0.77473013780388389, 0.85545335660177224, 0.92111883065658873, 0.96443542350304101, 0.98488875151987909, 0.99819557376360402, 0.99995611532015449, 1};
+                                             ^
+input_line_88:4:46: note: previous definition is here
+            static const std::vector<double> cdf = {0, 0.11739273458090085, 0.27920865286828034, 0.40591258037470945, 0.53495985540923596, 0.65528740064126445, 0.77473013780388389, 0.85545335660177224, 0.92111883065658873, 0.96443542350304101, 0.98488875151987909, 0.99819557376360402, 0.99995611532015449, 1};
+                                             ^
+input_line_576:6:20: error: redefinition of 'eval'
+            double eval(double x) {
+                   ^
+input_line_88:6:20: note: previous definition is here
+            double eval(double x) {
+                   ^
+input_line_578:3:46: error: redefinition of 'edges'
+            static const std::vector<double> edges = {3, 5, 8, 11, 15, 20, 27, 34, 43, 54, 65, 90, 130, 160};
+                                             ^
+input_line_90:3:46: note: previous definition is here
+            static const std::vector<double> edges = {3, 5, 8, 11, 15, 20, 27, 34, 43, 54, 65, 90, 130, 160};
+                                             ^
+input_line_578:4:46: error: redefinition of 'cdf'
+            static const std::vector<double> cdf = {0, 0.16152490712256173, 0.35503224468270606, 0.47512202406443294, 0.58237053425700991, 0.67507893037991629, 0.76440588775425689, 0.82819116354098621, 0.88882887057867788, 0.94062857382358211, 0.97262599861849808, 0.99747559746722991, 0.99998813562083466, 1};
+                                             ^
+input_line_90:4:46: note: previous definition is here
+            static const std::vector<double> cdf = {0, 0.16152490712256173, 0.35503224468270606, 0.47512202406443294, 0.58237053425700991, 0.67507893037991629, 0.76440588775425689, 0.82819116354098621, 0.88882887057867788, 0.94062857382358211, 0.97262599861849808, 0.99747559746722991, 0.99998813562083466, 1};
+                                             ^
+input_line_578:6:20: error: redefinition of 'eval'
+            double eval(double x) {
+                   ^
+input_line_90:6:20: note: previous definition is here
+            double eval(double x) {
+                   ^
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/nPFCands_QuantilePtScan.pdf has been created
+input_line_641:3:46: error: redefinition of 'edges'
+            static const std::vector<double> edges = {0, 5, 10, 15, 20, 30, 50, 70, 90, 110, 130, 150, 170, 200, 230, 260, 300, 350, 370};
+                                             ^
+input_line_240:3:46: note: previous definition is here
+            static const std::vector<double> edges = {0, 5, 10, 15, 20, 30, 50, 70, 90, 110, 130, 150, 170, 200, 230, 260, 300, 350, 370};
+                                             ^
+input_line_641:4:46: error: redefinition of 'cdf'
+            static const std::vector<double> cdf = {0, 0.3174537991952231, 0.53690227049107209, 0.67109687848767208, 0.76316296927003513, 0.87678845593481125, 0.96812786681066521, 0.99220523137053696, 0.99812619268470248, 0.99953310005386509, 0.99987375130880496, 0.99996152371298419, 0.99998564291768854, 0.9999954917374384, 0.99999826605286091, 0.99999923706325877, 0.99999973990792912, 0.99999996532105717, 1};
+                                             ^
+input_line_240:4:46: note: previous definition is here
+            static const std::vector<double> cdf = {0, 0.3174537991952231, 0.53690227049107209, 0.67109687848767208, 0.76316296927003513, 0.87678845593481125, 0.96812786681066521, 0.99220523137053696, 0.99812619268470248, 0.99953310005386509, 0.99987375130880496, 0.99996152371298419, 0.99998564291768854, 0.9999954917374384, 0.99999826605286091, 0.99999923706325877, 0.99999973990792912, 0.99999996532105717, 1};
+                                             ^
+input_line_641:6:20: error: redefinition of 'eval'
+            double eval(double x) {
+                   ^
+input_line_240:6:20: note: previous definition is here
+            double eval(double x) {
+                   ^
+input_line_643:3:46: error: redefinition of 'edges'
+            static const std::vector<double> edges = {0, 5, 10, 15, 20, 30, 50, 70, 90, 110, 130, 150, 170, 200, 230, 260, 300, 350, 370};
+                                             ^
+input_line_242:3:46: note: previous definition is here
+            static const std::vector<double> edges = {0, 5, 10, 15, 20, 30, 50, 70, 90, 110, 130, 150, 170, 200, 230, 260, 300, 350, 370};
+                                             ^
+input_line_643:4:46: error: redefinition of 'cdf'
+            static const std::vector<double> cdf = {0, 0.44116940443457997, 0.62476228343626905, 0.72145140528503227, 0.78536792257172272, 0.86915959329706671, 0.95705571381515686, 0.98935978010036052, 0.99785192707988624, 0.99957738955529563, 0.9998991041655092, 0.99996710469740835, 0.99998611248238611, 0.99999486282609307, 0.99999778765806357, 0.99999896387042497, 0.99999965703869542, 0.99999993961948863, 1};
+                                             ^
+input_line_242:4:46: note: previous definition is here
+            static const std::vector<double> cdf = {0, 0.44116940443457997, 0.62476228343626905, 0.72145140528503227, 0.78536792257172272, 0.86915959329706671, 0.95705571381515686, 0.98935978010036052, 0.99785192707988624, 0.99957738955529563, 0.9998991041655092, 0.99996710469740835, 0.99998611248238611, 0.99999486282609307, 0.99999778765806357, 0.99999896387042497, 0.99999965703869542, 0.99999993961948863, 1};
+                                             ^
+input_line_643:6:20: error: redefinition of 'eval'
+            double eval(double x) {
+                   ^
+input_line_242:6:20: note: previous definition is here
+            double eval(double x) {
+                   ^
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/PFCands_Ht_QuantilePtScan.pdf has been created
+input_line_706:3:46: error: redefinition of 'edges'
+            static const std::vector<double> edges = {0, 10, 20, 30, 40, 50, 70, 90, 120, 140, 160, 200, 250, 300, 350, 400};
+                                             ^
+input_line_308:3:46: note: previous definition is here
+            static const std::vector<double> edges = {0, 10, 20, 30, 40, 50, 70, 90, 120, 140, 160, 200, 250, 300, 350, 400};
+                                             ^
+input_line_706:4:46: error: redefinition of 'cdf'
+            static const std::vector<double> cdf = {0, 0.53962291656298633, 0.72035423383771946, 0.81757002804776779, 0.87684293910937217, 0.91487201606837198, 0.95695388471549214, 0.97673931052341079, 0.98967617059963298, 0.99357008744153053, 0.99580019834116895, 0.99800187863998202, 0.99910886805601007, 0.99959341985799588, 0.99984804633115931, 1};
+                                             ^
+input_line_308:4:46: note: previous definition is here
+            static const std::vector<double> cdf = {0, 0.53962291656298633, 0.72035423383771946, 0.81757002804776779, 0.87684293910937217, 0.91487201606837198, 0.95695388471549214, 0.97673931052341079, 0.98967617059963298, 0.99357008744153053, 0.99580019834116895, 0.99800187863998202, 0.99910886805601007, 0.99959341985799588, 0.99984804633115931, 1};
+                                             ^
+input_line_706:6:20: error: redefinition of 'eval'
+            double eval(double x) {
+                   ^
+input_line_308:6:20: note: previous definition is here
+            double eval(double x) {
+                   ^
+input_line_708:3:46: error: redefinition of 'edges'
+            static const std::vector<double> edges = {0, 10, 20, 30, 40, 50, 70, 90, 120, 140, 160, 200, 250, 300, 350, 400};
+                                             ^
+input_line_310:3:46: note: previous definition is here
+            static const std::vector<double> edges = {0, 10, 20, 30, 40, 50, 70, 90, 120, 140, 160, 200, 250, 300, 350, 400};
+                                             ^
+input_line_708:4:46: error: redefinition of 'cdf'
+            static const std::vector<double> cdf = {0, 0.64662312528424082, 0.76974269900637671, 0.8368051487148217, 0.88136418012753837, 0.91305649835490788, 0.95295030536995851, 0.97422262909174828, 0.98895333435376087, 0.99337076548758096, 0.99582477120964397, 0.99810972286592903, 0.99917483427288223, 0.99962704888537213, 0.99986189170269801, 1};
+                                             ^
+input_line_310:4:46: note: previous definition is here
+            static const std::vector<double> cdf = {0, 0.64662312528424082, 0.76974269900637671, 0.8368051487148217, 0.88136418012753837, 0.91305649835490788, 0.95295030536995851, 0.97422262909174828, 0.98895333435376087, 0.99337076548758096, 0.99582477120964397, 0.99810972286592903, 0.99917483427288223, 0.99962704888537213, 0.99986189170269801, 1};
+                                             ^
+input_line_708:6:20: error: redefinition of 'eval'
+            double eval(double x) {
+                   ^
+input_line_310:6:20: note: previous definition is here
+            double eval(double x) {
+                   ^
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/PFCands_Pt2sum_QuantilePtScan.pdf has been created
+input_line_771:3:46: error: redefinition of 'edges'
+            static const std::vector<double> edges = {0, 10, 20, 30, 40, 50, 60, 70, 100, 150, 200, 250, 300, 350, 400};
+                                             ^
+input_line_375:3:46: note: previous definition is here
+            static const std::vector<double> edges = {0, 10, 20, 30, 40, 50, 60, 70, 100, 150, 200, 250, 300, 350, 400};
+                                             ^
+input_line_771:4:46: error: redefinition of 'cdf'
+            static const std::vector<double> cdf = {0, 0.28167917904049705, 0.50198514190142351, 0.64038840435484845, 0.73627509656252066, 0.80569919490831543, 0.85692747696763061, 0.89493642642275439, 0.95932734058124158, 0.99214567958450983, 0.99852061966750827, 0.99970935355806245, 0.99993612089893225, 0.99998670052374616, 1};
+                                             ^
+input_line_375:4:46: note: previous definition is here
+            static const std::vector<double> cdf = {0, 0.28167917904049705, 0.50198514190142351, 0.64038840435484845, 0.73627509656252066, 0.80569919490831543, 0.85692747696763061, 0.89493642642275439, 0.95932734058124158, 0.99214567958450983, 0.99852061966750827, 0.99970935355806245, 0.99993612089893225, 0.99998670052374616, 1};
+                                             ^
+input_line_771:6:20: error: redefinition of 'eval'
+            double eval(double x) {
+                   ^
+input_line_375:6:20: note: previous definition is here
+            double eval(double x) {
+                   ^
+input_line_773:3:46: error: redefinition of 'edges'
+            static const std::vector<double> edges = {0, 10, 20, 30, 40, 50, 60, 70, 100, 150, 200, 250, 300, 350, 400};
+                                             ^
+input_line_377:3:46: note: previous definition is here
+            static const std::vector<double> edges = {0, 10, 20, 30, 40, 50, 60, 70, 100, 150, 200, 250, 300, 350, 400};
+                                             ^
+input_line_773:4:46: error: redefinition of 'cdf'
+            static const std::vector<double> cdf = {0, 0.403423786706542, 0.59497923965180977, 0.69505336589693734, 0.76110304325781208, 0.80965786406133999, 0.84765920495635061, 0.87842255553605375, 0.94186162252353889, 0.98711311207076258, 0.99781670420720237, 0.99964983796492146, 0.99993447685301662, 0.99998638044064136, 1};
+                                             ^
+input_line_377:4:46: note: previous definition is here
+            static const std::vector<double> cdf = {0, 0.403423786706542, 0.59497923965180977, 0.69505336589693734, 0.76110304325781208, 0.80965786406133999, 0.84765920495635061, 0.87842255553605375, 0.94186162252353889, 0.98711311207076258, 0.99781670420720237, 0.99964983796492146, 0.99993447685301662, 0.99998638044064136, 1};
+                                             ^
+input_line_773:6:20: error: redefinition of 'eval'
+            double eval(double x) {
+                   ^
+input_line_377:6:20: note: previous definition is here
+            double eval(double x) {
+                   ^
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/PFCands_Psum_QuantilePtScan.pdf has been created
+input_line_836:3:46: error: redefinition of 'edges'
+            static const std::vector<double> edges = {0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 250, 300, 400, 500, 600, 800, 1000, 1500, 2000, 2500, 3000, 3500, 4000};
+                                             ^
+input_line_442:3:46: note: previous definition is here
+            static const std::vector<double> edges = {0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 250, 300, 400, 500, 600, 800, 1000, 1500, 2000, 2500, 3000, 3500, 4000};
+                                             ^
+input_line_836:4:46: error: redefinition of 'cdf'
+            static const std::vector<double> cdf = {0, 0.28129176390350757, 0.44108953220127084, 0.54564580850546829, 0.62168189496341797, 0.68017132564405935, 0.72673431089790086, 0.76464216735600676, 0.79598529596693868, 0.82219535300235846, 0.84433511575125919, 0.88647665196347758, 0.9155502990252351, 0.95087178833137787, 0.96977915144202631, 0.9804933776337279, 0.99077070681878265, 0.9950023401356618, 0.99839226341282217, 0.99929873105109679, 0.99965638931435807, 0.99983503634776028, 0.99993605750779979, 1};
+                                             ^
+input_line_442:4:46: note: previous definition is here
+            static const std::vector<double> cdf = {0, 0.28129176390350757, 0.44108953220127084, 0.54564580850546829, 0.62168189496341797, 0.68017132564405935, 0.72673431089790086, 0.76464216735600676, 0.79598529596693868, 0.82219535300235846, 0.84433511575125919, 0.88647665196347758, 0.9155502990252351, 0.95087178833137787, 0.96977915144202631, 0.9804933776337279, 0.99077070681878265, 0.9950023401356618, 0.99839226341282217, 0.99929873105109679, 0.99965638931435807, 0.99983503634776028, 0.99993605750779979, 1};
+                                             ^
+input_line_836:6:20: error: redefinition of 'eval'
+            double eval(double x) {
+                   ^
+input_line_442:6:20: note: previous definition is here
+            double eval(double x) {
+                   ^
+input_line_838:3:46: error: redefinition of 'edges'
+            static const std::vector<double> edges = {0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 250, 300, 400, 500, 600, 800, 1000, 1500, 2000, 2500, 3000, 3500, 4000};
+                                             ^
+input_line_444:3:46: note: previous definition is here
+            static const std::vector<double> edges = {0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 250, 300, 400, 500, 600, 800, 1000, 1500, 2000, 2500, 3000, 3500, 4000};
+                                             ^
+input_line_838:4:46: error: redefinition of 'cdf'
+            static const std::vector<double> cdf = {0, 0.41569946892082377, 0.56554769991949072, 0.64451184284725382, 0.69716200639745463, 0.73639727538081512, 0.76753914295675107, 0.79322819456270466, 0.81499304385031535, 0.83375065319588648, 0.850134513904376, 0.88326425174865175, 0.90823981004754417, 0.94227281586176059, 0.96290996979838661, 0.97563643841657588, 0.98864461467047038, 0.99410110728297951, 0.99828017678031633, 0.99928285662272986, 0.99965727507547508, 0.99983668411872084, 0.99993725792618426, 1};
+                                             ^
+input_line_444:4:46: note: previous definition is here
+            static const std::vector<double> cdf = {0, 0.41569946892082377, 0.56554769991949072, 0.64451184284725382, 0.69716200639745463, 0.73639727538081512, 0.76753914295675107, 0.79322819456270466, 0.81499304385031535, 0.83375065319588648, 0.850134513904376, 0.88326425174865175, 0.90823981004754417, 0.94227281586176059, 0.96290996979838661, 0.97563643841657588, 0.98864461467047038, 0.99410110728297951, 0.99828017678031633, 0.99928285662272986, 0.99965727507547508, 0.99983668411872084, 0.99993725792618426, 1};
+                                             ^
+input_line_838:6:20: error: redefinition of 'eval'
+            double eval(double x) {
+                   ^
+input_line_444:6:20: note: previous definition is here
+            double eval(double x) {
+                   ^
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/PFCands_P2sum_QuantilePtScan.pdf has been created
+input_line_901:3:46: error: redefinition of 'edges'
+            static const std::vector<double> edges = {0, 2, 5, 10, 15, 20, 25, 35, 45, 60, 80, 120, 160, 200, 300, 400};
+                                             ^
+input_line_509:3:46: note: previous definition is here
+            static const std::vector<double> edges = {0, 2, 5, 10, 15, 20, 25, 35, 45, 60, 80, 120, 160, 200, 300, 400};
+                                             ^
+input_line_901:4:46: error: redefinition of 'cdf'
+            static const std::vector<double> cdf = {0, 0.057062191123178278, 0.16873774473786127, 0.32601700089931529, 0.4437580298328529, 0.53377647997096667, 0.60544388746950295, 0.71323139590844065, 0.78987783513408794, 0.86811389407846884, 0.92985942574389446, 0.98105871940037093, 0.99511735877876228, 0.99875760458062113, 0.99995448370607709, 1};
+                                             ^
+input_line_509:4:46: note: previous definition is here
+            static const std::vector<double> cdf = {0, 0.057062191123178278, 0.16873774473786127, 0.32601700089931529, 0.4437580298328529, 0.53377647997096667, 0.60544388746950295, 0.71323139590844065, 0.78987783513408794, 0.86811389407846884, 0.92985942574389446, 0.98105871940037093, 0.99511735877876228, 0.99875760458062113, 0.99995448370607709, 1};
+                                             ^
+input_line_901:6:20: error: redefinition of 'eval'
+            double eval(double x) {
+                   ^
+input_line_509:6:20: note: previous definition is here
+            double eval(double x) {
+                   ^
+input_line_903:3:46: error: redefinition of 'edges'
+            static const std::vector<double> edges = {0, 2, 5, 10, 15, 20, 25, 35, 45, 60, 80, 120, 160, 200, 300, 400};
+                                             ^
+input_line_511:3:46: note: previous definition is here
+            static const std::vector<double> edges = {0, 2, 5, 10, 15, 20, 25, 35, 45, 60, 80, 120, 160, 200, 300, 400};
+                                             ^
+input_line_903:4:46: error: redefinition of 'cdf'
+            static const std::vector<double> cdf = {0, 0.091934031669940741, 0.25569008708500202, 0.43881682880834888, 0.54410600116581309, 0.6151131015176694, 0.66795414869671743, 0.74369064987267697, 0.79721574868959544, 0.85538913276746609, 0.90936545728293106, 0.9695033716613084, 0.99185685969742587, 0.99815324848279119, 0.99995542931063308, 1};
+                                             ^
+input_line_511:4:46: note: previous definition is here
+            static const std::vector<double> cdf = {0, 0.091934031669940741, 0.25569008708500202, 0.43881682880834888, 0.54410600116581309, 0.6151131015176694, 0.66795414869671743, 0.74369064987267697, 0.79721574868959544, 0.85538913276746609, 0.90936545728293106, 0.9695033716613084, 0.99185685969742587, 0.99815324848279119, 0.99995542931063308, 1};
+                                             ^
+input_line_903:6:20: error: redefinition of 'eval'
+            double eval(double x) {
+                   ^
+input_line_511:6:20: note: previous definition is here
+            double eval(double x) {
+                   ^
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/PFCands_InvariantMass_QuantilePtScan.pdf has been created
++ echo 'Saving the plots in /t3home/zoghafoo/WMassNanoProduction'
++ echo 'Analyze scratch:'
++ cd /scratch/zoghafoo
++ pwd
++ ls
++ xrdcp -f -N /scratch/zoghafoo/SelectedEvents_RunII2016FGH.txt /scratch/zoghafoo/TotalEvents_RunII2016FGH.txt root://t3dcachedb03.psi.ch:1094///pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents/
+Multiple sources were given but target is not a directory.
++ rm -r /scratch/zoghafoo
+++ date +%s
++ end_time=1781179438
++ elapsed=936
++ printf 'Job finished in %02d:%02d:%02d (hh:mm:ss)\n' 0 15 36

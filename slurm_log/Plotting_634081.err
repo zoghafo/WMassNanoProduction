@@ -1,0 +1,40 @@
+++ date +%s
++ start_time=1781178748
++ DIRECTORY=/t3home/zoghafoo/WMassNanoProduction
++ source_dir=/scratch/zoghafoo
++ PNFS_DESTDIR=/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents
++ mkdir -p /scratch/zoghafoo
++ mkdir -p /scratch/zoghafoo/tmp
++ cd /t3home/zoghafoo/WMassNanoProduction
++ pwd
++ echo Plotting...
++ python3 NanoAOD_Plotting.py --mode quantile-all-ptscan --nthreads 32 --slurm True --quantile-bins 0 0.02 0.04 0.06 0.08 0.1 0.12 0.14 0.16 0.18 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.6 0.7 0.8 0.9 1 --pt-cuts 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT1.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT2.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT3.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT4.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT5.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT6.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT7.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT8.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT9.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT10.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT12.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT14.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT16.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT18.0GeV.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/quantile_binning/[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]/AllVariables_QuantileAllTogether_ZpT20.0GeV.pdf has been created
++ echo 'Saving the plots in /t3home/zoghafoo/WMassNanoProduction'
++ echo 'Analyze scratch:'
++ cd /scratch/zoghafoo
+/var/spool/slurmd/job634081/slurm_script: line 42: cd: /scratch/zoghafoo: No such file or directory
++ pwd
++ ls
++ xrdcp -f -N '/scratch/zoghafoo/*.txt' root://t3dcachedb03.psi.ch:1094///pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents/
+xrdcp: no such file or directory processing /scratch/zoghafoo/*.txt
++ rm -r /scratch/zoghafoo
+rm: cannot remove '/scratch/zoghafoo': No such file or directory
+++ date +%s
++ end_time=1781181457
++ elapsed=2709
++ printf 'Job finished in %02d:%02d:%02d (hh:mm:ss)\n' 0 45 9

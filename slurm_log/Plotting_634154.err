@@ -1,0 +1,33 @@
+++ date +%s
++ start_time=1781179939
++ DIRECTORY=/t3home/zoghafoo/WMassNanoProduction
++ source_dir=/scratch/zoghafoo
++ PNFS_DESTDIR=/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents
++ mkdir -p /scratch/zoghafoo
++ mkdir -p /scratch/zoghafoo/tmp
++ cd /t3home/zoghafoo/WMassNanoProduction
++ pwd
++ echo Plotting...
++ python3 NanoAOD_Plotting.py --mode ptscan --nthreads 32 --slurm True --pt-cuts 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20
+Info in <TCanvas::Print>: pdf file new_plots/PFCands_pt_pTscan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/PFCands_eta_pTscan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/PFCands_phi_pTscan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/PFCands_pvAssocQuality_pTscan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/nPFCands_pTscan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/PFCands_Ht_pTscan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/PFCands_Pt2sum_pTscan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/PFCands_Psum_pTscan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/PFCands_P2sum_pTscan.pdf has been created
+Info in <TCanvas::Print>: pdf file new_plots/PFCands_InvariantMass_pTscan.pdf has been created
++ echo 'Saving the plots in /t3home/zoghafoo/WMassNanoProduction'
++ echo 'Analyze scratch:'
++ cd /scratch/zoghafoo
++ pwd
++ ls
++ xrdcp -f -N /scratch/zoghafoo/SelectedEvents_RunII2016FGH.txt /scratch/zoghafoo/TotalEvents_RunII2016FGH.txt root://t3dcachedb03.psi.ch:1094///pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents/
+Multiple sources were given but target is not a directory.
++ rm -r /scratch/zoghafoo
+++ date +%s
++ end_time=1781181186
++ elapsed=1247
++ printf 'Job finished in %02d:%02d:%02d (hh:mm:ss)\n' 0 20 47

@@ -1025,8 +1025,8 @@ def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMi
 
             canvas.SetLogy()
             if index == 0:
-                ratio_SingleMuon.Draw("hist")
-                ratio_MCDYJets.Draw("hist")
+                ratio_SingleMuon.Draw("hist same")
+                ratio_MCDYJets.Draw("hist same")
             else:
                 ratio_SingleMuon.Draw("hist same")
                 ratio_MCDYJets.Draw("hist same")
@@ -1061,7 +1061,7 @@ def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMi
             print(f"Finished processing diMuon pT cut: {pt_cut} GeV!\n")
 
         if histos and plot_max > 0:
-            histos[0].SetMaximum(plot_max * 10)
+            histos[0].SetMaximum(plot_max * 20)
 
     
         legend_col0.AddEntry(legend_DataStyle, "Data", "l")
