@@ -1,0 +1,24 @@
+++ date +%s
++ start_time=1781099689
++ DIRECTORY=/t3home/zoghafoo/WMassNanoProduction
++ source_dir=/scratch/zoghafoo
++ PNFS_DESTDIR=/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents
++ mkdir -p /scratch/zoghafoo
++ mkdir -p /scratch/zoghafoo/tmp
++ cd /t3home/zoghafoo/WMassNanoProduction
++ pwd
++ echo Plotting...
++ python3 NanoAOD_Plotting.py --mode ptscan-quantilebinning --quantile-bins 0 0.02 0.04 0.06 0.08 0.1 0.12 0.14 0.16 0.18 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.6 0.7 0.8 0.9 1 --zoomxmax 100 --vars PFCands_Ht --pt-cuts 1 2 --nthreads 32 --slurm True
+Info in <TCanvas::Print>: pdf file new_plots/PFCands_Ht_pTscan_QuantileBinning.pdf has been created
++ echo 'Saving the plots in /t3home/zoghafoo/WMassNanoProduction'
++ echo 'Analyze scratch:'
++ cd /scratch/zoghafoo
++ pwd
++ ls
++ xrdcp -f -N /scratch/zoghafoo/SelectedEvents_RunII2016FGH.txt /scratch/zoghafoo/TotalEvents_RunII2016FGH.txt root://t3dcachedb03.psi.ch:1094///pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents/
+Multiple sources were given but target is not a directory.
++ rm -r /scratch/zoghafoo
+++ date +%s
++ end_time=1781100423
++ elapsed=734
++ printf 'Job finished in %02d:%02d:%02d (hh:mm:ss)\n' 0 12 14

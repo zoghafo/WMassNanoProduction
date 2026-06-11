@@ -151,6 +151,84 @@ def SelectedEvents(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias):
             "MCMinBias": [event_dict['MCMinBias'][0], event_dict['MCMinBias'][1]]
             }
 
+
+def TotalEvents_local():
+    print("------------------------")
+    print(f"Reading total events and PF candidates from text files...")
+
+
+    event_dict = {"SingleMuon": [], "MinBias": [], "MCDY": [], "MCMinBias": {}}
+
+    for dataset in DATASETS:
+        txt_file = f"{path}/{dataset}_TotalEvents.txt"
+        pd_totalEvents = pd.read_csv(txt_file, delimiter="\t")
+        event_dict[dataset] = [int(pd_totalEvents.iloc[0, 1]), int(pd_totalEvents.iloc[1, 1])]
+
+
+    tmp_path = f"{path}/tmp/TotalEvents.txt"
+    final_path = f"{path}/TotalEvents.txt"
+
+    with open(tmp_path, "w") as summary_file:
+        summary_file.write("Event Type\tData_SingleMuon\tData_MinBias\tMC_DY\tMC_MinBias\n")
+        summary_file.write(f"Total Events\t{event_dict['SingleMuon'][0]}\t{event_dict['MinBias'][0]}\t{event_dict['MCDY'][0]}\t{event_dict['MCMinBias'][0]}\n")
+        summary_file.write(f"Total PF Cands\t{event_dict['SingleMuon'][1]}\t{event_dict['MinBias'][1]}\t{event_dict['MCDY'][1]}\t{event_dict['MCMinBias'][1]}\n")
+
+    os.replace(tmp_path, final_path)
+
+    pd_totalEvents_summary = pd.read_csv(final_path, delimiter="\t")
+    print(f"\n{pd_totalEvents_summary}\n")
+
+    print(f"Total events and PF candidates summary written to '{final_path}'!")
+
+    print("\n------------------------")
+
+
+    return {"SingleMuon": [event_dict['SingleMuon'][0], event_dict['SingleMuon'][1]],
+            "MinBias": [event_dict['MinBias'][0], event_dict['MinBias'][1]],
+            "MCDY": [event_dict['MCDY'][0], event_dict['MCDY'][1]],
+            "MCMinBias": [event_dict['MCMinBias'][0], event_dict['MCMinBias'][1]]
+            }
+
+
+def SelectedEvents_local(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias):
+
+    print("------------------------\n")
+
+    print(f"Calculating selected events and PF candidates from NanoAODs...")
+
+    event_dict = {"SingleMuon":
+                  [int(df_SingleMuon.Count().GetValue()), int(df_SingleMuon.Sum("PFSelection_nPFCands").GetValue())],
+                  "MinBias":
+                  [int(df_MinBias.Count().GetValue()), int(df_MinBias.Sum("PFSelection_nPFCands").GetValue())],
+                  "MCDY":
+                  [int(df_MCDYJets.Count().GetValue()), int(df_MCDYJets.Sum("PFSelection_nPFCands").GetValue())],
+                  "MCMinBias":
+                  [int(df_MCMinBias.Count().GetValue()), int(df_MCMinBias.Sum("PFSelection_nPFCands").GetValue())]
+                  }
+
+    tmp_path = f"{path}/tmp/SelectedEvents.txt"
+    final_path = f"{path}/SelectedEvents.txt"
+
+    with open(tmp_path, "w") as summary_file:
+        summary_file.write("Event Type\tData_SingleMuon\tData_MinBias\tMC_DY\tMC_MinBias\n")
+        summary_file.write(f"Selected Events\t{event_dict['SingleMuon'][0]}\t{event_dict['MinBias'][0]}\t{event_dict['MCDY'][0]}\t{event_dict['MCMinBias'][0]}\n")
+        summary_file.write(f"Selected PF Cands\t{event_dict['SingleMuon'][1]}\t{event_dict['MinBias'][1]}\t{event_dict['MCDY'][1]}\t{event_dict['MCMinBias'][1]}\n")
+
+    os.replace(tmp_path, final_path)
+
+    pd_selectedEvents_summary = pd.read_csv(final_path, delimiter="\t")
+    print(f"\n{pd_selectedEvents_summary}\n")
+
+    print(f"Selected events and PF candidates summary written to '{final_path}'!")
+
+    print("\n------------------------")
+
+    return {"SingleMuon": [event_dict['SingleMuon'][0], event_dict['SingleMuon'][1]],
+            "MinBias": [event_dict['MinBias'][0], event_dict['MinBias'][1]],
+            "MCDY": [event_dict['MCDY'][0], event_dict['MCDY'][1]],
+            "MCMinBias": [event_dict['MCMinBias'][0], event_dict['MCMinBias'][1]]
+            }
+
 def DiMuonPtCut(df, pt_cut):
     df = df.Filter(f"diMuon_pT < {pt_cut}")
     return df
@@ -800,6 +878,509 @@ def Plot_CompareTriggers_QuantileBinning(df_SingleMuon_var, df_MinBias_var, df_M
         canvas.SaveAs(output_name)
         canvas.Close()
 
+
+def Plot_DiMuonPtCut_QuantileBinning(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, totalEvents, selectedEvents, quantile_bins=None, quantile_reference="both", zoom_xmax=140):
+
+    colours = [
+                ROOT.kBlue + 1,
+                ROOT.kRed + 1,
+                ROOT.kGreen + 2,
+                ROOT.kMagenta + 1,
+                ROOT.kOrange + 7,
+                ROOT.kCyan + 1,
+                ROOT.kViolet + 1,
+                ROOT.kAzure + 1,
+                ROOT.kPink + 7,
+                ROOT.kTeal + 3,
+                ROOT.kSpring + 5,
+                ROOT.kYellow + 2,
+                ROOT.kGray + 2,
+                ROOT.kBlack
+                ]
+
+    for var in variables:
+        if var in ["PFCands_pt", "PFCands_eta", "PFCands_phi", "PFCands_pvAssocQuality"]:
+            continue
+
+        label = VARIABLES[var]
+        bins = BINNING[var]
+        y_title = "Number of Events (normalised)"
+
+        plot_bins = bins
+
+        # h_MinBias_ptr = MakeHist(df_MinBias_var, var, label, y_title, bins, f"h_MinBias_{var}_ptscan")
+        # h_MinBias = h_MinBias_ptr.GetValue()
+        # NormaliseHist(h_MinBias)
+
+        # h_MCMinBias_ptr = MakeHist(df_MCMinBias_var, var, label, y_title, bins, f"h_MCMinBias_{var}_ptscan")
+        # h_MCMinBias = h_MCMinBias_ptr.GetValue()
+        # NormaliseHist(h_MCMinBias)
+
+        if quantile_reference == "Data":
+            h_reference_ptr = MakeHist(
+                df_MinBias_var, var, label, y_title, bins,
+                f"h_SingleMuon_{var}_quantile_ref"
+            )
+
+        elif quantile_reference == "MC":
+            h_reference_ptr = MakeHist(
+                df_MCMinBias_var, var, label, y_title, bins,
+                f"h_MCDYJets_{var}_quantile_ref"
+            )
+
+        elif quantile_reference == "both":
+            # For "both", derive quantile bin edges from Data.
+            h_reference_ptr = MakeHist(
+                df_MinBias_var, var, label, y_title, bins,
+                f"h_SingleMuon_{var}_quantile_ref"
+            )
+
+        else:
+            raise ValueError(
+                "quantile_reference must be 'Data', 'MC', or 'both'"
+            )
+
+        h_reference = h_reference_ptr.GetValue()
+
+        if quantile_bins is not None:
+            quantile_edges = quantile_edges_from_hist(h_reference, quantile_bins)
+
+            if quantile_edges is not None and len(quantile_edges) > 1:
+                plot_bins = array.array("d", quantile_edges)
+                print(f"\n\n{var} quantile edges:")
+                print(quantile_edges)
+                print()
+                print()
+            else:
+                print(
+                    f"Warning: could not derive quantile bin edges for '{var}' "
+                    f"from {quantile_reference}; using the default binning"
+                )
+
+        if quantile_reference == "Data" or quantile_reference == "both":
+            h_SingleMuon_ptr = MakeHist(df_SingleMuon_var, var, label, y_title, plot_bins, f"h_SingleMuon_{var}")
+            h_MinBias_ptr = MakeHist(df_MinBias_var, var, label, y_title, plot_bins, f"h_MinBias_{var}")
+        if quantile_reference == "MC" or quantile_reference == "both":
+            h_MCDY_ptr = MakeHist(df_MCDYJets_var, var, label, y_title, plot_bins, f"h_MCDY_{var}")
+            h_MCMinBias_ptr = MakeHist(df_MCMinBias_var, var, label, y_title, plot_bins, f"h_MCMinBias_{var}")
+
+        if quantile_reference == "Data" or quantile_reference == "both":
+            h_SingleMuon = h_SingleMuon_ptr.GetValue()
+            h_MinBias = h_MinBias_ptr.GetValue()
+            NormaliseHist(h_SingleMuon, True)
+            NormaliseHist(h_MinBias, True)
+        if quantile_reference == "MC" or quantile_reference == "both":
+            h_MCDY = h_MCDY_ptr.GetValue()
+            h_MCMinBias = h_MCMinBias_ptr.GetValue()
+            NormaliseHist(h_MCDY, True)
+            NormaliseHist(h_MCMinBias, True)
+
+
+        if quantile_bins is not None:
+            
+            print(f"Quantile numeric ranges for {var} from the normal distributions ({quantile_reference} reference):")
+
+            for qi in range(len(quantile_bins) - 1):
+                q_low = quantile_bins[qi]
+                q_high = quantile_bins[qi + 1]
+
+                SingleMuon_low = None
+                SingleMuon_high = None
+                MinBias_low = None
+                MinBias_high = None
+                MCDY_low = None
+                MCDY_high = None
+                MCMinBias_low = None
+                MCMinBias_high = None
+
+                if quantile_reference == "Data" or quantile_reference == "both":
+                    SingleMuon_low = inverse_cdf_from_hist(h_SingleMuon, 1.0 - q_high)
+                    SingleMuon_high = inverse_cdf_from_hist(h_SingleMuon, 1.0 - q_low)
+                    MinBias_low = inverse_cdf_from_hist(h_MinBias, 1.0 - q_high)
+                    MinBias_high = inverse_cdf_from_hist(h_MinBias, 1.0 - q_low)
+
+                if quantile_reference == "MC" or quantile_reference == "both":
+                    MCDY_low = inverse_cdf_from_hist(h_MCDY, 1.0 - q_high)
+                    MCDY_high = inverse_cdf_from_hist(h_MCDY, 1.0 - q_low)
+                    MCMinBias_low = inverse_cdf_from_hist(h_MCMinBias, 1.0 - q_high)
+                    MCMinBias_high = inverse_cdf_from_hist(h_MCMinBias, 1.0 - q_low)
+
+                if quantile_reference == "Data":
+                    if SingleMuon_low is None or SingleMuon_high is None or MinBias_low is None or MinBias_high is None:
+                        print(f"  [{q_low:.3f}, {q_high:.3f}] -> undefined")
+                    else:
+                        print(
+                            f"  [{q_low:.3f}, {q_high:.3f}] -> "
+                            f"Data SingleMuon {SingleMuon_low:.6g} - {SingleMuon_high:.6g}, "
+                            f"Data MinBias {MinBias_low:.6g} - {MinBias_high:.6g}"
+                        )
+                elif quantile_reference == "MC":
+                    if MCDY_low is None or MCDY_high is None or MCMinBias_low is None or MCMinBias_high is None:
+                        print(f"  [{q_low:.3f}, {q_high:.3f}] -> undefined")
+                    else:
+                        print(
+                            f"  [{q_low:.3f}, {q_high:.3f}] -> "
+                            f"MCDY {MCDY_low:.6g} - {MCDY_high:.6g}, "
+                            f"MCMinBias {MCMinBias_low:.6g} - {MCMinBias_high:.6g}"
+                        )
+                elif quantile_reference == "both":
+                    data_missing = SingleMuon_low is None or SingleMuon_high is None or MinBias_low is None or MinBias_high is None
+                    mc_missing = MCDY_low is None or MCDY_high is None or MCMinBias_low is None or MCMinBias_high is None
+                    if data_missing and mc_missing:
+                        print(f"  [{q_low:.3f}, {q_high:.3f}] -> undefined")
+                    else:
+                        parts = []
+                        if not data_missing:
+                            parts.append(f"Data SingleMuon {SingleMuon_low:.6g} - {SingleMuon_high:.6g}, Data MinBias {MinBias_low:.6g} - {MinBias_high:.6g}")
+                        else:
+                            parts.append("Data: undefined")
+                        if not mc_missing:
+                            parts.append(f"MCDY {MCDY_low:.6g} - {MCDY_high:.6g}, MCMinBias {MCMinBias_low:.6g} - {MCMinBias_high:.6g}")
+                        else:
+                            parts.append("MC: undefined")
+                        print(f"  [{q_low:.3f}, {q_high:.3f}] -> " + "; ".join(parts))
+
+        canvas = ROOT.TCanvas(f"c_ptscan_{var}", "", 800, 700)
+        canvas.cd()
+        canvas.SetRightMargin(0.19)
+        canvas.SetLogy()
+        canvas.SetGridy(1)
+
+        
+        if quantile_reference == "both":
+            pad1 = ROOT.TPad(f"pad1_{var}", "", 0, 0.32, 1, 1)
+            pad1.Draw()
+            pad1.cd()
+            pad1.SetBottomMargin(0.05)
+            pad1.SetRightMargin(0.19)
+            pad1.SetLogy()
+            pad1.SetGridy(1)
+            # pad1.SetTicky(0)
+
+            canvas.cd()
+
+            pad2 = ROOT.TPad(f"pad2_{var}", "", 0, 0, 1, 0.35)
+            pad2.Draw()
+            pad2.cd()
+            pad2.SetTopMargin(0.05)
+            pad2.SetBottomMargin(0.35)
+            pad2.SetRightMargin(0.19)
+            pad2.SetGridy(1)
+            # pad2.SetTicky(0)
+
+            
+
+        if quantile_reference == "both":
+            legend_col0 = ROOT.TLegend(0.73, 0.87, 0.85, 0.92)
+        else:
+            legend_col0 = ROOT.TLegend(0.73, 0.85, 0.85, 0.9)
+        
+        legend_col1 = ROOT.TLegend(0.82, 0.01, 0.98, 0.98)
+        dummy = ROOT.TObject()
+
+        for legend in (legend_col0, legend_col1):
+            legend.SetBorderSize(0)
+            legend.SetFillStyle(0)
+            legend.SetTextSize(0.015)
+            legend.SetMargin(0.2)
+
+        legend_DataStyle = ROOT.TLine(0.0, 0.0, 0.5, 0.0)
+        legend_DataStyle.SetLineColor(ROOT.kBlack)
+        legend_DataStyle.SetLineWidth(2)
+        legend_DataStyle.SetLineStyle(1)
+
+        legend_MCStyle = ROOT.TLine(0.0, 0.0, 0.5, 0.0)
+        legend_MCStyle.SetLineColor(ROOT.kBlack)
+        legend_MCStyle.SetLineWidth(2)
+        legend_MCStyle.SetLineStyle(2)
+        
+        histos = []
+        insent_histos = []
+        ratios_pad2 = []
+        plot_max = 0
+
+        for index, pt_cut in enumerate(pt_cuts):
+
+            print(f"Applying diMuon pT cut: {pt_cut} GeV...")
+
+            colour = colours[index % len(colours)]
+            
+
+            df_SingleMuon_cut = DiMuonPtCut(df_SingleMuon_var, pt_cut)
+            df_MCDYJets_cut = DiMuonPtCut(df_MCDYJets_var, pt_cut)
+
+            # Redefining the selected events and PFCands after the diMuon pT cut for Data_DY and MC_DY
+            selectedEvents['SingleMuon'][0] = df_SingleMuon_cut.Count().GetValue()
+            selectedEvents['SingleMuon'][1] = df_SingleMuon_cut.Sum("PFSelection_nPFCands").GetValue()
+
+            selectedEvents['MCDY'][0] = df_MCDYJets_cut.Count().GetValue()
+            selectedEvents['MCDY'][1] = df_MCDYJets_cut.Sum("PFSelection_nPFCands").GetValue()
+
+
+            if quantile_reference == "Data" or quantile_reference == "both":
+                h_SingleMuon_ptr = MakeHist(df_SingleMuon_cut, var, label, y_title, plot_bins, f"h_SingleMuon_{var}_ptcut{pt_cut}GeV")
+                h_SingleMuon = h_SingleMuon_ptr.GetValue()
+                h_SingleMuon.SetDirectory(0)
+                NormaliseHist(h_SingleMuon, True)
+
+                ratio_SingleMuon = h_SingleMuon.Clone(f"ratio_SingleMuon_{var}_{pt_cut}GeV_{index}")
+                ratio_SingleMuon.Divide(h_MinBias)
+                ratio_SingleMuon.SetStats(0)
+                ratio_SingleMuon.SetLineColor(colour)
+                ratio_SingleMuon.SetLineWidth(2)
+                ratio_SingleMuon.GetXaxis().SetTitle(label)
+                ratio_SingleMuon.GetXaxis().SetTitleSize(0.03)
+                ratio_SingleMuon.GetXaxis().SetLabelSize(0.03)
+                ratio_SingleMuon.GetXaxis().SetTitleOffset(1.4)
+                ratio_SingleMuon.GetYaxis().SetTitle("DY/MinBias")
+                if quantile_reference == "both":
+                    ratio_SingleMuon.GetYaxis().SetLabelSize(0.04)
+                    ratio_SingleMuon.GetYaxis().SetTitleSize(0.04)
+                    ratio_SingleMuon.GetYaxis().SetTitleOffset(1)
+                else:
+                    ratio_SingleMuon.GetYaxis().SetLabelSize(0.03)
+                    ratio_SingleMuon.GetYaxis().SetTitleSize(0.03)
+                ratio_SingleMuon.GetYaxis().SetNdivisions(10, False)
+
+                insent_histos.append(ratio_SingleMuon)
+
+
+            if quantile_reference == "MC" or quantile_reference == "both":
+                h_MCDY_ptr = MakeHist(df_MCDYJets_cut, var, label, y_title, plot_bins, f"h_MCDY_{var}_ptcut{pt_cut}GeV")
+                h_MCDY = h_MCDY_ptr.GetValue()
+                h_MCDY.SetDirectory(0)
+                NormaliseHist(h_MCDY, True)
+
+                ratio_MCDY = h_MCDY.Clone(f"ratio_MCDY_{var}_{pt_cut}GeV_{index}")
+                ratio_MCDY.Divide(h_MCMinBias)
+                ratio_MCDY.SetStats(0)
+                ratio_MCDY.SetLineColor(colour)
+                ratio_MCDY.SetLineWidth(2)
+                ratio_MCDY.SetLineStyle(2)
+                ratio_MCDY.GetXaxis().SetTitle(label)
+                ratio_MCDY.GetXaxis().SetTitleSize(0.03)
+                ratio_MCDY.GetXaxis().SetLabelSize(0.03)
+                ratio_MCDY.GetXaxis().SetTitleOffset(1.4)
+                ratio_MCDY.GetYaxis().SetTitle("DY/MinBias")
+                if quantile_reference == "both":
+                    ratio_MCDY.GetYaxis().SetLabelSize(0.04)
+                    ratio_MCDY.GetYaxis().SetTitleSize(0.04)
+                else:
+                    ratio_MCDY.GetYaxis().SetLabelSize(0.03)
+                    ratio_MCDY.GetYaxis().SetTitleSize(0.03)   
+                ratio_MCDY.GetYaxis().SetNdivisions(10, False)
+
+                insent_histos.append(ratio_MCDY)         
+
+            if quantile_reference == "both":
+                pad1.cd()
+            else:
+                canvas.cd()
+                
+            if index == 0:
+                if quantile_reference == "Data" or quantile_reference == "both":
+                    ratio_SingleMuon.Draw("hist e same")
+                    histos.append(ratio_SingleMuon)
+                if quantile_reference == "MC" or quantile_reference == "both":
+                    ratio_MCDY.Draw("hist e same")
+                    histos.append(ratio_MCDY)
+            else:
+                if quantile_reference == "Data" or quantile_reference == "both":
+                    ratio_SingleMuon.Draw("hist e same")
+                    histos.append(ratio_SingleMuon)
+                if quantile_reference == "MC" or quantile_reference == "both":
+                    ratio_MCDY.Draw("hist e same")
+                    histos.append(ratio_MCDY)
+
+
+
+            legend_col1.AddEntry(dummy, f"#color[{colour}]{{#bf{{p^{{#mu#mu}}_{{T}} < {pt_cut} GeV}}}}", "")
+
+            if quantile_reference == "Data" or quantile_reference == "both":
+
+                max_val = ratio_SingleMuon.GetBinContent(ratio_SingleMuon.GetMaximumBin())
+                if plot_max < max_val:
+                    plot_max = max_val
+
+                legend_col1.AddEntry(dummy, "#bf{Data}", "")
+
+                legend_col1.AddEntry(dummy, "DY", "")
+                legend_col1.AddEntry(dummy, f"{(selectedEvents['SingleMuon'][0]/totalEvents['SingleMuon'][0]) * 100:.2f}% selected Events", "")
+                legend_col1.AddEntry(dummy, f"{(selectedEvents['SingleMuon'][1]/totalEvents['SingleMuon'][1]) * 100:.2f}% selected PFCands", "")
+
+                legend_col1.AddEntry(dummy, "ZeroBias", "")
+                legend_col1.AddEntry(dummy, f"{(selectedEvents['MinBias'][0]/totalEvents['MinBias'][0]) * 100:.2f}% selected Events", "")
+                legend_col1.AddEntry(dummy, f"{(selectedEvents['MinBias'][1]/totalEvents['MinBias'][1]) * 100:.2f}% selected PFCands", "")
+            
+            if quantile_reference == "MC" or quantile_reference == "both":
+
+                max_val = ratio_MCDY.GetBinContent(ratio_MCDY.GetMaximumBin())
+                if plot_max < max_val:
+                    plot_max = max_val
+
+                legend_col1.AddEntry(dummy, "#bf{MC}", "")
+
+                legend_col1.AddEntry(dummy, "DY", "")
+                legend_col1.AddEntry(dummy, f"{(selectedEvents['MCDY'][0]/totalEvents['MCDY'][0]) * 100:.2f}% selected Events", "")
+                legend_col1.AddEntry(dummy, f"{(selectedEvents['MCDY'][1]/totalEvents['MCDY'][1]) * 100:.2f}% selected PFCands", "")
+
+                legend_col1.AddEntry(dummy, "ZeroBias", "")
+                legend_col1.AddEntry(dummy, f"{(selectedEvents['MCMinBias'][0]/totalEvents['MCMinBias'][0]) * 100:.2f}% selected Events", "")
+                legend_col1.AddEntry(dummy, f"{(selectedEvents['MCMinBias'][1]/totalEvents['MCMinBias'][1]) * 100:.2f}% selected PFCands", "")
+
+
+            
+            if quantile_reference == "both":
+
+                ratio = ratio_SingleMuon.Clone(f"ratio_{var}_{pt_cut}GeV_{index}")
+                ratio.Divide(ratio_MCDY)
+                ratio.SetDirectory(0)
+                ratio.SetStats(0)
+                ratio.SetLineColor(colour)
+                ratio.SetMarkerColor(colour)
+                ratio.SetMarkerStyle(20)
+                ratio.SetMarkerSize(0.6)
+                ratio.GetYaxis().SetTitle("Data/MC")
+                ratio.GetXaxis().SetTitle(label)
+                ratio.GetXaxis().SetTitleSize(0.08)
+                ratio.GetXaxis().SetTitleOffset(1.3)
+                ratio.GetXaxis().SetLabelSize(0.075)
+                ratio.GetXaxis().SetTickLength(0.07)
+                ratio.GetYaxis().SetTitleSize(0.08)
+                ratio.GetYaxis().SetLabelSize(0.075)
+                ratio.GetYaxis().SetTitleOffset(0.55)
+                pad2.cd()
+                ratio.Draw("pe")
+
+            print(f"Finished processing diMuon pT cut: {pt_cut} GeV!\n")
+  
+
+        canvas.cd()
+        if histos and plot_max > 0:
+            histos[0].SetMaximum(plot_max * 2)
+        if quantile_reference == "Data" or quantile_reference == "both":
+            legend_col0.AddEntry(legend_DataStyle, "Data", "l")
+        if quantile_reference == "MC" or quantile_reference == "both":
+            legend_col0.AddEntry(legend_MCStyle, "MC", "l")
+        canvas.cd()
+        legend_col1.Draw()
+        legend_col0.SetTextSize(0.02)
+        legend_col0.Draw()
+
+        if quantile_reference == "both":
+            inset = ROOT.TPad(f"inset_{var}", f"inset_{var}", 0.4, 0.35, 0.8, 0.8)
+        else:
+            inset = ROOT.TPad(f"inset_{var}", f"inset_{var}", 0.4, 0.1, 0.8, 0.55)
+        inset.SetLogy()
+        inset.SetFillStyle(0)
+        inset.SetBorderSize(1)
+        inset.SetRightMargin(0.05)
+        inset.SetTopMargin(0.08)
+        inset.SetBottomMargin(0.12)
+        inset.Draw()
+        inset.cd()
+        # inset.DrawFrame(0, 10**(-1), zoom_xmax, 10)
+
+        inset.cd()
+
+        ymin = min(hist.GetMinimum() for hist in histos) if histos else 0.1
+        if ymin <= 0:
+            ymin = 1e-2
+        ymax = max(hist.GetMaximum() for hist in histos) if histos else 1
+        if ymax <= 0:
+            ymax = 10
+        frame = inset.DrawFrame(
+                                0,
+                                ymin,
+                                zoom_xmax,
+                                ymax
+                                )
+        frame.GetXaxis().SetLabelSize(0.05)
+        frame.GetYaxis().SetLabelSize(0.05)
+        frame.GetXaxis().SetTitleSize(0.05)
+        frame.GetYaxis().SetTitleSize(0.05)
+        frame.GetYaxis().SetNdivisions(10, False)
+        inset.SetGridy(1)
+        inset.SetTicky(0)
+
+        for hh in histos:
+            hh.SetStats(0)
+            hh.GetXaxis().SetRangeUser(0, zoom_xmax)
+            hh.Draw("hist e same")
+        
+        
+           
+        # canvas.cd()
+
+        # inset_ratio = ROOT.TPad(f"inset_ratio_{var}", f"inset_ratio_{var}", 0.74, 0.115, 1, 0.34)
+        # inset_ratio.SetLogy()
+        # inset_ratio.SetGridy()
+        # inset_ratio.SetFillStyle(0)
+        # inset_ratio.SetBorderSize(1)
+
+        # inset_ratio.Draw()
+        # inset_ratio.cd()
+        # inset_ratio.DrawFrame(0, 10**(-1), zoom_xmax, 100)
+        # # print(f"Ratio plot y-axis range for {var} inset: {min(ratio_SingleMuon.GetMinimum(), ratio_MCDYJets.GetMinimum())} - {max(ratio_SingleMuon.GetMaximum(), ratio_MCDYJets.GetMaximum())}")
+        # ymin = (
+        #     min(ratio_SingleMuon.GetMinimum(), ratio_MCDYJets.GetMinimum())
+        #     if quantile_reference == "both"
+        #     else ratio_SingleMuon.GetMinimum()
+        #     if quantile_reference == "Data"
+        #     else ratio_MCDYJets.GetMinimum()
+        # )
+        # ymax = (
+        #     max(ratio_SingleMuon.GetMaximum(), ratio_MCDYJets.GetMaximum())
+        #     if quantile_reference == "both"
+        #     else ratio_SingleMuon.GetMaximum()
+        #     if quantile_reference == "Data"
+        #     else ratio_MCDYJets.GetMaximum()
+        # )
+        # frame_ratio = inset_ratio.DrawFrame(
+        #                         0,
+        #                         ymin * 0.2,
+        #                         zoom_xmax,
+        #                         ymax * 1.3
+        #                         )
+        # frame_ratio.GetXaxis().SetLabelSize(0.07)
+        # frame_ratio.GetYaxis().SetLabelSize(0.07)
+        # frame_ratio.GetXaxis().SetTitleSize(0.07)
+        # frame_ratio.GetYaxis().SetTitleSize(0.07)
+        # frame_ratio.GetXaxis().SetTitle("")
+        # frame_ratio.GetYaxis().SetTitle("")
+        # frame_ratio.GetXaxis().SetRangeUser(0, zoom_xmax)
+        # frame_ratio.GetYaxis().SetNdivisions(10, False)
+        # inset_ratio.SetGridy(1)
+        # inset_ratio.SetTicky(0)
+
+
+        # if quantile_reference in ["Data", "both"]:
+        #     hdata_ratio = ratio_SingleMuon.Clone(ratio_SingleMuon.GetName() + "_insetratio")
+        #     hdata_ratio.SetStats(0)
+        #     hdata_ratio.SetLineWidth(2)
+        #     hdata_ratio.Draw("pe same")
+
+        # if quantile_reference in ["MC", "both"]:
+        #     hMC_ratio = ratio_MCDYJets.Clone(ratio_MCDYJets.GetName() + "_insetratio")
+        #     hMC_ratio.SetStats(0)
+        #     hMC_ratio.SetLineWidth(2)
+        #     hMC_ratio.Draw("pe same")
+
+
+
+
+
+
+
+        if quantile_reference == "Data":
+            output_name = f"new_plots/{var}_pTscan_QuantileBinningData{out_suffix}.pdf"
+        elif quantile_reference == "MC":
+            output_name = f"new_plots/{var}_pTscan_QuantileBinningMC{out_suffix}.pdf"
+        else:
+            output_name = f"new_plots/{var}_pTscan_QuantileBinning{out_suffix}.pdf"
+            
+        canvas.SaveAs(output_name)
+        canvas.Close()
 
 def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, totalEvents, selectedEvents):
 
@@ -2270,6 +2851,12 @@ def parse_args():
         default=1,
         help="Number of threads for RDataFrame processing (default: 1, set >1 to enable multithreading)",
     )
+    parser.add_argument(
+        "--slurm",
+        type=bool,
+        default=False,
+        help="If True, adjust file paths for running on the CERN SLURM cluster (default: False)",
+    )
     return parser.parse_args()
     
 
@@ -2290,9 +2877,12 @@ def main():
 
     df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias = MakeDataframes(args.maxevents)
 
-    # if args.save_event_counts:
-    totalEvents = TotalEvents()
-    selectedEvents = SelectedEvents(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias)
+    if args.slurm == True:
+        totalEvents = TotalEvents()
+        selectedEvents = SelectedEvents(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias)
+    else:
+        totalEvents = TotalEvents_local()
+        selectedEvents = SelectedEvents_local(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias)
 
     if args.no_plot:
         print("Selections finished. Plotting disabled by --no-plot.")

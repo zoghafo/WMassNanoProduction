@@ -1,0 +1,101 @@
+/t3home/zoghafoo/WMassNanoProduction
+Plotting...
+Number of threads: 32 
+
+{'charge': 1,
+ 'maxevents': None,
+ 'mode': 'ptscan-quantilebinning',
+ 'no_plot': False,
+ 'nthreads': 32,
+ 'output_suffix': '',
+ 'pt_cuts': [1.0, 2.0],
+ 'quantile_bins': [0.0,
+                   0.02,
+                   0.04,
+                   0.06,
+                   0.08,
+                   0.1,
+                   0.12,
+                   0.14,
+                   0.16,
+                   0.18,
+                   0.2,
+                   0.25,
+                   0.3,
+                   0.35,
+                   0.4,
+                   0.45,
+                   0.5,
+                   0.6,
+                   0.7,
+                   0.8,
+                   0.9,
+                   1.0],
+ 'quantile_reference': 'both',
+ 'save_event_counts': False,
+ 'slurm': True,
+ 'vars': ['PFCands_Ht'],
+ 'zoomxmax': 100.0}
+------------------------
+Reading total events and PF candidates from text files...
+
+       Event Type  Data_SingleMuon  Data_MinBias         MC_DY   MC_MinBias
+0    Total Events        317494717      69205921      96424820    499907600
+1  Total PF Cands     481589284679   80429995602  134047192083  52973764700
+
+Total events and PF candidates summary written to '/scratch/zoghafoo/TotalEvents_RunII2016FGH.txt'!
+
+------------------------
+------------------------
+
+Calculating selected events and PF candidates from NanoAODs...
+
+          Event Type  Data_SingleMuon  Data_MinBias       MC_DY  MC_MinBias
+0    Selected Events         10142965      57671894    29672721   414040967
+1  Selected PF Cands        361604529    1004173250  1131468878  7118133993
+
+Selected events and PF candidates summary written to '/scratch/zoghafoo/SelectedEvents_RunII2016FGH.txt'!
+
+------------------------
+
+
+PFCands_Ht quantile edges:
+[0.0, 1.575032339406709, 3.150064678813418, 4.725097018220129, 6.880764999576881, 9.159204202399698, 10.488012510504886, 12.350978569516242, 14.213944628527601, 16.569694187442614, 19.28513477882148, 23.241969016919896, 25.002137495582176, 26.76230597424445, 28.522474452906728, 30.703211031118602, 35.08248166757661, 39.46175230403462, 43.8410229404926, 48.22029357695061, 59.86165504934151, 370.0]
+
+
+Quantile numeric ranges for PFCands_Ht from the normal distributions (both reference):
+  [0.000, 0.020] -> Data SingleMuon 52.9334 - 370, Data MinBias 38.421 - 370; MCDY 53.5978 - 370, MCMinBias 38.9972 - 370
+  [0.020, 0.040] -> Data SingleMuon 47.3525 - 52.9334, Data MinBias 31.3178 - 38.421; MCDY 47.7577 - 53.5978, MCMinBias 30.7476 - 38.9972
+  [0.040, 0.060] -> Data SingleMuon 45.1374 - 47.3525, Data MinBias 28.438 - 31.3178; MCDY 45.7279 - 47.7577, MCMinBias 27.7186 - 30.7476
+  [0.060, 0.080] -> Data SingleMuon 43.0404 - 45.1374, Data MinBias 26.6354 - 28.438; MCDY 43.7132 - 45.7279, MCMinBias 25.4037 - 27.7186
+  [0.080, 0.100] -> Data SingleMuon 41.1101 - 43.0404, Data MinBias 25.0152 - 26.6354; MCDY 41.8971 - 43.7132, MCMinBias 23.3146 - 25.4037
+  [0.100, 0.120] -> Data SingleMuon 39.2115 - 41.1101, Data MinBias 23.5633 - 25.0152; MCDY 40.081 - 41.8971, MCMinBias 19.4266 - 23.3146
+  [0.120, 0.140] -> Data SingleMuon 37.4981 - 39.2115, Data MinBias 21.1407 - 23.5633; MCDY 38.3686 - 40.081, MCMinBias 17.1509 - 19.4266
+  [0.140, 0.160] -> Data SingleMuon 35.7847 - 37.4981, Data MinBias 18.8213 - 21.1407; MCDY 36.7097 - 38.3686, MCMinBias 15.3918 - 17.1509
+  [0.160, 0.180] -> Data SingleMuon 34.1702 - 35.7847, Data MinBias 17.3371 - 18.8213; MCDY 35.0529 - 36.7097, MCMinBias 13.9361 - 15.3918
+  [0.180, 0.200] -> Data SingleMuon 32.6245 - 34.1702, Data MinBias 16.0499 - 17.3371; MCDY 33.5042 - 35.0529, MCMinBias 12.8778 - 13.9361
+  [0.200, 0.250] -> Data SingleMuon 29.7945 - 32.6245, Data MinBias 13.638 - 16.0499; MCDY 30.1886 - 33.5042, MCMinBias 10.5854 - 12.8778
+  [0.250, 0.300] -> Data SingleMuon 28.1038 - 29.7945, Data MinBias 11.8992 - 13.638; MCDY 28.3675 - 30.1886, MCMinBias 9.23165 - 10.5854
+  [0.300, 0.350] -> Data SingleMuon 26.6912 - 28.1038, Data MinBias 10.3983 - 11.8992; MCDY 26.8848 - 28.3675, MCMinBias 7.49773 - 9.23165
+  [0.350, 0.400] -> Data SingleMuon 25.301 - 26.6912, Data MinBias 9.43549 - 10.3983; MCDY 25.4179 - 26.8848, MCMinBias 6.14843 - 7.49773
+  [0.400, 0.450] -> Data SingleMuon 23.9347 - 25.301, Data MinBias 8.18431 - 9.43549; MCDY 23.9573 - 25.4179, MCMinBias 5.02025 - 6.14843
+  [0.450, 0.500] -> Data SingleMuon 21.7587 - 23.9347, Data MinBias 6.83498 - 8.18431; MCDY 21.5681 - 23.9573, MCMinBias 4.35019 - 5.02025
+  [0.500, 0.600] -> Data SingleMuon 16.8112 - 21.7587, Data MinBias 4.8692 - 6.83498; MCDY 16.3433 - 21.5681, MCMinBias 3.33469 - 4.35019
+  [0.600, 0.700] -> Data SingleMuon 13.2552 - 16.8112, Data MinBias 3.711 - 4.8692; MCDY 12.6765 - 16.3433, MCMinBias 2.61966 - 3.33469
+  [0.700, 0.800] -> Data SingleMuon 10.1575 - 13.2552, Data MinBias 2.70129 - 3.711; MCDY 9.63376 - 12.6765, MCMinBias 1.9714 - 2.61966
+  [0.800, 0.900] -> Data SingleMuon 6.32982 - 10.1575, Data MinBias 1.78055 - 2.70129; MCDY 5.50684 - 9.63376, MCMinBias 1.13429 - 1.9714
+  [0.900, 1.000] -> Data SingleMuon 0 - 6.32982, Data MinBias 0 - 1.78055; MCDY 0 - 5.50684, MCMinBias 0 - 1.13429
+Applying diMuon pT cut: 1.0 GeV...
+Finished processing diMuon pT cut: 1.0 GeV!
+
+Applying diMuon pT cut: 2.0 GeV...
+Finished processing diMuon pT cut: 2.0 GeV!
+
+[<cppyy.gbl.TH1D object at 0x10bdebf0>, <cppyy.gbl.TH1D object at 0x10c89250>, <cppyy.gbl.TH1D object at 0x1210f2b0>, <cppyy.gbl.TH1D object at 0x11e27dd0>]
+Saving the plots in /t3home/zoghafoo/WMassNanoProduction
+Analyze scratch:
+/scratch/zoghafoo
+SelectedEvents_RunII2016FGH.txt
+tmp
+TotalEvents_RunII2016FGH.txt
+Job finished in 00:12:14 (hh:mm:ss)

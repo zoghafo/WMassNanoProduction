@@ -1,0 +1,45 @@
+/t3home/zoghafoo/WMassNanoProduction
+Plotting...
+Number of threads: 32 
+
+{'charge': 1,
+ 'maxevents': None,
+ 'mode': 'compare',
+ 'no_plot': False,
+ 'nthreads': 32,
+ 'output_suffix': '',
+ 'pt_cuts': [1, 4, 10, 20],
+ 'quantile_bins': [0, 0.25, 0.5, 0.75, 1],
+ 'quantile_reference': 'both',
+ 'save_event_counts': False,
+ 'slurm': True,
+ 'vars': dict_keys(['PFCands_pt', 'PFCands_eta', 'PFCands_phi', 'PFCands_pvAssocQuality', 'nPFCands', 'PFCands_Ht', 'PFCands_Pt2sum', 'PFCands_Psum', 'PFCands_P2sum', 'PFCands_InvariantMass']),
+ 'zoomxmax': 140}
+------------------------
+Reading total events and PF candidates from text files...
+
+       Event Type  Data_SingleMuon  Data_MinBias         MC_DY   MC_MinBias
+0    Total Events        317494717      69205921      96424820    499907600
+1  Total PF Cands     481589284679   80429995602  134047192083  52973764700
+
+Total events and PF candidates summary written to '/scratch/zoghafoo/TotalEvents_RunII2016FGH.txt'!
+
+------------------------
+------------------------
+
+Calculating selected events and PF candidates from NanoAODs...
+
+          Event Type  Data_SingleMuon  Data_MinBias       MC_DY  MC_MinBias
+0    Selected Events         10142965      57671894    29672721   414040967
+1  Selected PF Cands        361604529    1004173250  1131468878  7118133993
+
+Selected events and PF candidates summary written to '/scratch/zoghafoo/SelectedEvents_RunII2016FGH.txt'!
+
+------------------------
+Saving the plots in /t3home/zoghafoo/WMassNanoProduction
+Analyze scratch:
+/scratch/zoghafoo
+SelectedEvents_RunII2016FGH.txt
+tmp
+TotalEvents_RunII2016FGH.txt
+Job finished in 00:10:45 (hh:mm:ss)
