@@ -5,3 +5,4 @@ crab_projects/
 oldold_plots/
 new_plotsOld/
 *~selEvents_tier3/*.root
+slurm_log/
