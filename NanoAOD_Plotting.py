@@ -926,7 +926,7 @@ def Plot_CompareTriggers_QuantileBinning(df_SingleMuon_var, df_MinBias_var, df_M
         canvas.SaveAs(output_name)
         canvas.Close()
 
-def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, totalEvents, selectedEvents, ratio):
+def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, ratio):
 
     colours = [ROOT.kViolet - 6, ROOT.kBlue - 4, ROOT.kGreen + 3, ROOT.kOrange + 5, ROOT.kRed + 1]
 
@@ -945,17 +945,19 @@ def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMi
 
         canvas = ROOT.TCanvas(f"c_ptscan_{var}", "", 800, 700)
         canvas.cd()
-        canvas.SetRightMargin(0.19)
+        canvas.SetRightMargin(0.08)
+        canvas.SetLeftMargin(0.15)
+        canvas.SetBottomMargin(0.15)
         canvas.SetLogy()
 
-        legend_col0 = ROOT.TLegend(0.68, 0.84, 0.85, 0.89)
-        legend_col1 = ROOT.TLegend(0.82, 0.01, 0.98, 0.98)
+        legend_col0 = ROOT.TLegend(0.74, 0.8, 0.89, 0.89)
+        legend_col1 = ROOT.TLegend(0.2, 0.65, 0.62, 0.89)
         dummy = ROOT.TObject()
         for legend in (legend_col0, legend_col1):
             legend.SetBorderSize(0)
             legend.SetFillStyle(0)
-            legend.SetTextSize(0.015)
-            legend.SetMargin(0.2)
+            legend.SetTextSize(0.04)
+        legend_col1.SetMargin(0.1)
 
         legend_DataStyle = ROOT.TLine(0.0, 0.0, 0.5, 0.0)
         legend_DataStyle.SetLineColor(ROOT.kBlack)
@@ -980,11 +982,11 @@ def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMi
             df_MCDYJets_cut = DiMuonPtCut(df_MCDYJets_var, pt_cut)
 
             # Redefining the selected events and PFCands after the diMuon pT cut for Data_DY and MC_DY
-            selectedEvents['SingleMuon'][0] = df_SingleMuon_cut.Count().GetValue()
-            selectedEvents['SingleMuon'][1] = df_SingleMuon_cut.Sum("PFSelection_nPFCands").GetValue()
+            # selectedEvents['SingleMuon'][0] = df_SingleMuon_cut.Count().GetValue()
+            # selectedEvents['SingleMuon'][1] = df_SingleMuon_cut.Sum("PFSelection_nPFCands").GetValue()
 
-            selectedEvents['MCDY'][0] = df_MCDYJets_cut.Count().GetValue()
-            selectedEvents['MCDY'][1] = df_MCDYJets_cut.Sum("PFSelection_nPFCands").GetValue()
+            # selectedEvents['MCDY'][0] = df_MCDYJets_cut.Count().GetValue()
+            # selectedEvents['MCDY'][1] = df_MCDYJets_cut.Sum("PFSelection_nPFCands").GetValue()
 
 
             h_SingleMuon_ptr = MakeHist(df_SingleMuon_cut, var, label, y_title, bins, f"h_SingleMuon_{var}_{pt_cut}GeV")
@@ -1019,23 +1021,26 @@ def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMi
             ratio1_hist.SetLineColor(colour)
             ratio1_hist.SetLineWidth(2)
             ratio1_hist.GetXaxis().SetTitle(label)
-            ratio1_hist.GetXaxis().SetTitleSize(0.025)
-            ratio1_hist.GetXaxis().SetLabelSize(0.025)
-            ratio1_hist.GetXaxis().SetTitleOffset(1.6)
-            ratio1_hist.GetYaxis().SetLabelSize(0.025)
-            ratio1_hist.GetYaxis().SetTitleSize(0.025)
+            ratio1_hist.GetXaxis().SetTitleSize(0.05)
+            ratio1_hist.GetXaxis().SetLabelSize(0.05)
+            ratio1_hist.GetXaxis().SetTitleOffset(1.2)
+            ratio1_hist.GetYaxis().SetLabelSize(0.05)
+            ratio1_hist.GetYaxis().SetTitleSize(0.05)
 
             
             ratio2_hist.SetStats(0)
-            ratio2_hist.SetLineColor(colour)
+            if ratio == "DYZeroBias":
+                ratio2_hist.SetLineColor(colour)
+            if ratio == "DataMC":
+                ratio2_hist.SetLineColor(ROOT.kBlack)
             ratio2_hist.SetLineWidth(2)
             ratio2_hist.SetLineStyle(2)
             ratio2_hist.GetXaxis().SetTitle(label)
-            ratio2_hist.GetXaxis().SetTitleSize(0.025)
-            ratio2_hist.GetXaxis().SetLabelSize(0.025)
-            ratio2_hist.GetXaxis().SetTitleOffset(1.6)
-            ratio2_hist.GetYaxis().SetLabelSize(0.025)
-            ratio2_hist.GetYaxis().SetTitleSize(0.025)
+            ratio2_hist.GetXaxis().SetTitleSize(0.05)
+            ratio2_hist.GetXaxis().SetLabelSize(0.05)
+            ratio2_hist.GetXaxis().SetTitleOffset(1.2)
+            ratio2_hist.GetYaxis().SetLabelSize(0.05)
+            ratio2_hist.GetYaxis().SetTitleSize(0.05)
 
             canvas.SetLogy()
             if index == 0:
@@ -1053,25 +1058,25 @@ def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMi
             histos.append(ratio2_hist)
 
             legend_col1.AddEntry(ratio1_hist, f"p^{{#mu#mu}}_{{T}} < {pt_cut} GeV", "l")
-            legend_col1.AddEntry(dummy, "#bf{Data}", "")
+            # legend_col1.AddEntry(dummy, "#bf{Data}", "")
 
-            legend_col1.AddEntry(dummy, "DY", "")
-            legend_col1.AddEntry(dummy, f"{(selectedEvents['SingleMuon'][0]/totalEvents['SingleMuon'][0]) * 100:.2f}% selected Events", "")
-            legend_col1.AddEntry(dummy, f"{(selectedEvents['SingleMuon'][1]/totalEvents['SingleMuon'][1]) * 100:.2f}% selected PFCands", "")
+            # legend_col1.AddEntry(dummy, "DY", "")
+            # legend_col1.AddEntry(dummy, f"{(selectedEvents['SingleMuon'][0]/totalEvents['SingleMuon'][0]) * 100:.2f}% selected Events", "")
+            # legend_col1.AddEntry(dummy, f"{(selectedEvents['SingleMuon'][1]/totalEvents['SingleMuon'][1]) * 100:.2f}% selected PFCands", "")
 
-            legend_col1.AddEntry(dummy, "ZeroBias", "")
-            legend_col1.AddEntry(dummy, f"{(selectedEvents['MinBias'][0]/totalEvents['MinBias'][0]) * 100:.2f}% selected Events", "")
-            legend_col1.AddEntry(dummy, f"{(selectedEvents['MinBias'][1]/totalEvents['MinBias'][1]) * 100:.2f}% selected PFCands", "")
+            # legend_col1.AddEntry(dummy, "ZeroBias", "")
+            # legend_col1.AddEntry(dummy, f"{(selectedEvents['MinBias'][0]/totalEvents['MinBias'][0]) * 100:.2f}% selected Events", "")
+            # legend_col1.AddEntry(dummy, f"{(selectedEvents['MinBias'][1]/totalEvents['MinBias'][1]) * 100:.2f}% selected PFCands", "")
 
-            legend_col1.AddEntry(dummy, "#bf{MC}", "")
+            # legend_col1.AddEntry(dummy, "#bf{MC}", "")
 
-            legend_col1.AddEntry(dummy, "DY", "")
-            legend_col1.AddEntry(dummy, f"{(selectedEvents['MCDY'][0]/totalEvents['MCDY'][0]) * 100:.2f}% selected Events", "")
-            legend_col1.AddEntry(dummy, f"{(selectedEvents['MCDY'][1]/totalEvents['MCDY'][1]) * 100:.2f}% selected PFCands", "")
+            # legend_col1.AddEntry(dummy, "DY", "")
+            # legend_col1.AddEntry(dummy, f"{(selectedEvents['MCDY'][0]/totalEvents['MCDY'][0]) * 100:.2f}% selected Events", "")
+            # legend_col1.AddEntry(dummy, f"{(selectedEvents['MCDY'][1]/totalEvents['MCDY'][1]) * 100:.2f}% selected PFCands", "")
 
-            legend_col1.AddEntry(dummy, "ZeroBias", "")
-            legend_col1.AddEntry(dummy, f"{(selectedEvents['MCMinBias'][0]/totalEvents['MCMinBias'][0]) * 100:.2f}% selected Events", "")
-            legend_col1.AddEntry(dummy, f"{(selectedEvents['MCMinBias'][1]/totalEvents['MCMinBias'][1]) * 100:.2f}% selected PFCands", "")
+            # legend_col1.AddEntry(dummy, "ZeroBias", "")
+            # legend_col1.AddEntry(dummy, f"{(selectedEvents['MCMinBias'][0]/totalEvents['MCMinBias'][0]) * 100:.2f}% selected Events", "")
+            # legend_col1.AddEntry(dummy, f"{(selectedEvents['MCMinBias'][1]/totalEvents['MCMinBias'][1]) * 100:.2f}% selected PFCands", "")
             print(f"Finished processing diMuon pT cut: {pt_cut} GeV!\n")
 
         if histos and plot_max > 0:
@@ -1085,7 +1090,7 @@ def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMi
             legend_col0.AddEntry(legend_MCStyle, "ZeroBias", "l")
         
         legend_col1.Draw()
-        legend_col0.SetTextSize(0.02)
+        # legend_col0.SetTextSize(0.02)
         legend_col0.Draw()
 
 
@@ -1856,7 +1861,7 @@ def QuantilePerObservable(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df
         canvas.Close()
 
 
-def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, totalEvents, selectedEvents, bins):
+def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, bins):
 
 
     def colors_func(n):
@@ -2063,11 +2068,11 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
             df_MCDYJets_cut = DiMuonPtCut(df_MCDYJets_q, pt_cut)
 
             # Redefining the selected events and PFCands after the diMuon pT cut for Data_DY and MC_DY
-            selectedEvents['SingleMuon'][0] = df_SingleMuon_cut.Count().GetValue()
-            selectedEvents['SingleMuon'][1] = df_SingleMuon_cut.Sum("PFSelection_nPFCands").GetValue()
+            # selectedEvents['SingleMuon'][0] = df_SingleMuon_cut.Count().GetValue()
+            # selectedEvents['SingleMuon'][1] = df_SingleMuon_cut.Sum("PFSelection_nPFCands").GetValue()
 
-            selectedEvents['MCDY'][0] = df_MCDYJets_cut.Count().GetValue()
-            selectedEvents['MCDY'][1] = df_MCDYJets_cut.Sum("PFSelection_nPFCands").GetValue()
+            # selectedEvents['MCDY'][0] = df_MCDYJets_cut.Count().GetValue()
+            # selectedEvents['MCDY'][1] = df_MCDYJets_cut.Sum("PFSelection_nPFCands").GetValue()
 
             h_SingleMuon_ptr = df_SingleMuon_cut.Histo1D(
                 (f"h_SingleMuon_{var}_quantile_{pt_cut}GeV", f"; {plot_xlabel}; DY/ZeroBias", len(edges) - 1, edges),
@@ -2160,21 +2165,21 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
             legend_col1.AddEntry(ratio_SingleMuon, f"p^{{#mu#mu}}_{{T}} < {pt_cut} GeV", "l")
             legend_col1.AddEntry(dummy, "#bf{Data}", "")
 
-            legend_col1.AddEntry(dummy, f"DY ({(selectedEvents['SingleMuon'][0]/totalEvents['SingleMuon'][0]) * 100:.2f}%, {(selectedEvents['SingleMuon'][1]/totalEvents['SingleMuon'][1]) * 100:.2f}%)", "")
+            # legend_col1.AddEnt ry(dummy, f"DY ({(selectedEvents['SingleMuon'][0]/totalEvents['SingleMuon'][0]) * 100:.2f}%, {(selectedEvents['SingleMuon'][1]/totalEvents['SingleMuon'][1]) * 100:.2f}%)", "")
             # legend_col1.AddEntry(dummy, f"{(selectedEvents['SingleMuon'][0]/totalEvents['SingleMuon'][0]) * 100:.2f}% selected Events", "")
             # legend_col1.AddEntry(dummy, f"{(selectedEvents['SingleMuon'][1]/totalEvents['SingleMuon'][1]) * 100:.2f}% selected PFCands", "")
 
-            legend_col1.AddEntry(dummy, f"ZeroBias ({(selectedEvents['MinBias'][0]/totalEvents['MinBias'][0]) * 100:.2f}%, {(selectedEvents['MinBias'][1]/totalEvents['MinBias'][1]) * 100:.2f}%)", "")
+            # legend_col1.AddEntry(dummy, f"ZeroBias ({(selectedEvents['MinBias'][0]/totalEvents['MinBias'][0]) * 100:.2f}%, {(selectedEvents['MinBias'][1]/totalEvents['MinBias'][1]) * 100:.2f}%)", "")
             # legend_col1.AddEntry(dummy, f"{(selectedEvents['MinBias'][0]/totalEvents['MinBias'][0]) * 100:.2f}% selected Events", "")
             # legend_col1.AddEntry(dummy, f"{(selectedEvents['MinBias'][1]/totalEvents['MinBias'][1]) * 100:.2f}% selected PFCands", "")
 
             legend_col1.AddEntry(dummy, "#bf{MC}", "")
 
-            legend_col1.AddEntry(dummy, f"DY ({(selectedEvents['MCDY'][0]/totalEvents['MCDY'][0]) * 100:.2f}%, {(selectedEvents['MCDY'][1]/totalEvents['MCDY'][1]) * 100:.2f}%)", "")
+            # legend_col1.AddEntry(dummy, f"DY ({(selectedEvents['MCDY'][0]/totalEvents['MCDY'][0]) * 100:.2f}%, {(selectedEvents['MCDY'][1]/totalEvents['MCDY'][1]) * 100:.2f}%)", "")
             # legend_col1.AddEntry(dummy, f"{(selectedEvents['MCDY'][0]/totalEvents['MCDY'][0]) * 100:.2f}% selected Events", "")
             # legend_col1.AddEntry(dummy, f"{(selectedEvents['MCDY'][1]/totalEvents['MCDY'][1]) * 100:.2f}% selected PFCands", "")
 
-            legend_col1.AddEntry(dummy, f"ZeroBias ({(selectedEvents['MCMinBias'][0]/totalEvents['MCMinBias'][0]) * 100:.2f}%, {(selectedEvents['MCMinBias'][1]/totalEvents['MCMinBias'][1]) * 100:.2f}%)", "")
+            # legend_col1.AddEntry(dummy, f"ZeroBias ({(selectedEvents['MCMinBias'][0]/totalEvents['MCMinBias'][0]) * 100:.2f}%, {(selectedEvents['MCMinBias'][1]/totalEvents['MCMinBias'][1]) * 100:.2f}%)", "")
             # legend_col1.AddEntry(dummy, f"{(selectedEvents['MCMinBias'][0]/totalEvents['MCMinBias'][0]) * 100:.2f}% selected Events", "")
             # legend_col1.AddEntry(dummy, f"{(selectedEvents['MCMinBias'][1]/totalEvents['MCMinBias'][1]) * 100:.2f}% selected PFCands", "")
 
@@ -2208,7 +2213,7 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
         canvas.Close()
 
 
-def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, out_suffix, totalEvents, selectedEvents, bins):
+def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, out_suffix, bins):
 
     colours = [ROOT.kViolet - 6, ROOT.kBlue - 4, ROOT.kGreen + 3, ROOT.kOrange + 5, ROOT.kRed + 1, ROOT.kCyan + 2]
     ratio_data_hists = []
@@ -2397,12 +2402,13 @@ def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
 
     first_ratio.GetXaxis().SetTitle("1 - F_{MB}(x)")
     first_ratio.GetYaxis().SetTitle("DY/ZeroBias")
-    first_ratio.GetXaxis().SetTitleSize(0.035)
-    first_ratio.GetXaxis().SetTitleOffset(1.3)
-    first_ratio.GetXaxis().SetLabelSize(0.035)
+    first_ratio.GetXaxis().SetTitleSize(0.05)
+    first_ratio.GetXaxis().SetTitleOffset(0.5)
+    first_ratio.GetXaxis().SetLabelSize(0.05)
     first_ratio.GetXaxis().SetTickLength(0.03)
-    first_ratio.GetYaxis().SetTitleSize(0.035)
-    first_ratio.GetYaxis().SetLabelSize(0.035)
+    first_ratio.GetYaxis().SetTitleSize(0.05)
+    first_ratio.GetYaxis().SetLabelSize(0.05)
+    first_ratio.GetYaxis().SetTitleOffset(0.9)
     first_ratio.SetMaximum(max_val * 10)
     pad1.cd()
     first_ratio.Draw("hist e")
@@ -2423,16 +2429,16 @@ def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
         ratio.SetMarkerStyle(20)
         ratio.SetMarkerSize(0.8)
         ratio.GetXaxis().SetTitle("1 - F_{MB}(x)")
-        ratio.GetXaxis().SetTitleSize(0.08)
-        ratio.GetXaxis().SetTitleOffset(1.3)
-        ratio.GetXaxis().SetLabelSize(0.07)
+        ratio.GetXaxis().SetTitleSize(0.1)
+        ratio.GetXaxis().SetTitleOffset(1.4)
+        ratio.GetXaxis().SetLabelSize(0.1)
         ratio.GetXaxis().SetTickLength(0.07)
         ratio.GetYaxis().SetTitle("Ratio")
-        ratio.GetYaxis().SetTitleSize(0.08)
-        ratio.GetYaxis().SetLabelSize(0.07)
+        ratio.GetYaxis().SetTitleSize(0.1)
+        ratio.GetYaxis().SetLabelSize(0.1)
         ratio.GetYaxis().SetTitleOffset(0.5)
-        ratio.SetMinimum(0)
-        ratio.SetMaximum(2)
+        ratio.SetMinimum(0.7)
+        ratio.SetMaximum(1.8)
         ratio_final_hists.append(ratio)
         
 
@@ -2445,7 +2451,7 @@ def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
     canvas.cd()
 
     legendVars = ROOT.TLegend(0.76, 0.58, 0.96, 0.9)
-    legendStats = ROOT.TLegend(0.76, 0.34, 0.96, 0.58)
+    legendStats = ROOT.TLegend(0.76, 0.51, 0.96, 0.58)
     dummy = ROOT.TObject()
     for legend in [legendVars, legendStats]:
         legend.SetBorderSize(0)
@@ -2469,21 +2475,21 @@ def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
 
     legendStats.AddEntry(legend, "#bf{Data}", "l")
 
-    legendStats.AddEntry(dummy, f"DY ({(selectedEvents['SingleMuon'][0]/totalEvents['SingleMuon'][0]) * 100:.2f}%, {(selectedEvents['SingleMuon'][1]/totalEvents['SingleMuon'][1]) * 100:.2f}%)", "")
+    # legendStats.AddEntry(dummy, f"DY ({(selectedEvents['SingleMuon'][0]/totalEvents['SingleMuon'][0]) * 100:.2f}%, {(selectedEvents['SingleMuon'][1]/totalEvents['SingleMuon'][1]) * 100:.2f}%)", "")
     # legendStats.AddEntry(dummy, f"{(selectedEvents['SingleMuon'][0]/totalEvents['SingleMuon'][0]) * 100:.2f}% selected Events", "")
     # legendStats.AddEntry(dummy, f"{(selectedEvents['SingleMuon'][1]/totalEvents['SingleMuon'][1]) * 100:.2f}% selected PFCands", "")
 
-    legendStats.AddEntry(dummy, f"ZeroBias ({(selectedEvents['MinBias'][0]/totalEvents['MinBias'][0]) * 100:.2f}%, {(selectedEvents['MinBias'][1]/totalEvents['MinBias'][1]) * 100:.2f}%)", "")
+    # legendStats.AddEntry(dummy, f"ZeroBias ({(selectedEvents['MinBias'][0]/totalEvents['MinBias'][0]) * 100:.2f}%, {(selectedEvents['MinBias'][1]/totalEvents['MinBias'][1]) * 100:.2f}%)", "")
     # legendStats.AddEntry(dummy, f"{(selectedEvents['MinBias'][0]/totalEvents['MinBias'][0]) * 100:.2f}% selected Events", "")
     # legendStats.AddEntry(dummy, f"{(selectedEvents['MinBias'][1]/totalEvents['MinBias'][1]) * 100:.2f}% selected PFCands", "")
 
     legendStats.AddEntry(legend_MC, "#bf{MC}", "l")
 
-    legendStats.AddEntry(dummy, f"DY ({(selectedEvents['MCDY'][0]/totalEvents['MCDY'][0]) * 100:.2f}%, {(selectedEvents['MCDY'][1]/totalEvents['MCDY'][1]) * 100:.2f}%)", "")
+    # legendStats.AddEntry(dummy, f"DY ({(selectedEvents['MCDY'][0]/totalEvents['MCDY'][0]) * 100:.2f}%, {(selectedEvents['MCDY'][1]/totalEvents['MCDY'][1]) * 100:.2f}%)", "")
     # legendStats.AddEntry(dummy, f"{(selectedEvents['MCDY'][0]/totalEvents['MCDY'][0]) * 100:.2f}% selected Events", "")
     # legendStats.AddEntry(dummy, f"{(selectedEvents['MCDY'][1]/totalEvents['MCDY'][1]) * 100:.2f}% selected PFCands", "")
 
-    legendStats.AddEntry(dummy, f"ZeroBias ({(selectedEvents['MCMinBias'][0]/totalEvents['MCMinBias'][0]) * 100:.2f}%, {(selectedEvents['MCMinBias'][1]/totalEvents['MCMinBias'][1]) * 100:.2f}%)", "")
+    # legendStats.AddEntry(dummy, f"ZeroBias ({(selectedEvents['MCMinBias'][0]/totalEvents['MCMinBias'][0]) * 100:.2f}%, {(selectedEvents['MCMinBias'][1]/totalEvents['MCMinBias'][1]) * 100:.2f}%)", "")
     # legendStats.AddEntry(dummy, f"{(selectedEvents['MCMinBias'][0]/totalEvents['MCMinBias'][0]) * 100:.2f}% selected Events", "")
     # legendStats.AddEntry(dummy, f"{(selectedEvents['MCMinBias'][1]/totalEvents['MCMinBias'][1]) * 100:.2f}% selected PFCands", "")
 
@@ -2501,7 +2507,7 @@ def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
     canvas.Close()
 
 
-def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, totalEvents, selectedEvents, bins):
+def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, bins):
 
     def colors_func(n):
         base = [
@@ -2643,11 +2649,11 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJ
             df_MCDYJets_q = DiMuonPtCut(df_MCDYJets_q, pt_cut)
             
             # Redefining the selected events and PFCands after the diMuon pT cut for Data_DY and MC_DY
-            selectedEvents['SingleMuon'][0] = df_SingleMuon_q.Count().GetValue()
-            selectedEvents['SingleMuon'][1] = df_SingleMuon_q.Sum("PFSelection_nPFCands").GetValue()
+            # selectedEvents['SingleMuon'][0] = df_SingleMuon_q.Count().GetValue()
+            # selectedEvents['SingleMuon'][1] = df_SingleMuon_q.Sum("PFSelection_nPFCands").GetValue()
 
-            selectedEvents['MCDY'][0] = df_MCDYJets_q.Count().GetValue()
-            selectedEvents['MCDY'][1] = df_MCDYJets_q.Sum("PFSelection_nPFCands").GetValue()
+            # selectedEvents['MCDY'][0] = df_MCDYJets_q.Count().GetValue()
+            # selectedEvents['MCDY'][1] = df_MCDYJets_q.Sum("PFSelection_nPFCands").GetValue()
 
             plot_column = f"{var}_invQ_all_pt"
             plot_xlabel = "1 - F_{MB}(x)"
@@ -2740,12 +2746,13 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJ
 
         first_ratio.GetXaxis().SetTitle("1 - F_{MB}(x)")
         first_ratio.GetYaxis().SetTitle("DY/ZeroBias")
-        first_ratio.GetXaxis().SetTitleSize(0.035)
+        first_ratio.GetXaxis().SetTitleSize(0.05)
         first_ratio.GetXaxis().SetTitleOffset(1.3)
-        first_ratio.GetXaxis().SetLabelSize(0.035)
+        first_ratio.GetXaxis().SetLabelSize(0.05)
         first_ratio.GetXaxis().SetTickLength(0.03)
-        first_ratio.GetYaxis().SetTitleSize(0.035)
-        first_ratio.GetYaxis().SetLabelSize(0.035)
+        first_ratio.GetYaxis().SetTitleSize(0.05)
+        first_ratio.GetYaxis().SetLabelSize(0.05)
+        first_ratio.GetYaxis().SetTitleOffset(0.9)
         first_ratio.SetMaximum(max_val * 2)
         first_ratio.Draw("hist e")
 
@@ -2762,15 +2769,15 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJ
             ratio_final.SetMarkerStyle(20)
             ratio_final.SetMarkerSize(0.8)
             ratio_final.GetXaxis().SetTitle("1 - F_{MB}(x)")
-            ratio_final.GetXaxis().SetTitleSize(0.08)
+            ratio_final.GetXaxis().SetTitleSize(0.1)
             ratio_final.GetXaxis().SetTitleOffset(1.3)
-            ratio_final.GetXaxis().SetLabelSize(0.07)
+            ratio_final.GetXaxis().SetLabelSize(0.1)
             ratio_final.GetXaxis().SetTickLength(0.07)
             ratio_final.GetYaxis().SetTitle("Ratio")
-            ratio_final.GetYaxis().SetTitleSize(0.08)
-            ratio_final.GetYaxis().SetLabelSize(0.07)
+            ratio_final.GetYaxis().SetTitleSize(0.1)
+            ratio_final.GetYaxis().SetLabelSize(0.1)
             ratio_final.GetYaxis().SetTitleOffset(0.5)
-            ratio_final.SetMinimum(0)
+            ratio_final.SetMinimum(0.75)
             ratio_final.SetMaximum(2)
 
             if var == ratio_final_hists[0][0]:
@@ -2783,13 +2790,15 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJ
         pad1.cd()
 
         legendVars = ROOT.TLegend(0.785, 0.56, 0.935, 0.9)
-        legendStats = ROOT.TLegend(0.785, 0.33, 0.935, 0.57)
+        legendStats = ROOT.TLegend(0.55, 0.7, 0.935, 0.89)
         dummy = ROOT.TObject()
         for legend in (legendVars, legendStats):
             legend.SetBorderSize(0)
             legend.SetFillStyle(0)
             legend.SetTextSize(0.026)
             legend.SetMargin(0.2)
+        legendStats.SetTextSize(0.044)
+        legendStats.SetMargin(0.11)
 
         legend_Data = ROOT.TLine(0.0, 0.0, 0.5, 0.0)
         legend_Data.SetLineColor(ROOT.kBlack)
@@ -2808,21 +2817,21 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJ
 
         legendStats.AddEntry(legend_Data, "#bf{Data}", "l")
 
-        legendStats.AddEntry(dummy, f"DY ({(selectedEvents['SingleMuon'][0]/totalEvents['SingleMuon'][0]) * 100:.2f}%, {(selectedEvents['SingleMuon'][1]/totalEvents['SingleMuon'][1]) * 100:.2f}%)", "")
+        # legendStats.AddEntry(dummy, f"DY ({(selectedEvents['SingleMuon'][0]/totalEvents['SingleMuon'][0]) * 100:.2f}%, {(selectedEvents['SingleMuon'][1]/totalEvents['SingleMuon'][1]) * 100:.2f}%)", "")
         # legendStats.AddEntry(dummy, f"{(selectedEvents['SingleMuon'][0]/totalEvents['SingleMuon'][0]) * 100:.2f}% selected Events", "")
         # legendStats.AddEntry(dummy, f"{(selectedEvents['SingleMuon'][1]/totalEvents['SingleMuon'][1]) * 100:.2f}% selected PFCands", "")
 
-        legendStats.AddEntry(dummy, f"ZeroBias ({(selectedEvents['MinBias'][0]/totalEvents['MinBias'][0]) * 100:.2f}%, {(selectedEvents['MinBias'][1]/totalEvents['MinBias'][1]) * 100:.2f}%)", "")
+        # legendStats.AddEntry(dummy, f"ZeroBias ({(selectedEvents['MinBias'][0]/totalEvents['MinBias'][0]) * 100:.2f}%, {(selectedEvents['MinBias'][1]/totalEvents['MinBias'][1]) * 100:.2f}%)", "")
         # legendStats.AddEntry(dummy, f"{(selectedEvents['MinBias'][0]/totalEvents['MinBias'][0]) * 100:.2f}% selected Events", "")
         # legendStats.AddEntry(dummy, f"{(selectedEvents['MinBias'][1]/totalEvents['MinBias'][1]) * 100:.2f}% selected PFCands", "")
 
         legendStats.AddEntry(legend_MC, "#bf{MC}", "l")
 
-        legendStats.AddEntry(dummy, f"DY ({(selectedEvents['MCDY'][0]/totalEvents['MCDY'][0]) * 100:.2f}%, {(selectedEvents['MCDY'][1]/totalEvents['MCDY'][1]) * 100:.2f}%)", "")
+        # legendStats.AddEntry(dummy, f"DY ({(selectedEvents['MCDY'][0]/totalEvents['MCDY'][0]) * 100:.2f}%, {(selectedEvents['MCDY'][1]/totalEvents['MCDY'][1]) * 100:.2f}%)", "")
         # legendStats.AddEntry(dummy, f"{(selectedEvents['MCDY'][0]/totalEvents['MCDY'][0]) * 100:.2f}% selected Events", "")
         # legendStats.AddEntry(dummy, f"{(selectedEvents['MCDY'][1]/totalEvents['MCDY'][1]) * 100:.2f}% selected PFCands", "")
 
-        legendStats.AddEntry(dummy, f"ZeroBias ({(selectedEvents['MCMinBias'][0]/totalEvents['MCMinBias'][0]) * 100:.2f}%, {(selectedEvents['MCMinBias'][1]/totalEvents['MCMinBias'][1]) * 100:.2f}%)", "")
+        # legendStats.AddEntry(dummy, f"ZeroBias ({(selectedEvents['MCMinBias'][0]/totalEvents['MCMinBias'][0]) * 100:.2f}%, {(selectedEvents['MCMinBias'][1]/totalEvents['MCMinBias'][1]) * 100:.2f}%)", "")
         # legendStats.AddEntry(dummy, f"{(selectedEvents['MCMinBias'][0]/totalEvents['MCMinBias'][0]) * 100:.2f}% selected Events", "")
         # legendStats.AddEntry(dummy, f"{(selectedEvents['MCMinBias'][1]/totalEvents['MCMinBias'][1]) * 100:.2f}% selected PFCands", "")
 
@@ -2948,12 +2957,12 @@ def main():
 
     df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias = MakeDataframes(args.maxevents)
 
-    if args.slurm == True:
-        totalEvents = TotalEvents()
-        selectedEvents = SelectedEvents(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias)
-    else:
-        totalEvents = TotalEvents_local()
-        selectedEvents = SelectedEvents_local(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias)
+    # if args.slurm == True:
+    #     totalEvents = TotalEvents()
+    #     selectedEvents = SelectedEvents(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias)
+    # else:
+    #     totalEvents = TotalEvents_local()
+    #     selectedEvents = SelectedEvents_local(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias)
 
     if args.no_plot:
         print("Selections finished. Plotting disabled by --no-plot.")
@@ -2978,7 +2987,7 @@ def main():
         )
 
     if args.mode in ["ptscan", "all"]:
-        Plot_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, totalEvents, selectedEvents, args.ratio_pt_cuts)
+        Plot_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, args.ratio_pt_cuts)
 
     if args.mode in ["ptscan-quantilebinning", "all"]:
         Plot_DiMuonPtCut_QuantileBinning(
@@ -3006,10 +3015,10 @@ def main():
         Quantile_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, totalEvents, selectedEvents, args.quantile_bins)
 
     if args.mode in ["quantile-all", "quantiles", "all"]:
-        Quantile_AllTogether(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix, totalEvents, selectedEvents, args.quantile_bins)
+        Quantile_AllTogether(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix, args.quantile_bins)
 
     if args.mode in ["quantile-all-ptscan", "quantiles", "all"]:
-        Quantile_AllTogether_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, totalEvents, selectedEvents, args.quantile_bins)
+        Quantile_AllTogether_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, args.quantile_bins)
 
 if __name__ == "__main__":
     main()
