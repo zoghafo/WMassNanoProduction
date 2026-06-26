@@ -2848,40 +2848,6 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJ
         canvas.SaveAs(output_name)
         canvas.Close()
 
-
-def DrawMassLines(masses, sqrts, xmin, xmax, ymin, ymax):
-    for mass in masses:
-        c = (mass / sqrts)**2
-
-        graph = ROOT.TGraph()
-        i = 0
-
-        for ix in range(200):
-            x = xmin * (xmax / xmin)**(ix / 199.0)
-            y = c / x
-
-            if ymin <= y <= ymax:
-                graph.SetPoint(i, x, y)
-                i += 1
-
-        if i == 0:
-            continue
-
-        graph.SetLineColor(ROOT.kBlack)
-        graph.SetLineStyle(2)
-        graph.SetLineWidth(2)
-        graph.Draw("L SAME")
-
-        # label near the right-most visible point
-        x_label = graph.GetPointX(i - 1)
-        y_label = graph.GetPointY(i - 1)
-
-        text = ROOT.TLatex()
-        text.SetTextSize(0.028)
-        text.SetTextColor(ROOT.kBlack)
-        text.DrawLatex(x_label * 0.8, y_label * 1.15, f"{mass:g} GeV")
-
-
 def MomentumFractions(df_SingleMuon_var, df_MCDYJets_var, pt_cuts, out_suffix):
 
     samples = [
