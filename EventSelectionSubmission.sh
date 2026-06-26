@@ -3,7 +3,7 @@
 #SBATCH -p long
 #SBATCH --account=t3
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=32
 #SBATCH --mem=8gb
 #SBATCH --time=23:00:00
 #SBATCH --output=slurm_log/%x_%j.out
@@ -35,6 +35,12 @@ python3 NanoAOD_EventSelection.py \
   --nthreads "$NTHREADS"
   # --maxevents $MAXEVENTS
 
+echo "Finished the python script"
+echo "voms proxy info:"
+voms-proxy-info --all
+echo "Time left on proxy:"
+voms-proxy-info --timeleft
+echo "------------------"
 echo "Going to copy"
 echo "From "$source_dir"/"$DATASET"_SelectedEvents_$OUTPUTSUFFIX.root"
 echo "To root://t3dcachedb03.psi.ch:1094//"$DESTDIR

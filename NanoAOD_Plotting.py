@@ -2849,13 +2849,295 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJ
         canvas.Close()
 
 
+def DrawMassLines(masses, sqrts, xmin, xmax, ymin, ymax):
+    for mass in masses:
+        c = (mass / sqrts)**2
+
+        graph = ROOT.TGraph()
+        i = 0
+
+        for ix in range(200):
+            x = xmin * (xmax / xmin)**(ix / 199.0)
+            y = c / x
+
+            if ymin <= y <= ymax:
+                graph.SetPoint(i, x, y)
+                i += 1
+
+        if i == 0:
+            continue
+
+        graph.SetLineColor(ROOT.kBlack)
+        graph.SetLineStyle(2)
+        graph.SetLineWidth(2)
+        graph.Draw("L SAME")
+
+        # label near the right-most visible point
+        x_label = graph.GetPointX(i - 1)
+        y_label = graph.GetPointY(i - 1)
+
+        text = ROOT.TLatex()
+        text.SetTextSize(0.028)
+        text.SetTextColor(ROOT.kBlack)
+        text.DrawLatex(x_label * 0.8, y_label * 1.15, f"{mass:g} GeV")
+
+
+def MomentumFractions(df_SingleMuon_var, df_MCDYJets_var, out_suffix):
+
+    samples = [
+        ("DataDY", df_SingleMuon_var),
+        ("MCDY", df_MCDYJets_var),
+    ]
+    
+
+    for label, df in samples:
+
+        xmax_plot = 0.02
+        ymax_plot = 0.1
+
+        xmin_plot = 1e-3 
+
+        df = df.Redefine("DiMuon_xminll", "min(DiMuon_xmaxll, DiMuon_xminll)")
+        df = df.Redefine("DiMuon_xmaxll", "max(DiMuon_xmaxll, DiMuon_xminll)")
+
+    
+        h_ptr = df.Histo2D(
+            (
+                "h_2D",
+                "",
+                100, 0, xmax_plot,
+                100, 0, ymax_plot,
+            ),
+            "DiMuon_xminll",   # x axis
+            "DiMuon_xmaxll",   # y axis
+        )
+
+        hist = h_ptr.GetValue()
+        hist.SetDirectory(0)
+        hist.GetXaxis().SetTitle("x_{min}^{ll}")
+        hist.GetYaxis().SetTitle("x_{max}^{ll}")
+
+        print("Entries =", hist.GetEntries())
+        # print("Integral =", hist.Integral())
+        # print("Maximum =", hist.GetMaximum())
+
+        if hist.GetEntries() == 0 or hist.Integral() == 0:
+            print("ERROR: histogram is empty. Nothing will be visible.")
+            return
+
+        NormaliseHist(hist)
+
+        canvas = ROOT.TCanvas(f"canvas_{out_suffix}", "Momentum fractions", 900, 700)
+        canvas.SetRightMargin(0.18)
+        canvas.cd()
+        canvas.SetLogx()
+        canvas.SetLogy()
+        canvas.SetLogz()
+
+        hist.SetTitle(f"{label}")
+        hist.SetStats(0)
+        hist.SetMinimum(0)
+        hist.GetYaxis().SetTitleOffset(1.2)
+        hist.GetZaxis().SetTitle("Normalised Entries")
+        hist.GetZaxis().SetTitleOffset(1.5)
+
+        
+        ROOT.gStyle.SetPalette(ROOT.kRainBow)
+        ROOT.gStyle.SetNumberContours(255)
+        ROOT.gStyle.SetOptStat(100000)
+
+        hist.Draw("COLZ")
+        ROOT.gStyle.SetPalette(61)
+
+
+        # -------- Lines for mass values --------
+
+        sqrt_s = 13000 # GeV
+
+        masses = [(ROOT.kBlack, 20), (ROOT.kGreen, 60), (ROOT.kRed, 90.0), (ROOT.kBlue, 120), (ROOT.kMagenta, 150)]
+        rapidities = [(ROOT.kGray + 2, 0), (ROOT.kOrange + 7, 1.0), (ROOT.kCyan + 2, 2), (ROOT.kViolet + 1, 2.4)] 
+
+        legend_mll = ROOT.TLegend(0.66, 0.63, 0.8, 0.89)
+        legend_yll = ROOT.TLegend(0.66, 0.15, 0.8, 0.35)
+
+        for legend in (legend_mll, legend_yll):
+            legend.SetBorderSize(0)
+            # legend.SetFillStyle(0)
+            legend.SetTextSize(0.026)
+            legend.SetMargin(0.3)
+
+        for m in masses:
+            line = ROOT.TF1(
+                f"mass_line_{int(m[1])}",
+                f"({m[1] * m[1]})/({sqrt_s * sqrt_s}*x)",
+                1e-4,
+                xmax_plot,
+            )
+
+            line.SetLineColor(m[0])
+            line.SetLineWidth(3)
+            line.SetLineStyle(3)
+            line.Draw("SAME")
+
+            x_label = xmax_plot * 0.6
+            y_label = (m[1] * m[1]) / (sqrt_s * sqrt_s * x_label)
+
+            legend_mll.AddEntry(line, f"m_{{ll}} = {m[1]:.0f} GeV", "l")
+
+        for y in rapidities:
+            slope = ROOT.TMath.Exp(2.0 * abs(y[1]))
+
+            line = ROOT.TF1(
+                f"rapidity_line_{str(y[1]).replace('.', 'p')}",
+                f"{slope}*x",
+                1e-4,
+                xmax_plot,
+            )
+
+            line.SetLineColor(y[0])
+            line.SetLineWidth(3)
+            line.SetLineStyle(8)
+            line.Draw("SAME")
+
+            legend_yll.AddEntry(line, f"|y_{{ll}}| = {y[1]:.1f}", "l")
+
+        legend_mll.Draw()
+        legend_yll.Draw()
+
+        canvas.SaveAs(f"new_plots/xmaxllxminll_MllYll/xmaxll_xminll_{label}{out_suffix}.pdf")
+            
+        canvas.Close()
+
+    print("Momentum fraction plots saved")
+
+
+
+def MassRapidity(df_SingleMuon_var, df_MCDYJets_var, out_suffix):
+
+    samples = [
+        ("DataDY", df_SingleMuon_var),
+        ("MCDY", df_MCDYJets_var),
+    ]
+    
+
+    for label, df in samples:
+
+        xmax_plot = 0.02
+        ymax_plot = 0.1
+
+        xmin_plot = 1e-3
+
+
+        h_ptr = df.Histo2D(
+            (
+                "h_2D",
+                "",
+                100, 0, 220,
+                100, -3, 3,
+            ),
+            "DiMuon_Mass",   # x axis
+            "DiMuon_Rapidity",   # y axis
+        )
+
+        hist = h_ptr.GetValue()
+        hist.SetDirectory(0)
+        hist.GetXaxis().SetTitle("m_{ll}")
+        hist.GetYaxis().SetTitle("|y_{ll}|")
+
+        print("Entries =", hist.GetEntries())
+        # print("Integral =", hist.Integral())
+        # print("Maximum =", hist.GetMaximum())
+
+        if hist.GetEntries() == 0 or hist.Integral() == 0:
+            print("ERROR: histogram is empty. Nothing will be visible.")
+            return
+
+        NormaliseHist(hist)
+
+        canvas = ROOT.TCanvas(f"canvas_{out_suffix}", "Mll_Yll", 900, 700)
+        canvas.SetRightMargin(0.18)
+        canvas.cd()
+        # canvas.SetLogx()
+        # canvas.SetLogy()
+        canvas.SetLogz()
+
+        hist.SetTitle(f"{label}")
+        hist.SetStats(0)
+        hist.SetMinimum(0)
+        hist.GetYaxis().SetTitleOffset(1.2)
+        hist.GetZaxis().SetTitle("Normalised Entries")
+        hist.GetZaxis().SetTitleOffset(1.5)
+
+        
+        ROOT.gStyle.SetPalette(ROOT.kRainBow)
+        ROOT.gStyle.SetNumberContours(255)
+        ROOT.gStyle.SetOptStat(100000)
+
+        hist.Draw("COLZ")
+        ROOT.gStyle.SetPalette(61)
+
+
+        # -------- Lines for mass values --------
+
+        masses = [(ROOT.kBlack, 20), (ROOT.kGreen, 60), (ROOT.kRed, 90.0), (ROOT.kBlue, 120), (ROOT.kMagenta, 150)]
+        rapidities = [(ROOT.kGray + 2, 0), (ROOT.kOrange + 7, 1.0), (ROOT.kCyan + 2, 2), (ROOT.kViolet + 1, 2.4)] 
+
+        legend_mll = ROOT.TLegend(0.66, 0.63, 0.8, 0.89)
+        legend_yll = ROOT.TLegend(0.66, 0.15, 0.8, 0.35)
+
+        for legend in (legend_mll, legend_yll):
+            legend.SetBorderSize(0)
+            # legend.SetFillStyle(0)
+            legend.SetTextSize(0.026)
+            legend.SetMargin(0.3)
+
+
+        x_min = hist.GetXaxis().GetXmin()
+        x_max = hist.GetXaxis().GetXmax()
+        y_min = hist.GetYaxis().GetXmin()
+        y_max = hist.GetYaxis().GetXmax()
+
+        mll_lines = []
+        yll_lines = []
+
+        for m in masses:
+            line = ROOT.TLine(m[1], y_min, m[1], y_max)
+
+            line.SetLineColor(m[0])
+            line.SetLineWidth(3)
+            line.SetLineStyle(3)
+            mll_lines.append(line)
+            line.Draw("SAME")
+
+            legend_mll.AddEntry(line, f"m_{{ll}} = {m[1]:.0f} GeV", "l")
+
+        for y in rapidities:
+            line = ROOT.TLine(x_min, y[1], x_max, y[1])
+
+            line.SetLineColor(y[0])
+            line.SetLineWidth(3)
+            line.SetLineStyle(8)
+            yll_lines.append(line)
+            line.Draw("SAME")
+
+            legend_yll.AddEntry(line, f"|y_{{ll}}| = {y[1]:.1f}", "l")
+
+        legend_mll.Draw()
+        legend_yll.Draw()
+
+        canvas.SaveAs(f"new_plots/xmaxllxminll_MllYll/xmaxll_xminll_{label}{out_suffix}.pdf")
+            
+        canvas.Close()
+
+    print("Mass-Rapidity plots saved")
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Combined plotting driver for NanoAOD PF-candidate studies"
     )
     parser.add_argument(
         "--mode",
-        choices=["compare", "compare-quantilebinning", "ptscan", "ptscan-quantilebinning", "quantile", "quantile-ptscan", "quantile-all", "quantile-all-ptscan", "quantiles", "all"],
+        choices=["compare", "compare-quantilebinning", "ptscan", "ptscan-quantilebinning", "quantile", "quantile-ptscan", "quantile-all", "quantile-all-ptscan", "quantiles", "momentumfractions", "mllyll", "all"],
         default="all",
         help="Run compare plots, diMuon pT scan plots, quantile plots, quantile pT scan plots, all-together quantile plots, all-together quantile pT-cut plots, or all",
     )
@@ -2942,6 +3224,8 @@ def parse_args():
 
 def main():
 
+    start = time.time()
+
     args = parse_args()
 
     if args.nthreads > 1:
@@ -3019,6 +3303,16 @@ def main():
 
     if args.mode in ["quantile-all-ptscan", "quantiles", "all"]:
         Quantile_AllTogether_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, args.quantile_bins)
+
+    if args.mode in ["momentumfractions", "all"]:
+        MomentumFractions(df_SingleMuon, df_MCDYJets, args.output_suffix)
+
+    if args.mode in ["mllyll", "all"]:
+        MassRapidity(df_SingleMuon, df_MCDYJets, args.output_suffix)
+
+    end = time.time()
+    elapsed_time = end - start
+    print(f"\nTotal execution time: {elapsed_time:.2f} seconds")
 
 if __name__ == "__main__":
     main()

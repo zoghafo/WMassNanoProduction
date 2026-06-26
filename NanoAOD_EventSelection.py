@@ -137,7 +137,7 @@ def DiMuonSelection(df):
     df = df.Filter("ROOT::VecOps::Sum(Muon_sel) == 2")
     df = df.Define("Muon_idx", "ROOT::VecOps::Nonzero(Muon_sel)")
     df = df.Filter("Muon_charge[Muon_idx[0]] * Muon_charge[Muon_idx[1]] < 0")
-    df = df.Define("diMuon_pT", "pow(pow(Muon_pt[Muon_idx[0]] * cos(Muon_phi[Muon_idx[0]]) + Muon_pt[Muon_idx[1]] * cos(Muon_phi[Muon_idx[1]]), 2) + pow(Muon_pt[Muon_idx[0]] * sin(Muon_phi[Muon_idx[0]]) + Muon_pt[Muon_idx[1]] * sin(Muon_phi[Muon_idx[1]]), 2), 0.5)")
+    df = df.Define("DiMuon_pt", "pow(pow(Muon_pt[Muon_idx[0]] * cos(Muon_phi[Muon_idx[0]]) + Muon_pt[Muon_idx[1]] * cos(Muon_phi[Muon_idx[1]]), 2) + pow(Muon_pt[Muon_idx[0]] * sin(Muon_phi[Muon_idx[0]]) + Muon_pt[Muon_idx[1]] * sin(Muon_phi[Muon_idx[1]]), 2), 0.5)")
     return df
 
 
@@ -201,9 +201,32 @@ def addInvariantMass(df):
     )
     return df
 
+def addDiMuon4Vector(df, dataset):
+    if dataset in {"SingleMuon", "MCDY"}:
+        
+        print(f"Calculating DiMuon_4Vector for dataset {dataset}...")
+        
+        df = df.Define(
+            "DiMuon_P",
+            """
+            TLorentzVector muon1, muon2;
+            muon1.SetPtEtaPhiM(Muon_pt[Muon_idx[0]], Muon_eta[Muon_idx[0]], Muon_phi[Muon_idx[0]], Muon_mass[Muon_idx[0]]);
+            muon2.SetPtEtaPhiM(Muon_pt[Muon_idx[1]], Muon_eta[Muon_idx[1]], Muon_phi[Muon_idx[1]], Muon_mass[Muon_idx[1]]);
+            TLorentzVector diMuonSystem = muon1 + muon2;
+            return diMuonSystem;
+            """
+        )
+        df = df.Define("DiMuon_Mass", "DiMuon_P.M()")
+        df = df.Define("DiMuon_Rapidity", "DiMuon_P.Rapidity()")
+        df = df.Define("DiMuon_xmaxll", "exp(DiMuon_Rapidity)*DiMuon_Mass/std::sqrt(13000*13000)")
+        df = df.Define("DiMuon_xminll", "exp(-DiMuon_Rapidity)*DiMuon_Mass/std::sqrt(13000*13000)")
+        df = df.Define("DiMuon_Eta", "DiMuon_P.Eta()")
+        df = df.Define("DiMuon_Pt", "DiMuon_P.Pt()")
+        df = df.Define("DiMuon_Phi", "DiMuon_P.Phi()")
+        df = df.Define("DiMuon_E", "DiMuon_P.E()")
 
-def DiMuonPtCut(df, pt_cut):
-    df = df.Filter(f"diMuon_pT < {pt_cut}")
+    else:
+        print(f"Dataset {dataset} not SingleMuon or MCDY. Skipping DiMuon_4Vector calculation.")
     return df
 
 def ObservablesCalculation(df):
@@ -232,7 +255,7 @@ def ObservablesCalculation(df):
 def SaveSelectedEvents(df_SingleMuon, df_MinBias, df_MCDY, df_MCMinBias, out_path="", output_suffix=""):
 
     variables_list_MinBias = [f"PFSelection_{var}" for var in VARIABLES.keys()]
-    variables_list_SingleMuon = ["diMuon_pT"] + variables_list_MinBias
+    variables_list_SingleMuon = ["DiMuon_pt"] + variables_list_MinBias + ["DiMuon_P", "DiMuon_Mass", "DiMuon_Rapidity", "DiMuon_xmaxll", "DiMuon_xminll", "DiMuon_Eta", "DiMuon_Pt", "DiMuon_Phi", "DiMuon_E"]
 
 
     df_SingleMuon.Snapshot("Events", f"{out_path}/Data_SingleMuon_SelectedEvents_{output_suffix}.root", variables_list_SingleMuon)
@@ -243,7 +266,7 @@ def SaveSelectedEvents(df_SingleMuon, df_MinBias, df_MCDY, df_MCMinBias, out_pat
 def SnapshotColumns(dataset_name):
     variables_list_minbias = [f"PFSelection_{var}" for var in VARIABLES.keys()]
     if dataset_name in {"SingleMuon", "MCDY"}:
-        return ["diMuon_pT"] + variables_list_minbias
+        return ["DiMuon_pt"] + variables_list_minbias + ["DiMuon_P", "DiMuon_Mass", "DiMuon_Rapidity", "DiMuon_xmaxll", "DiMuon_xminll", "DiMuon_Eta", "DiMuon_Pt", "DiMuon_Phi", "DiMuon_E"]
     return variables_list_minbias
 
 
@@ -320,6 +343,7 @@ def main():
             dataframe = VetoMuons(dataframe)
             dataframe = GoodMuons(dataframe)
             dataframe = DiMuonSelection(dataframe)
+            dataframe = addDiMuon4Vector(dataframe, args.dataset)
 
         dataframe = PVSelection(dataframe, dataset_name)
         dataframe = PFCandidateSelection(dataframe, args.charge)
