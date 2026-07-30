@@ -2005,11 +2005,11 @@ def QuantilePerObservable(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df
         pad2.SetGridy()
         # pad2.SetLogy()
 
-        legend_var = ROOT.TLegend(0.5, 0.73, 0.73, 0.92)
+        legend_var = ROOT.TLegend(0.52, 0.73, 0.73, 0.92)
         legend_DataMC = ROOT.TLegend(0.73, 0.65, 0.89, 0.92)
         
         legend_var.SetMargin(0.05)
-        legend_DataMC.SetMargin(0.32)
+        legend_DataMC.SetMargin(0.25)
 
 
         for legend in [legend_DataMC, legend_var]:
@@ -2031,6 +2031,8 @@ def QuantilePerObservable(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df
         legend_DataMC.AddEntry(dummy, f"#color[{ROOT.kViolet - 6}]{{#bf{{DY}}}}", "")
         legend_DataMC.AddEntry(dummy, f"#color[{ROOT.kOrange + 5}]{{#bf{{MinBias}}}}", "")
 
+
+        legend_var.AddEntry(dummy, label, "")
         legend_var.AddEntry(dummy, f"#color[{ROOT.kBlack}]{{86 GeV < m_{{#mu#mu}} < 96 GeV}}", "")
 
 
@@ -2410,87 +2412,14 @@ def QuantilePerObservable(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df
             h_MCDYJets_pad2.Draw("hist e same")
 
 
-
-
-
             # ratio_SingleMuon.Scale(1 * (xsec_MINBIAS/xsec_DY) * (xsec_INEL/xsec_MINBIAS) * (Events_MINBIAS/Events_DY))
             # ratio_MCDYJets.Scale(1 * (xsec_MINBIAS/xsec_DY) * (xsec_INEL/xsec_MINBIAS) * (Events_MCMINBIAS/Events_MCDY))
-
-
-
-   
-
-
-
-            # # ---------------------- from Pythia --------------------
-            # if pt_cut == 4:
-
-            #     canvas.cd()
-            #     pad1.cd()
-                
-            #     df_pythia = pd.read_hdf("simulated_enhf_vs_impactparam.hdf")
-
-            #     values = df_pythia["values"]
-            #     edges = df_pythia["edges"]
-
-            #     index_pythia = 0
-
-            
-            #     if var == "PFCands_Ht":
-            #         index_pythia = 2
-            #     elif var == "PFCands_Pt2sum":
-            #         index_pythia = 5
-            #     elif var == "PFCands_InvariantMass":
-            #         index_pythia = 3
-            #     elif var == "nPFCands":
-            #         index_pythia = 0
-            #     elif var == "PFCands_Psum":
-            #         index_pythia = 1
-            #     else:
-            #         print(f"Variable {var} not found in Pythia data; skipping Pythia overlay.")
-            #         continue
-
-            #     bins_new = array.array('d', np.asarray(df_pythia["edges"].iloc[index_pythia], dtype=np.float64))
-            #     h_pythia = ROOT.TH1F("h_pythia", "Histogram of values", len(bins_new) - 1, bins_new)
-
-            #     row_values = values.iloc[index_pythia]
-            #     row_edges = edges.iloc[index_pythia]
-
-
-            #     for j in range(len(row_values)):
-            #         h_pythia.SetBinContent(j, row_values[j])
-            #     # print(f"Set bin {j} content to {row_values[j]}")
-
-
-
-            #     # NormaliseHist(h_pythia)
-
-            #     h_pythia.SetLineColor(ROOT.kRed)
-            #     h_pythia.SetLineWidth(2)
-            #     # h_pythia.SetLineStyle(2)
-            #     h_pythia.Draw("hist same")
-
-
-            #     ratio_MC.SetMaximum(max(ratio_MCDYJets.GetMaximum(), ratio_MC.GetMaximum(), h_pythia.GetMaximum()) * 1.2)
-    
-
-
-
-
-
 
             canvas.cd()
             pad1.cd()
 
 
-            
-
-
-
-            # if pt_cut == 4:
-            #     legend_var.AddEntry(h_pythia, f"#color[{ROOT.kRed}]{{#bf{{Pythia}}}}", "l")
-
-            # legend_var.AddEntry(dummy, label, "")
+        
 
             if pt_cut is None or len(pt_cuts) == 0:
                 legend_var.AddEntry(dummy, f"#color[{ROOT.kBlack}]{{No p^{{#mu#mu}}_{{T}} cut}}", "")
@@ -2608,7 +2537,7 @@ def DYMinBiasPerObservableRatio(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_v
     for var in variables:
         if var in ["PFCands_pt", "PFCands_eta", "PFCands_phi", "PFCands_pvAssocQuality"]:
             continue
-
+    
         # print(df_MinBias_var.Filter(f"PFSelection_{var} <= 600 and PFSelection_{var} >= 370").Count().GetValue())
         # print(df_MCMinBias_var.Filter(f"PFSelection_{var} <= 600 and PFSelection_{var} >= 370").Count().GetValue())
 
@@ -2735,8 +2664,10 @@ def DYMinBiasPerObservableRatio(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_v
         b_column = f"{var}_b"
 
 
-        df_MinBias_q = df_MinBias_q.Define(b_column, f"2 * TMath::Sqrt({var}_invQ)")
-        df_MCMinBias_q = df_MCMinBias_q.Define(b_column, f"2 * TMath::Sqrt({var}_invQ)")
+        df_MinBias_q = df_MinBias_q.Define(b_column, f"TMath::Sqrt({var}_invQ)")
+        df_MCMinBias_q = df_MCMinBias_q.Define(b_column, f"TMath::Sqrt({var}_invQ)")
+
+
 
 
         quantile_edges = array.array("d", bins)
@@ -2852,6 +2783,8 @@ def DYMinBiasPerObservableRatio(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_v
         # legend_DataMC.AddEntry(dummy, f"#color[{ROOT.kOrange + 5}]{{#bf{{MinBias}}}}", "")
         # legend_DataMC.AddEntry(dummy, f"#bf{{DY/MinBias:}}", "")
 
+
+        legend_var.AddEntry(dummy, label, "")
         legend_var.AddEntry(dummy, f"#color[{ROOT.kBlack}]{{86 GeV < m_{{#mu#mu}} < 96 GeV}}", "")
 
 
@@ -2887,12 +2820,17 @@ def DYMinBiasPerObservableRatio(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_v
         h_MinBias_pad2, h_MCMinBias_pad2 = MinBias_hists
 
         pad2_edges = array.array("d", edges)
+        # row_edges = array.array("d", row_edges)
+
+        row_edges = array.array("d", [0, np.float64(0.06771917820510076), np.float64(0.095769380250414), np.float64(0.11729305729804548), np.float64(0.13543197247597957), np.float64(0.1514132657568233), np.float64(0.1658670074002681), np.float64(0.1791536268746254), np.float64(0.1915252179716987), np.float64(0.20314476664654912), np.float64(0.21413473168231043), np.float64(0.22458755622124144), np.float64(0.23457137141569767), np.float64(0.24415080459547), np.float64(0.25336831388591113), np.float64(0.2622620627886614), np.float64(0.27086075289080863), np.float64(0.27919474446161696), np.float64(0.28729008411666734), np.float64(0.29516055005737757), np.float64(0.30282938663040593), np.float64(0.31030875673065056), np.float64(0.31760932351260407), np.float64(0.32474847109556676), np.float64(0.3317340148005362), np.float64(0.3385729086239687), np.float64(0.34527887504286797), np.float64(0.3518570571235465), np.float64(0.35831449279148175), np.float64(0.36465522568973113), np.float64(0.3708922349388906), np.float64(0.3770214951649005), np.float64(0.3830526931047334), np.float64(0.38899039007821384), np.float64(0.39484099416090923), np.float64(0.4006061629165849), np.float64(0.4062895332930982), np.float64(0.41189239218749285), np.float64(0.41742212428033765), np.float64(0.4228775091171456), np.float64(0.4282654256578457), np.float64(0.43358639497875157), np.float64(0.43884285229161946), np.float64(0.4440351414987963), np.float64(0.4491693377587458), np.float64(0.4542455074950158), np.float64(0.45926369218327756), np.float64(0.4642294971827949), np.float64(0.46914274283139534), np.float64(0.4740087116128389), np.float64(0.4788162049539999), np.float64(0.4835830584725723), np.float64(0.4882998385419549), np.float64(0.492971490249194), np.float64(0.49759928464269626), np.float64(0.5021861558960953), np.float64(0.5067298028062975), np.float64(0.5112347603096676), np.float64(0.5157003657606397), np.float64(0.5201259704379984), np.float64(0.5245158836687824), np.float64(0.5288693594051539), np.float64(0.5331856685958746), np.float64(0.5374705326910176), np.float64(0.5417215057816172), np.float64(0.5459362121207153), np.float64(0.5501186286457918), np.float64(0.5542694863164835), np.float64(0.5583910373191109), np.float64(0.5624808516178347), np.float64(0.5665411426499725), np.float64(0.5705740560277086), np.float64(0.5745786634645293), np.float64(0.5785540583101089), np.float64(0.5825038072698504), np.float64(0.5864284285392442), np.float64(0.5903254940249333), np.float64(0.5941970009959288), np.float64(0.5980420000894316), np.float64(0.601863872456008), np.float64(0.6056616283573825), np.float64(0.6094357186457734), np.float64(0.6131837602394081), np.float64(0.6169104324776424), np.float64(0.6206161203163563), np.float64(0.6242984275768584), np.float64(0.627960519277854), np.float64(0.6316013781401101), np.float64(0.6352213692605598), np.float64(0.6388222008355665), np.float64(0.642401503249464), np.float64(0.645963649836947), np.float64(0.649504929331415), np.float64(0.653023033197035), np.float64(0.656523601833375), np.float64(0.6600056042509638), np.float64(0.6634693327660983), np.float64(0.6669176649603968), np.float64(0.6703443894717683), np.float64(0.6737524025470819), np.float64(0.677143263556282), np.float64(0.6805197699244779), np.float64(0.6838770771854776), np.float64(0.6872230154868856), np.float64(0.6905539939413767), np.float64(0.6938689819280623), np.float64(0.69716820754778), np.float64(0.700449424806787), np.float64(0.7037165715167543), np.float64(0.7069673967900283), np.float64(0.7102033421639492), np.float64(0.7134209743640362), np.float64(0.7166241595873099), np.float64(0.7198154930137515), np.float64(0.7229927398397871), np.float64(0.7261596569588128), np.float64(0.7293104513794623), np.float64(0.7324476920491245), np.float64(0.7355703769636873), np.float64(0.7386810316796251), np.float64(0.7417763107725434), np.float64(0.744862209766653), np.float64(0.7479330647971604), np.float64(0.750991362996463), np.float64(0.7540384037912521), np.float64(0.7570720390230188), np.float64(0.760094704209446), np.float64(0.7631042636793856), np.float64(0.7661031290514557), np.float64(0.7690891770275039), np.float64(0.772065915926859), np.float64(0.775030106275075), np.float64(0.7779818915059437), np.float64(0.7809236266165469), np.float64(0.7838543217363251), np.float64(0.786771902373721), np.float64(0.7896819883218182), np.float64(0.7925792077504382), np.float64(0.7954669620135625), np.float64(0.7983442708204654), np.float64(0.8012112467062821), np.float64(0.8040680001998644), np.float64(0.8069146398735019), np.float64(0.8097512723910703), np.float64(0.8125790665861962), np.float64(0.8153949333497883), np.float64(0.8182011092701583), np.float64(0.8209987468368584), np.float64(0.8237858339314312), np.float64(0.8265635233087143), np.float64(0.8293329519326298), np.float64(0.8320931632083416), np.float64(0.8348463198646578), np.float64(0.8375873301751731), np.float64(0.8403183708155048), np.float64(0.8430426154274755), np.float64(0.8457570628172195), np.float64(0.8484638450764913), np.float64(0.8511620195349171), np.float64(0.8538516677945489), np.float64(0.8565338796046945), np.float64(0.8592046994580039), np.float64(0.8618682459918864), np.float64(0.8645245864322801), np.float64(0.8671737870006458), np.float64(0.8698109428506454), np.float64(0.8724450824185024), np.float64(0.8750693166446882), np.float64(0.8776866896838177), np.float64(0.8802952983771481), np.float64(0.8828981582710494), np.float64(0.8854904379815871), np.float64(0.8880790451917464), np.float64(0.8906669241580049), np.float64(0.8933334481053092), np.float64(0.8958964988214294), np.float64(0.8984541625113627), np.float64(0.9010026466280597), np.float64(0.9035468133874577), np.float64(0.9060809737983706), np.float64(0.9086099694659432), np.float64(0.9111290986964), np.float64(0.913643174771448), np.float64(0.9161522392912171), np.float64(0.9187429166182601), np.float64(0.921234337568156), np.float64(0.9237209107894958), np.float64(0.9262054758187966), np.float64(0.9286778077102401), np.float64(0.9311445037418382), np.float64(0.9336046824881347), np.float64(0.9360685556522516), np.float64(0.9385499125115474), np.float64(0.9409898115134975), np.float64(0.9434234004247413), np.float64(0.9458507279511688), np.float64(0.9482736657206371), np.float64(0.9506940661991125), np.float64(0.9531110415729309), np.float64(0.9556259559796053), np.float64(0.958095465768445), np.float64(0.9604857149499038), np.float64(0.9628808058840664), np.float64(0.965292346657803), np.float64(0.9677371896854264), np.float64(0.9701036828076787), np.float64(0.9724661952636298), np.float64(0.9749107851910783), np.float64(0.977263446084068), np.float64(0.9796157523909592), np.float64(0.9820557513498427), np.float64(0.9845037545280869), np.float64(0.986837926278644), np.float64(0.9891665900160443), np.float64(0.9914958887431353), np.float64(0.9939171617603181), np.float64(0.9962700676858399), np.float64(0.9986537929948627), np.float64(1.0009558319643395), np.float64(1.0032534505508477), np.float64(1.005550978245815), np.float64(1.0078278264314433), np.float64(1.010103822237967), np.float64(1.0123755552601694), np.float64(1.0146396455992812), np.float64(1.0169012457512383), np.float64(1.019267259342583), np.float64(1.0215346955954112), np.float64(1.0240926467217102), np.float64(1.0263923847844072), np.float64(1.0286390720610987), np.float64(1.030883379075005), np.float64(1.0332843176393431), np.float64(1.0355193918899575), np.float64(1.037742153868499), np.float64(1.0401305853667524), np.float64(1.043252234541546), np.float64(1.0454618638118092), np.float64(1.0477955671591244), np.float64(1.049989871302913), np.float64(1.0524154098021752)])
 
         h_MinBias_pad2_2_ptr = df_MinBias_q.Histo1D(
                                                 (
                                                     f"h_MinBias_{var}_b",
                                                     ";impact parameter b;Normalised density",
-                                                    len(pad2_edges) - 1, pad2_edges
+                                                    # len(pad2_edges) - 1, pad2_edges
+                                                    # 50, 0, 1
+                                                    len(row_edges) - 1, row_edges
                                                 ),
                                                 b_column,
                                             )
@@ -2901,7 +2839,9 @@ def DYMinBiasPerObservableRatio(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_v
                                                     (
                                                         f"h_MCMinBias_{var}_b",
                                                         ";impact parameter b;Normalised density",
-                                                        len(pad2_edges) - 1, pad2_edges
+                                                        # len(pad2_edges) - 1, pad2_edges
+                                                        # 50, 0, 1
+                                                        len(row_edges) - 1, row_edges
                                                     ),
                                                     b_column,
                                                 )
@@ -2963,8 +2903,8 @@ def DYMinBiasPerObservableRatio(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_v
             df_SingleMuon_beforeptcut = df_SingleMuon_var.Define(f"{var}_invQ", f"1.0 - {var}InvQMap::eval(PFSelection_{var})")
             df_MCDYJets_beforeptcut = df_MCDYJets_var.Define(f"{var}_invQ", f"1.0 - {var}InvQMap::eval(PFSelection_{var})")
 
-            df_SingleMuon_beforeptcut = df_SingleMuon_beforeptcut.Define(b_column, f"2 * TMath::Sqrt({var}_invQ)")
-            df_MCDYJets_beforeptcut = df_MCDYJets_beforeptcut.Define(b_column, f"2 * TMath::Sqrt({var}_invQ)")
+            df_SingleMuon_beforeptcut = df_SingleMuon_beforeptcut.Define(b_column, f"TMath::Sqrt({var}_invQ)")
+            df_MCDYJets_beforeptcut = df_MCDYJets_beforeptcut.Define(b_column, f"TMath::Sqrt({var}_invQ)")
 
             
 
@@ -3099,7 +3039,9 @@ def DYMinBiasPerObservableRatio(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_v
                                                     (
                                                         f"h_SingleMuon_{var}_b_{pt_cut}GeVCut",
                                                         ";impact parameter b;Normalised density",
-                                                        len(pad2_edges) - 1, pad2_edges
+                                                        # len(pad2_edges) - 1, pad2_edges
+                                                        # 50, 0, 1
+                                                        len(row_edges) - 1, row_edges
                                                     ),
                                                     b_column,
                                                 )
@@ -3107,7 +3049,9 @@ def DYMinBiasPerObservableRatio(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_v
                                                     (
                                                         f"h_MCDYJets_{var}_b_{pt_cut}GeVCut",
                                                         ";impact parameter b;Normalised density",
-                                                        len(pad2_edges) - 1, pad2_edges
+                                                        # len(pad2_edges) - 1, pad2_edges
+                                                        # 50, 0, 1
+                                                        len(row_edges) - 1, row_edges
                                                     ),
                                                     b_column,
                                                 )
@@ -3156,27 +3100,31 @@ def DYMinBiasPerObservableRatio(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_v
             h_MCDYMinBias_pad2.SetLineStyle(2)
 
             h_DYMinBias_pad2_2.SetStats(0)
-            h_DYMinBias_pad2_2.SetLineColor(ROOT.kGreen + 3)
-            h_DYMinBias_pad2_2.SetMarkerColor(ROOT.kGreen + 3)
-            h_DYMinBias_pad2_2.SetLineWidth(1)
+            h_DYMinBias_pad2_2.SetLineColor(ROOT.kViolet - 6)
+            h_DYMinBias_pad2_2.SetMarkerColor(ROOT.kViolet - 6)
+            h_DYMinBias_pad2_2.SetLineWidth(2)
 
             h_MCDYMinBias_pad2_2.SetStats(0)
-            h_MCDYMinBias_pad2_2.SetLineColor(ROOT.kGreen + 3)
-            h_MCDYMinBias_pad2_2.SetMarkerColor(ROOT.kGreen + 3)
-            h_MCDYMinBias_pad2_2.SetLineWidth(1)
+            h_MCDYMinBias_pad2_2.SetLineColor(ROOT.kViolet - 6)
+            h_MCDYMinBias_pad2_2.SetMarkerColor(ROOT.kViolet - 6)
+            h_MCDYMinBias_pad2_2.SetLineWidth(2)
             h_MCDYMinBias_pad2_2.SetLineStyle(2)
 
             h_DYMinBias_pad2.GetYaxis().SetRangeUser(0, max(h_DYMinBias_pad2.GetMaximum(), h_MCDYMinBias_pad2.GetMaximum(), h_DYMinBias_pad2_2.GetMaximum(), h_MCDYMinBias_pad2_2.GetMaximum()) * 1.1)
             
 
+            # if index == 0:
+            #     h_DYMinBias_pad2.Draw("hist e")
+            # else:
+            #     h_DYMinBias_pad2.Draw("hist e same")
+
+            # h_MCDYMinBias_pad2.Draw("hist e same")
+
             if index == 0:
-                h_DYMinBias_pad2.Draw("hist e")
+                h_DYMinBias_pad2_2.Draw("hist e")
             else:
-                h_DYMinBias_pad2.Draw("hist e same")
+                h_DYMinBias_pad2_2.Draw("hist e same")
 
-            h_MCDYMinBias_pad2.Draw("hist e same")
-
-            h_DYMinBias_pad2_2.Draw("hist e same")
             h_MCDYMinBias_pad2_2.Draw("hist e same")
 
 
@@ -3193,57 +3141,58 @@ def DYMinBiasPerObservableRatio(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_v
 
 
 
-            # # ---------------------- from Pythia --------------------
-            # if pt_cut == 4:
+            # ---------------------- from Pythia --------------------
+            if pt_cut == 4:
 
-            #     canvas.cd()
-            #     pad1.cd()
-                
-            #     df_pythia = pd.read_hdf("simulated_enhf_vs_impactparam.hdf")
+                canvas.cd()
+                pad2.cd()
 
-            #     values = df_pythia["values"]
-            #     edges = df_pythia["edges"]
+                df_pythia = pd.read_hdf("simulated_enhf_vs_impactparam.hdf")
 
-            #     index_pythia = 0
+                values = df_pythia["values"]
+                edges = df_pythia["edges"]
 
-            
-            #     if var == "PFCands_Ht":
-            #         index_pythia = 2
-            #     elif var == "PFCands_Pt2sum":
-            #         index_pythia = 5
-            #     elif var == "PFCands_InvariantMass":
-            #         index_pythia = 3
-            #     elif var == "nPFCands":
-            #         index_pythia = 0
-            #     elif var == "PFCands_Psum":
-            #         index_pythia = 1
-            #     else:
-            #         print(f"Variable {var} not found in Pythia data; skipping Pythia overlay.")
-            #         continue
-
-            #     bins_new = array.array('d', np.asarray(df_pythia["edges"].iloc[index_pythia], dtype=np.float64))
-            #     h_pythia = ROOT.TH1F("h_pythia", "Histogram of values", len(bins_new) - 1, bins_new)
-
-            #     row_values = values.iloc[index_pythia]
-            #     row_edges = edges.iloc[index_pythia]
+                index_pythia = 0
 
 
-            #     for j in range(len(row_values)):
-            #         h_pythia.SetBinContent(j, row_values[j])
-            #     # print(f"Set bin {j} content to {row_values[j]}")
+                if var == "PFCands_Ht":
+                    index_pythia = 2
+                elif var == "PFCands_Pt2sum":
+                    index_pythia = 5
+                elif var == "PFCands_InvariantMass":
+                    index_pythia = 3
+                elif var == "nPFCands":
+                    index_pythia = 0
+                elif var == "PFCands_Psum":
+                    index_pythia = 1
+                else:
+                    print(f"Variable {var} not found in Pythia data; skipping Pythia overlay.")
+
+                bins_new = array.array('d', np.asarray(df_pythia["edges"].iloc[index_pythia], dtype=np.float64))
+                h_pythia = ROOT.TH1F("h_pythia", "Histogram of values", len(bins_new) - 1, bins_new)
+
+                row_values = values.iloc[index_pythia]
+                row_edges = edges.iloc[index_pythia]
+
+                # print(f"Setting Pythia histogram for {var} with {len(row_values)} bins and edges: {row_edges}")
+
+
+                for j in range(len(row_values)):
+                    h_pythia.SetBinContent(j, row_values[j])
+                # print(f"Set bin {j} content to {row_values[j]}")
 
 
 
-            #     # NormaliseHist(h_pythia)
+                # NormaliseHist(h_pythia)
 
-            #     h_pythia.SetLineColor(ROOT.kRed)
-            #     h_pythia.SetLineWidth(2)
-            #     # h_pythia.SetLineStyle(2)
-            #     h_pythia.Draw("hist same")
+                h_pythia.SetLineColor(ROOT.kRed)
+                h_pythia.SetLineWidth(2)
+                # h_pythia.SetLineStyle(2)
+
+                h_pythia.Draw("hist same")
 
 
-            #     ratio_MC.SetMaximum(max(ratio_MCDYJets.GetMaximum(), ratio_MC.GetMaximum(), h_pythia.GetMaximum()) * 1.2)
-    
+                h_DYMinBias_pad2.SetMaximum(max(h_DYMinBias_pad2.GetMaximum(), h_MCDYMinBias_pad2.GetMaximum(), h_DYMinBias_pad2_2.GetMaximum(), h_MCDYMinBias_pad2_2.GetMaximum(), h_pythia.GetMaximum()) * 1.1)
 
 
 
@@ -3253,10 +3202,6 @@ def DYMinBiasPerObservableRatio(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_v
 
         
 
-            # if pt_cut == 4:
-            #     legend_var.AddEntry(h_pythia, f"#color[{ROOT.kRed}]{{#bf{{Pythia}}}}", "l")
-
-            # legend_var.AddEntry(dummy, label, "")
 
             if pt_cut is None or len(pt_cuts) == 0:
                 legend_var.AddEntry(dummy, f"#color[{ROOT.kBlack}]{{No p^{{#mu#mu}}_{{T}} cut}}", "")
@@ -3277,19 +3222,25 @@ def DYMinBiasPerObservableRatio(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_v
             legend_var_pad2 = legend_var.Clone()
             legend_DataMC_pad2 = legend_DataMC.Clone()
 
+            legend_var_pad2.SetY1(0.68)
+
+            
+
             for entry in list(legend_DataMC_pad2.GetListOfPrimitives()):
                 if entry.GetLabel() == "MinBias":
                     legend_DataMC_pad2.GetListOfPrimitives().Remove(entry)
                 if entry.GetLabel() == "#bf{Data}":
                     legend_DataMC_pad2.GetListOfPrimitives().Remove(entry)
                 if entry.GetLabel() == "#bf{MC}":
-                    legend_DataMC_pad2.GetListOfPrimitives().Remove(entry)
+                    legend_DataMC_pad2.GetListOfPrimitives().Remove(entry)            
+            
 
-
-            legend_DataMC_pad2.AddEntry(dummyData, f"#bf{{Data}}", "l")
-            legend_DataMC_pad2.AddEntry(dummyMC, f"#bf{{MC}}", "l")
-            legend_DataMC_pad2.AddEntry(dummy, f"#color[{ROOT.kOrange + 5}]{{#bf{{b: bTb}}}}", "")
-            legend_DataMC_pad2.AddEntry(dummy, f"#color[{ROOT.kGreen + 3}]{{#bf{{b: eTe}}}}", "")
+            legend_DataMC_pad2.AddEntry(h_DYMinBias_pad2_2, f"#bf{{Data}}", "l")
+            legend_DataMC_pad2.AddEntry(h_MCDYMinBias_pad2_2, f"#bf{{MC}}", "l")
+            # legend_DataMC_pad2.AddEntry(dummy, f"#color[{ROOT.kOrange + 5}]{{#bf{{b: bTb}}}}", "")
+            # legend_DataMC_pad2.AddEntry(dummy, f"#color[{ROOT.kGreen + 3}]{{#bf{{b: eTe}}}}", "")
+            if pt_cut == 4:
+                legend_DataMC_pad2.AddEntry(h_pythia, f"#bf{{Pythia}}", "l")
 
 
             legend_DataMC_pad2.Draw()
