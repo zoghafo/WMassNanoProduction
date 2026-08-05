@@ -2045,10 +2045,6 @@ def QuantilePerObservable(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df
     df_SingleMuon_var = df_SingleMuon_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
     df_MCDYJets_var = df_MCDYJets_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
 
-    df_SingleMuon_var = df_SingleMuon_var.Filter("PFSelection_PFCands_Ht <= 120")
-    df_MCDYJets_var = df_MCDYJets_var.Filter("PFSelection_PFCands_Ht <= 120")
-    df_MinBias_var = df_MinBias_var.Filter("PFSelection_PFCands_Ht <= 120")
-    df_MCMinBias_var = df_MCMinBias_var.Filter("PFSelection_PFCands_Ht <= 120")
 
 
     pt_cuts = parse_pt_cuts(pt_cuts)
