@@ -686,8 +686,6 @@ def CopyLegend(source, target):
 
 def Plot_CompareTriggers(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, out_suffix):
 
-    df_SingleMuon_var = df_SingleMuon_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
-    df_MCDYJets_var = df_MCDYJets_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
 
     for var in variables:
 
@@ -934,8 +932,7 @@ def Plot_CompareTriggers(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
 
 def Plot_CompareTriggers_QuantileBinning(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, out_suffix, quantile_bins=None, quantile_reference="both"):
 
-    df_SingleMuon_var = df_SingleMuon_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
-    df_MCDYJets_var = df_MCDYJets_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
+
 
     for var in variables:
         if var in ["PFCands_pt", "PFCands_eta", "PFCands_phi", "PFCands_pvAssocQuality"]:
@@ -1316,8 +1313,7 @@ def Plot_CompareTriggers_QuantileBinning(df_SingleMuon_var, df_MinBias_var, df_M
         canvas.Close()
 
 def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix):
-    df_SingleMuon_var = df_SingleMuon_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
-    df_MCDYJets_var = df_MCDYJets_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
+
 
     pt_cuts = parse_pt_cuts(pt_cuts)
 
@@ -1565,9 +1561,6 @@ def Plot_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMi
         canvas.Close()
 
 def Plot_DiMuonPtCut_QuantileBinning(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, quantile_bins=None, quantile_reference="both"):
-
-    df_SingleMuon_var = df_SingleMuon_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
-    df_MCDYJets_var = df_MCDYJets_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96") 
 
     pt_cuts = parse_pt_cuts(pt_cuts)
 
@@ -2042,8 +2035,6 @@ def QuantilePerObservable(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df
 
     print(f"Bin weight: {binweight}")
 
-    df_SingleMuon_var = df_SingleMuon_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
-    df_MCDYJets_var = df_MCDYJets_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
 
 
 
@@ -2401,8 +2392,7 @@ def DYMinBiasPerObservableRatio(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_v
 
     print(f"Bin weight: {binweight}")
 
-    df_SingleMuon_var = df_SingleMuon_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
-    df_MCDYJets_var = df_MCDYJets_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
+
 
 
 
@@ -2912,9 +2902,6 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
 
     pt_cuts = parse_pt_cuts(pt_cuts)
 
-    df_SingleMuon_var = df_SingleMuon_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
-    df_MCDYJets_var = df_MCDYJets_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
-
 
 
     histos = []
@@ -2935,6 +2922,15 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
             ROOT.kYellow + 2,
             ROOT.kGray + 2,
             ROOT.kBlack,
+            ROOT.kRed,
+            ROOT.kOrange - 3,
+            ROOT.kGreen - 3,
+            ROOT.kMagenta - 3,
+            ROOT.kCyan - 3,
+            ROOT.kViolet - 3,
+            ROOT.kAzure - 3,
+            ROOT.kPink - 3,
+
         ]
         return [base[i % len(base)] for i in range(n)]
     
@@ -2958,21 +2954,33 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
 
         canvas = ROOT.TCanvas(f"c_quantile_ptscan_{var}", "", 1500, 1400)
         canvas.cd()
-        canvas.SetBottomMargin(0.13)
-        canvas.SetRightMargin(0.25)
+        canvas.SetBottomMargin(0.05)
+        canvas.SetRightMargin(0.26)
+        canvas.SetTopMargin(0.05)
         # canvas.SetLogy()
 
-        pad1 = ROOT.TPad(f"pad1_{var}GeV", "pad1", 0, 0.1, 1, 1)
-        # pad1.SetBottomMargin(0)
-        pad1.SetRightMargin(0.25)
-        # pad1.SetLogy()
+        pad1 = ROOT.TPad(f"pad1_{var}GeV", "pad1", 0, 0.4, 1, 1)
+        # pad1.SetBottomMargin(0.07)
+        pad1.SetRightMargin(0.26)
+        # pad1.SetTopMargin(0.05)
+        # pad1.SetLogx()
+        pad1.SetLogy()
         pad1.Draw()
 
         canvas.cd()
 
-        
-        inset = ROOT.TPad(f"inset_{var}", f"inset_{var}", 0.75, 0, 0.99, 1)
-        # inset.SetLogy()
+        pad2 = ROOT.TPad(f"pad2_{var}GeV", "pad2", 0, 0, 1, 0.44)
+        pad2.SetRightMargin(0.26)
+        pad2.SetBottomMargin(0.16)
+        pad2.SetTopMargin(0)
+        # pad2.SetLogx()
+        pad2.SetLogy()
+        pad2.Draw()
+
+        canvas.cd()
+    
+        inset = ROOT.TPad(f"inset_{var}", f"inset_{var}", 0.75, 0, 1, 1)
+        inset.SetLogy()
         inset.SetFillStyle(0)
         inset.SetBorderSize(1)
         inset.SetRightMargin(0.05)
@@ -3003,11 +3011,13 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
         legend_col0.SetMargin(0.2)
         
 
-        legend_ptcuts = ROOT.TLegend(0.5, 0.35, 0.8, 0.7)
+        legend_ptcuts = ROOT.TLegend(0.13, 0.13, 0.48, 0.51)
         legend_ptcuts.SetBorderSize(0)
         legend_ptcuts.SetFillStyle(0)
         legend_ptcuts.SetTextSize(0.03)
         legend_ptcuts.SetMargin(0)
+        legend_ptcuts.SetNColumns(2)
+        # legend_ptcuts.SetColumnSeparation(0.001)
 
         legend_Data = ROOT.TLine(0.0, 0.0, 0.5, 0.0)
         legend_Data.SetLineColor(ROOT.kBlack)
@@ -3026,12 +3036,6 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
 
         # legend_ptcuts.AddEntry(dummy, f"#color[{ROOT.kBlack}]{{#bf{{DY/MinBias:}}}}", "")
         legend_ptcuts.SetHeader("#bf{DY/MinBias:}", "L")
-
-
-
-
-# ------------------ BUILD HISTOGRAMS ------------------------------
-
 
         df_pythia = pd.read_hdf("simulated_enhf_vs_impactparam.hdf")
 
@@ -3067,7 +3071,6 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
             h_pythia.SetBinContent(j, row_values[j])
         # print(f"Set bin {j} content to {row_values[j]}")
 
-        # NormaliseHist(h_pythia)
         h_pythia.SetStats(0)
         h_pythia.SetLineColor(ROOT.kRed)
         h_pythia.SetMarkerColor(ROOT.kRed)
@@ -3075,15 +3078,14 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
         h_pythia.SetLineStyle(6)
         h_pythia.SetDirectory(0)
         h_pythia.GetXaxis().SetTitle("impact parameter b")
-        h_pythia.GetXaxis().SetTitleSize(0.03)
-        h_pythia.GetXaxis().SetLabelSize(0.03)
+        h_pythia.GetXaxis().SetTitleSize(0)
+        h_pythia.GetXaxis().SetLabelSize(0)
         h_pythia.GetXaxis().SetTickLength(0.04)
         h_pythia.GetYaxis().SetTitle("DY/MinBias")
-        h_pythia.GetYaxis().SetTitleSize(0.03)
-        h_pythia.GetYaxis().SetLabelSize(0.03)
-        h_pythia.GetYaxis().SetTitleOffset(1.5)
+        h_pythia.GetYaxis().SetTitleSize(0.04)
+        h_pythia.GetYaxis().SetLabelSize(0.05)
+        h_pythia.GetYaxis().SetTitleOffset(1)
         h_pythia.GetYaxis().SetNdivisions(505)
-        histos.append(h_pythia)
     
 
         canvas.cd()
@@ -3279,24 +3281,33 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
 
         for index, ih in enumerate(inset_histos):
             if index == 0:
-                yminInset_list.append(ih.GetMinimum())
-                ymaxInset_list.append(ih.GetMaximum())
+                yminInset_list.append(min(ih.GetBinContent(i) for i in range(1, 5)))
+                ymaxInset_list.append(max(ih.GetBinContent(i) for i in range(1, 5)))
             else:
-                yminInset_list.append(ih[1].GetMinimum())
-                ymaxInset_list.append(ih[1].GetMaximum())
+                yminInset_list.append(min(ih[0].GetBinContent(i) for i in range(1, 5)))
+                ymaxInset_list.append(max(ih[0].GetBinContent(i) for i in range(1, 5)))
 
 
 
-        yminInset = min(yminInset_list)
-        ymaxInset = max(ymaxInset_list)
+        yminInset = min(yminInset_list) * 0.7
+        if yminInset <= 0:
+            yminInset = 0.0001
+        ymaxInset = max(ymaxInset_list) * 1.2
 
         
-        frame = inset.DrawFrame(xmin, yminInset, xmax, ymaxInset * 1.2)
+        frame = inset.DrawFrame(xmin, yminInset, xmax, ymaxInset)
         frame.GetXaxis().SetLabelSize(0.05)
-        frame.GetYaxis().SetLabelSize(0.08)
+        frame.GetYaxis().SetLabelSize(0.06)
         frame.GetXaxis().SetTitleSize(0.05)
         frame.GetYaxis().SetTitleSize(0.01)
-        frame.GetXaxis().SetLabelOffset(0.00005)
+        frame.GetXaxis().SetLabelOffset(0.005)
+
+        inset_histos[0].GetXaxis().SetTitle("")
+        inset_histos[0].GetYaxis().SetTitle("")
+        inset_histos[0].GetXaxis().SetLabelSize(0.01)
+        inset_histos[0].GetYaxis().SetLabelSize(0.08)
+        inset_histos[0].GetXaxis().SetRangeUser(xmin, xmax)
+
 
 
 
@@ -3304,19 +3315,72 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
             if index == 0:
                 ih.Draw("hist e same")
             else:
-                ih[1].Draw("hist e same")
-
-
+                ih[0].Draw("hist e same")
 
 
         max_hist = max(
             h_pythia.GetMaximum(),
             max(h.GetMaximum() for h in histos)
-        )
+        ) * 1.2
 
-        h_pythia.SetMaximum(max_hist * 1.2)
+        h_pythia.SetMaximum(max_hist)
 
-    
+
+
+        canvas.cd()
+        pad2.cd()
+        pad2.Clear()
+
+        data_ref = histos[1].Clone("data_ref")
+        mc_ref   = histos[2].Clone("mc_ref")
+
+        data_ref.SetDirectory(0)
+        mc_ref.SetDirectory(0)
+
+        ratio_histos = []
+
+        for index, h in enumerate(histos):
+            if index in [0]:  # Skip the first three histograms (Pythia, Data lowest pT cut, MC lowest pT cut) for ratio calculation
+                continue 
+
+            ratio = h.Clone(f"{h.GetName()}_ratio_{index}")
+            ratio.SetDirectory(0)
+            ratio_histos.append(ratio)
+
+            if index == 0 or index % 2 != 0:
+                ratio.Divide(data_ref)
+            else:
+                ratio.Divide(mc_ref)
+
+            ratio.SetStats(0)
+            ratio.SetLineColor(h.GetLineColor())
+            ratio.SetMarkerColor(h.GetMarkerColor())
+            ratio.SetMarkerStyle(h.GetMarkerStyle())
+            ratio.SetMarkerSize(h.GetMarkerSize())
+            ratio.SetLineStyle(h.GetLineStyle())
+            ratio.SetLineWidth(2)
+
+            ratio.GetXaxis().SetTitle(plot_xlabel)
+            ratio.GetXaxis().SetTitleSize(0.06)
+            ratio.GetXaxis().SetTitleOffset(1.2)
+            ratio.GetXaxis().SetLabelSize(0.06)
+            ratio.GetXaxis().SetTickLength(0.07)
+
+            ratio.GetYaxis().SetTitle("#frac{DY/MinBias for a p^{#mu#mu}_{T} interval}{DY/MinBias for lowest p^{#mu#mu}_{T} interval}")
+            ratio.GetYaxis().SetTitleSize(0.04)
+            ratio.GetYaxis().SetLabelSize(0.06)
+            ratio.GetYaxis().SetTitleOffset(1.0)
+
+            if index == 1:
+                ratio.Draw("hist e")
+            else:
+                ratio.Draw("hist e same")
+
+
+        ymin_ratio = min(r.GetMinimum() for r in ratio_histos) * 0.9
+        ymax_ratio = max(r.GetMaximum() for r in ratio_histos) * 1.1
+
+        ratio_histos[0].GetYaxis().SetRangeUser(ymin_ratio, ymax_ratio)
 
         canvas.cd()
         pad1.cd()
@@ -3333,6 +3397,9 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
         canvas.SaveAs(output_name)
 
         canvas.Close()
+
+
+
 
 def Quantile_AllTogether(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, out_suffix, bins):
 
@@ -3682,9 +3749,6 @@ def Quantile_AllTogether_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJ
         ratio_data_hists = []
         ratio_mc_hists = []
         ratio_final_hists = []
-
-        df_SingleMuon_var = df_SingleMuon_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
-        df_MCDYJets_var = df_MCDYJets_var.Filter("DiMuon_Mass > 86 && DiMuon_Mass < 96")
 
         for var_index, var in enumerate(variables):
             if var in ["PFCands_pt", "PFCands_eta", "PFCands_phi", "PFCands_pvAssocQuality"]:
@@ -4480,7 +4544,13 @@ def parse_args():
         default=True,
         help="Disable bin width weighting when normalizing histograms",
     )
-
+    parser.add_argument(
+        "--dimuonmass_cut",
+        type=float,
+        nargs=2,
+        default=[86, 96],
+        help="Cuts on the di-muon mass histograms (two values: min and max; excluding the edges)",
+    )
     return parser.parse_args()
     
 
@@ -4502,6 +4572,9 @@ def main():
     pprint.pprint(vars(args))
 
     df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias = MakeDataframes(args.maxevents)
+
+    df_SingleMuon = df_SingleMuon.Filter(f"DiMuon_Mass > {args.dimuonmass_cut[0]} && DiMuon_Mass < {args.dimuonmass_cut[1]}")
+    df_MCDYJets = df_MCDYJets.Filter(f"DiMuon_Mass > {args.dimuonmass_cut[0]} && DiMuon_Mass < {args.dimuonmass_cut[1]}")
 
     # if args.slurm == True:
     #     totalEvents = TotalEvents()
