@@ -47,6 +47,19 @@ VARIABLES = {
     "PFCands_InvariantMass": "m_{inv} [GeV]",
 }
 
+VARIABLESFORPYTHON = {
+    "PFCands_pt": r'$p_{T}\,\mathrm{[GeV]}$',
+    "PFCands_eta": r'$\eta$',
+    "PFCands_phi": r'$\phi$',
+    "PFCands_pvAssocQuality": r'$^{\mathrm{PV}}\,\mathrm{association\,quality}$',
+    "nPFCands": r'$N_{\mathrm{PF}}^{\mathrm{charged}}$',
+    "PFCands_Ht": r'$H_{T}\,\mathrm{[GeV]}$',
+    "PFCands_Pt2sum": r'$\sum_{\mathrm{PF\,cands}} p_{T}^{2}\,\mathrm{[GeV^{2}]}$',
+    "PFCands_Psum": r'$\sum_{\mathrm{PF\,cands}} p\,\mathrm{[GeV]}$',
+    "PFCands_P2sum": r'$\sum_{\mathrm{PF\,cands}} p^{2}\,\mathrm{[GeV^{2}]}$',
+    "PFCands_InvariantMass": r'$m_{\mathrm{inv}}\,\mathrm{[GeV]}$',
+}
+
 BINNING = {
     "PFCands_pt": [20, 0, 100],
     "PFCands_eta": [20, -2.4, 2.4],
@@ -4767,7 +4780,7 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
         plt.ylabel(fr'$\sigma_{{\mathrm{{eff}}}}$')
         # plt.title(fr'$\sigma_{{\mathrm{{eff}}}}$ vs $m_{{\mu\mu}}$')
         plt.xticks(mass_edges)
-        plt.legend()
+        plt.legend(title=f'{VARIABLESFORPYTHON[var]}', loc='upper left')
         plt.show()
         plt.savefig(f"new_plots/sigma_eff/{var}_SigmaEff{out_suffix}.pdf")
 
