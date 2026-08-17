@@ -4723,18 +4723,32 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
                 integral_Data = 0
                 integral_MC = 0
 
-                for ratio_hists in [ratio_Data, ratio_MC]:
+                # for ratio_hists in [ratio_Data, ratio_MC]:
 
-                    for i in range(1, ratio_hists.GetNbinsX()+1):
+                #     for i in range(1, ratio_hists.GetNbinsX()+1):
 
-                        content = ratio_hists.GetBinContent(i)
-                        width = ratio_hists.GetBinWidth(i)
+                #         content = ratio_hists.GetBinContent(i)
+                #         width = ratio_hists.GetBinWidth(i)
 
-                        if ratio_hists == ratio_Data:
-                            integral_Data += content * content * width
-                        else:
-                            integral_MC += content * content * width
-                
+                #         if ratio_hists == ratio_Data:
+                #             integral_Data += content * content * width * width
+                #         else:
+                #             integral_MC += content * content * width * width
+
+                for i in range(1, ratio_Data.GetNbinsX() + 1):
+
+                    b_low = ratio_Data.GetBinLowEdge(i)
+                    b_high = b_low + ratio_Data.GetBinWidth(i)
+
+                    delta_b2 = b_high**2 - b_low**2
+
+                    content_Data = ratio_Data.GetBinContent(i)
+                    content_MC = ratio_MC.GetBinContent(i)
+
+                    integral_Data += content_Data**2 * delta_b2
+                    integral_MC += content_MC**2 * delta_b2
+
+
                 # Calculate sigma_eff for Data and MC
                 sigma_eff_Data = (sigma0 * sigma0) / (integral_Data) if integral_Data != 0 else 0
                 sigma_eff_MC = (sigma0 * sigma0) / (integral_MC) if integral_MC != 0 else 0
@@ -4754,8 +4768,8 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
         print(f"\n\nSigma_eff values for Data: {sigma_eff_data_values}")
         print(f"\n\nSigma_eff values for MC: {sigma_eff_mc_values}")
 
-        print(len(inv_mass))
-        print(len(sigma_eff_data_values))
+        # print(len(inv_mass))
+        # print(len(sigma_eff_data_values))
 
         inv_mass_centers = [0.5*(a+b) for a,b in inv_mass]
         mass_edges = sorted(set(
@@ -4782,7 +4796,10 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
         plt.xticks(mass_edges)
         plt.legend(title=f'{VARIABLESFORPYTHON[var]}', loc='upper left')
         plt.show()
-        plt.savefig(f"new_plots/sigma_eff/{var}_SigmaEff{out_suffix}.pdf")
+        output_dir = f"new_plots/sigma_eff/{var}_SigmaEff{out_suffix}.pdf"
+        # os.makedirs(output_dir, exist_ok=True)
+        plt.savefig(output_dir)
+        print(f"Saved plot: new_plots/sigma_eff/{var}_SigmaEff{out_suffix}.pdf")
 
 
 
