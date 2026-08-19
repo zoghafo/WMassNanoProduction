@@ -4640,8 +4640,8 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
         h_MinBias = h_MinBias_ptr.GetValue()
         h_MCMinBias = h_MCMinBias_ptr.GetValue()
 
-        NormaliseHist(h_MinBias, binweight)
-        NormaliseHist(h_MCMinBias, binweight)
+        # NormaliseHist(h_MinBias, binweight)
+        # NormaliseHist(h_MCMinBias, binweight)
 
         x_values = []
 
@@ -4693,8 +4693,8 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
                 h_SingleMuon = h_SingleMuon_ptr.GetValue()
                 h_MCDYJets = h_MCDYJets_ptr.GetValue()
 
-                NormaliseHist(h_SingleMuon, binweight)
-                NormaliseHist(h_MCDYJets, binweight)
+                # NormaliseHist(h_SingleMuon, binweight)
+                # NormaliseHist(h_MCDYJets, binweight)
 
 
 
@@ -4771,19 +4771,22 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
                 b_low = ratio_Data.GetBinLowEdge(i)
                 b_high = ratio_Data.GetBinLowEdge(i) + ratio_Data.GetBinWidth(i)
 
-                area = np.pi * (b_high**2 - b_low**2)
+                # Calculate the width each bin
+                width = np.pi * (b_high**2 - b_low**2)
 
+                # Enhancement factor (i.e. DY/MinBias) in each bin of the ratio histogram 
                 E_Data = ratio_Data.GetBinContent(i)
                 E_MC = ratio_MC.GetBinContent(i)
 
-                normalization_Data += area * E_Data
-                normalization_MC += area * E_MC
+                # Calculate the normalization and integral for Data and MC
+                normalization_Data += width * E_Data
+                normalization_MC += width * E_MC
 
-                integral_Data += area * E_Data**2
-                integral_MC += area * E_MC**2
+                integral_Data += width * E_Data**2
+                integral_MC += width * E_MC**2
 
-            sigma_eff_Data = normalization_Data / integral_Data if integral_Data != 0 else 0
-            sigma_eff_MC = normalization_MC / integral_MC if integral_MC != 0 else 0
+            sigma_eff_Data = (normalization_Data / integral_Data if integral_Data != 0 else 0) * sigma0
+            sigma_eff_MC = (normalization_MC / integral_MC if integral_MC != 0 else 0) * sigma0
 
             # sigma_eff_Data = (normalization_Data / integral_Data if integral_Data != 0 else 0)
             # sigma_eff_MC = (normalization_MC / integral_MC if integral_MC != 0 else 0)
@@ -4798,19 +4801,24 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
 
 
         print(f"\n\nSigma_eff values for Data: {sigma_eff_data_values}")
-        print(f"\n\nSigma_eff values for MC: {sigma_eff_mc_values}")
+        print(f"\n\nSigma_eff values for MC: {sigma_eff_mc_values}\n\n")
 
         # print(len(inv_mass))
         # print(len(sigma_eff_data_values))
 
-        inv_mass_centers = [0.5*(a+b) for a,b in inv_mass]
-        mass_edges = sorted(set(
-                        [edge for bin_range in inv_mass for edge in bin_range]
-                    ))
+        inv_mass_centers = [0.5 * (a + b) for a, b in inv_mass]
 
+        mass_edges = sorted(set(
+            edge for bin_range in inv_mass for edge in bin_range
+        ))
+
+        fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+
+        # Data
+        axes[0].grid(zorder=0)
 
         for edge in mass_edges:
-            plt.axvline(
+            axes[0].axvline(
                 edge,
                 linestyle="--",
                 linewidth=1,
@@ -4818,20 +4826,68 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
                 zorder=1
             )
 
-        plt.figure(figsize=(10, 6))
-        plt.grid(zorder=0)
-        plt.scatter(inv_mass_centers, sigma_eff_data_values, marker='o', label='Data DY/MinBias', color='blue', zorder = 3)
-        plt.scatter(inv_mass_centers, sigma_eff_mc_values, marker='o', label='MC DY/MinBias', color='red', zorder = 3)
-        plt.xlabel(fr'$m_{{\mu\mu}}$ [GeV]')
-        plt.ylabel(fr'$\frac{{\sigma_{{\mathrm{{eff}}}}}}{{\sigma_{{0}}}}$', fontsize=20)
-        # plt.title(fr'$\sigma_{{\mathrm{{eff}}}}$ vs $m_{{\mu\mu}}$')
-        plt.xticks(mass_edges)
-        plt.legend(title=f'{VARIABLESFORPYTHON[var]}', loc='upper left')
-        plt.show()
+        axes[0].scatter(
+            inv_mass_centers,
+            sigma_eff_data_values,
+            marker='o',
+            label='Data DY/MinBias',
+            color='blue',
+            zorder=3
+        )
+
+        axes[0].set_xlabel(fr'$m_{{\mu\mu}}$ [GeV]')
+        axes[0].set_ylabel(
+            fr'$\frac{{\sigma_{{\mathrm{{eff}}}}}}{{\sigma_{{0}}}}$',
+            fontsize=20
+        )
+        axes[0].set_xticks(mass_edges)
+        axes[0].legend(
+            title=f'{VARIABLESFORPYTHON[var]}',
+            loc='upper left'
+        )
+
+ 
+
+        # MC
+        axes[1].grid(zorder=0)
+
+        for edge in mass_edges:
+            axes[1].axvline(
+                edge,
+                linestyle="--",
+                linewidth=1,
+                color="gray",
+                zorder=1
+            )
+
+        axes[1].scatter(
+            inv_mass_centers,
+            sigma_eff_mc_values,
+            marker='o',
+            label='MC DY/MinBias',
+            color='red',
+            zorder=3
+        )
+
+        axes[1].set_xlabel(fr'$m_{{\mu\mu}}$ [GeV]')
+        axes[1].set_xticks(mass_edges)
+        axes[1].legend(
+            title=f'{VARIABLESFORPYTHON[var]}',
+            loc='upper left'
+        )
+
+        axes[0].set_ylim(0, max(sigma_eff_data_values) * 1.1)
+        axes[1].set_ylim(0, max(sigma_eff_mc_values) * 1.1)
+
+   
+
+        plt.tight_layout()
+
         output_dir = f"new_plots/sigma_eff/{var}_SigmaEff{out_suffix}.pdf"
-        # os.makedirs(output_dir, exist_ok=True)
         plt.savefig(output_dir)
-        print(f"Saved plot: new_plots/sigma_eff/{var}_SigmaEff{out_suffix}.pdf")
+        print(f"Saved plot: {output_dir}")
+
+        plt.show()
 
 
 
