@@ -10,6 +10,7 @@ import numpy as np
 import math
 import h5py
 import matplotlib.pyplot as plt
+from matplotlib.ticker import LogLocator
 
 ROOT.gROOT.SetBatch(True)
 
@@ -64,7 +65,8 @@ BINNING = {
     "PFCands_pt": [20, 0, 100],
     "PFCands_eta": [20, -2.4, 2.4],
     "PFCands_phi": [20, -3.14, 3.14],
-    "PFCands_InvariantMass": [0, 2, 5, 10, 15, 20, 25, 35, 45, 60, 80, 120, 160],
+    # "PFCands_InvariantMass": [0, 2, 5, 10, 15, 20, 25, 35, 45, 60, 80, 120, 160],
+    "PFCands_InvariantMass": [0, 15, 20, 30, 40, 50, 60, 70, 86, 96, 100, 110, 120, 130, 140, 150, 160],
     "PFCands_pvAssocQuality": [9, 0, 9],
     "nPFCands": [3.0, 5.0, 8.0, 11.0, 15.0, 20.0, 27.0, 34.0, 43.0, 54.0, 65.0, 90.0, 130.0, 160.0],
     # "PFCands_Ht": [0, 5, 10, 15, 20, 30, 50, 70, 90, 110, 130, 150, 170, 200, 230, 260, 300, 350, 370],
@@ -2904,13 +2906,13 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
     quantile_bins = array.array("d", bins)
     
     if b_bins is None:
-        # b_bins = array.array("d", np.linspace(0, 1, 50))
-        b_bins = array.array("d", np.concatenate([
-                                  np.arange(0.00, 0.10, 0.01),
-                                  np.arange(0.10, 0.20, 0.01),
-                                  np.arange(0.20, 1.05, 0.05)
-                                ])
-                            )
+        b_bins = array.array("d", np.linspace(0, 1, 50))
+        # b_bins = array.array("d", np.concatenate([
+        #                           np.arange(0.00, 0.10, 0.01),
+        #                           np.arange(0.10, 0.20, 0.01),
+        #                           np.arange(0.20, 1.05, 0.05)
+        #                         ])
+        #                     )
     else:
         b_bins = array.array("d", b_bins)
 
@@ -2923,12 +2925,12 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
 
     def colors_func(n):
         base = [
+            ROOT.kViolet - 6,
             ROOT.kBlue + 1,
             ROOT.kGreen + 2,
             ROOT.kMagenta + 1,
             ROOT.kOrange + 7,
             ROOT.kCyan + 1,
-            ROOT.kViolet + 1,
             ROOT.kAzure + 1,
             ROOT.kPink + 7,
             ROOT.kTeal + 3,
@@ -2948,7 +2950,7 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
         ]
         return [base[i % len(base)] for i in range(n)]
     
-    colours = colors_func(len(pt_cuts))
+    # colours = colors_func(len(pt_cuts))
 
 
     for var in variables:
@@ -2968,44 +2970,44 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
 
         canvas = ROOT.TCanvas(f"c_quantile_ptscan_{var}", "", 1500, 1400)
         canvas.cd()
-        canvas.SetBottomMargin(0.05)
-        canvas.SetRightMargin(0.26)
+        canvas.SetBottomMargin(0.15)
+        # canvas.SetRightMargin(0.26)
         canvas.SetTopMargin(0.05)
         # canvas.SetLogy()
 
-        pad1 = ROOT.TPad(f"pad1_{var}GeV", "pad1", 0, 0.4, 1, 1)
-        pad1.SetLeftMargin(0.10)
-        pad1.SetRightMargin(0.26)
-        pad1.SetLogy()
-        pad1.SetGridy(1)
-        pad1.SetTicky(1)
-        pad1.Draw()
+        # pad1 = ROOT.TPad(f"pad1_{var}GeV", "pad1", 0, 0.4, 1, 1)
+        # pad1.SetLeftMargin(0.10)
+        # pad1.SetRightMargin(0.26)
+        # pad1.SetLogy()
+        # pad1.SetGridy(1)
+        # pad1.SetTicky(1)
+        # pad1.Draw()
 
-        canvas.cd()
+        # canvas.cd()
 
-        # left bottom pad: y-axis only
-        pad2 = ROOT.TPad(f"pad2_{var}GeV", "pad2", 0.0, 0, 0.4, 0.4)
-        pad2.SetLeftMargin(0.18)
-        pad2.SetRightMargin(0.03)
-        pad2.SetBottomMargin(0.1)
-        pad2.SetTopMargin(0)
-        pad2.SetLogy()
-        pad2.SetGridy(1)
-        pad2.SetTicky(1)
-        pad2.Draw()
+        # # left bottom pad: y-axis only
+        # pad2 = ROOT.TPad(f"pad2_{var}GeV", "pad2", 0.0, 0, 0.4, 0.4)
+        # pad2.SetLeftMargin(0.18)
+        # pad2.SetRightMargin(0.03)
+        # pad2.SetBottomMargin(0.1)
+        # pad2.SetTopMargin(0)
+        # pad2.SetLogy()
+        # pad2.SetGridy(1)
+        # pad2.SetTicky(1)
+        # pad2.Draw()
 
-        canvas.cd()
+        # canvas.cd()
 
-        # right bottom pad: x-axis only
-        pad3 = ROOT.TPad(f"pad3_{var}GeV", "pad3", 0.43, 0, 0.86, 0.4)
-        pad3.SetLeftMargin(0.03)
-        pad3.SetRightMargin(0.26)
-        pad3.SetBottomMargin(0.1)
-        pad3.SetTopMargin(0)
-        pad3.SetLogy()
-        pad3.SetGridy(1)
-        pad3.SetTicky(1)
-        pad3.Draw()
+        # # right bottom pad: x-axis only
+        # pad3 = ROOT.TPad(f"pad3_{var}GeV", "pad3", 0.43, 0, 0.86, 0.4)
+        # pad3.SetLeftMargin(0.03)
+        # pad3.SetRightMargin(0.26)
+        # pad3.SetBottomMargin(0.1)
+        # pad3.SetTopMargin(0)
+        # pad3.SetLogy()
+        # pad3.SetGridy(1)
+        # pad3.SetTicky(1)
+        # pad3.Draw()
 
 
         canvas.cd()
@@ -3028,24 +3030,24 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
         dummy = ROOT.TObject()
 
 
-        legend_var = ROOT.TLegend(0.42, 0.8, 0.6, 0.89)
+        legend_var = ROOT.TLegend(0.15, 0.83, 0.3, 0.89)
         legend_var.SetBorderSize(0)
         # legend_var.SetFillStyle(0)
         legend_var.SetTextSize(0.03)
         legend_var.SetMargin(0.2)
         legend_var.AddEntry(dummy, label, "")
 
-        legend_col0 = ROOT.TLegend(0.53, 0.75, 0.72, 0.89001)
+        legend_col0 = ROOT.TLegend(0.32, 0.83, 0.45, 0.89001)
         legend_col0.SetBorderSize(0)
         # legend_col0.SetFillStyle(0)
         legend_col0.SetTextSize(0.03)
         legend_col0.SetMargin(0.2)
         
 
-        legend_ptcuts = ROOT.TLegend(0.13, 0.13, 0.48, 0.51)
+        legend_ptcuts = ROOT.TLegend(0.46, 0.35, 0.89, 0.87)
         legend_ptcuts.SetBorderSize(0)
         # legend_ptcuts.SetFillStyle(0)
-        legend_ptcuts.SetTextSize(0.03)
+        legend_ptcuts.SetTextSize(0.02)
         legend_ptcuts.SetMargin(0.05)
         legend_ptcuts.SetNColumns(2)
         # legend_ptcuts.SetColumnSeparation(0.001)
@@ -3062,7 +3064,7 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
         
         legend_col0.AddEntry(legend_Data, f"#color[{ROOT.kBlack}]{{#bf{{Data}}}}", "l")
         legend_col0.AddEntry(legend_MC, f"#color[{ROOT.kBlack}]{{#bf{{MC}}}}", "l")
-        legend_col0.AddEntry(dummy, "86 < m_{#mu#mu} < 96 GeV", "")
+        # legend_col0.AddEntry(dummy, "86 < m_{#mu#mu} < 96 GeV", "")
         # legend_col0.AddEntry(dummy, f"#color[{ROOT.kOrange + 5}]{{#bf{{MinBias}}}}", "")
 
         # legend_ptcuts.AddEntry(dummy, f"#color[{ROOT.kBlack}]{{#bf{{DY/MinBias:}}}}", "")
@@ -3120,16 +3122,16 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
     
 
         canvas.cd()
-        pad1.cd()
+        # pad1.cd()
 
-        h_pythia.Draw("hist")
+        # h_pythia.Draw("hist")
 
-        histos.append(h_pythia)
+        # histos.append(h_pythia)
 
-        h_pythia_clone = h_pythia.Clone(f"h_pythia_clone_{var}")
-        inset_histos.append(h_pythia_clone)
+        # h_pythia_clone = h_pythia.Clone(f"h_pythia_clone_{var}")
+        # inset_histos.append(h_pythia_clone)
 
-        legend_var.AddEntry(h_pythia, "Pythia", "l")
+        # legend_var.AddEntry(h_pythia, "Pythia", "l")
 
 
 
@@ -3175,337 +3177,403 @@ def Quantile_DiMuonPtCut(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_
 
 
         plot_max = 0
+        inv_mass = [(86, 96), 
+                    # (0, 10),
+                    # # (10, 20), 
+                    # # (20, 30), 
+                    # # (30, 40), 
+                    # # (40, 50), 
+                    # (50, 60), 
+                    # (60, 70), 
+                    # (70, 86), 
+                    # (96, 100), 
+                    # (100, 110), 
+                    # (110, 120), 
+                    # (120, 130), 
+                    # (130, 140), 
+                    # (140, 150)
+                    (0, 30),
+                    (30, 70),
+                    (70, 86),
+                    (96, 110),
+                    (110, 130),
+                    (130, 150)
+                    ]
+        colours = colors_func(len(inv_mass))
 
+        for idx, mass in enumerate(inv_mass):
+            print(mass, idx)
 
-        for index, pt_cut in enumerate(pt_cuts):
-
-            if index == len(pt_cuts) - 1:
-                break
-
-            if pt_cut is None:
-                pt_cut = 0
-                pt_cuts[index] = 0
-
-            canvas.cd()
-            
-            
-            print(f"\n\nProcessing DiMuon pT cut: {pt_cut} GeV...\n")
-
-            df_SingleMuon_q = df_SingleMuon_var.Filter(f"DiMuon_Pt >= {pt_cuts[index]} && DiMuon_Pt < {pt_cuts[index + 1]}")
-            df_MCDYJets_q = df_MCDYJets_var.Filter(f"DiMuon_Pt >= {pt_cuts[index]} && DiMuon_Pt < {pt_cuts[index + 1]}")
-
-            df_SingleMuon_q = ApplyQuantileAndIP(df_SingleMuon_q, var, "MB")
-            df_MCDYJets_q = ApplyQuantileAndIP(df_MCDYJets_q, var, "MCMB")
-                
-            colour = colours[index]
-
-            h_SingleMuon_ptr = df_SingleMuon_q.Histo1D(
-                (
-                    f"h_SingleMuon_{var}_b_{pt_cut}GeV",
-                    f"; {plot_xlabel}; DY/ZeroBias",
-                    len(b_bins) - 1, b_bins
-                ),
-                b_column,
-            )
-            h_MCDYJets_ptr = df_MCDYJets_q.Histo1D(
-                (
-                    f"h_MCDYJets_{var}_b_{pt_cut}GeV",
-                    f";{plot_xlabel}; DY/ZeroBias",
-                    len(b_bins) - 1, b_bins
-                ),
-                b_column,
-            )
+            print(f"\n\nProcessing DiMuon mass range: {mass[0]} - {mass[1]} GeV...\n")
    
+            # df_SingleMuon_mass = df_SingleMuon_var.Filter(f"DiMuon_Mass >= {mass[0]} && DiMuon_Mass <= {mass[1]}")
+            # df_MCDYJets_mass = df_MCDYJets_var.Filter(f"DiMuon_Mass >= {mass[0]} && DiMuon_Mass <= {mass[1]}")
 
-            h_SingleMuon = h_SingleMuon_ptr.GetValue()
-            h_MCDYJets = h_MCDYJets_ptr.GetValue()
+            # for index, pt_cut in enumerate(pt_cuts):
+
+            #     if index == len(pt_cuts) - 1:
+            #         break
+
+            #     if pt_cut is None:
+            #         pt_cut = 0
+            #         pt_cuts[index] = 0
+
+            #     canvas.cd()
+                
+                
+            #     print(f"\n\nProcessing DiMuon pT cut: {pt_cut} GeV...\n")
+
+            #     df_SingleMuon_q = df_SingleMuon_var.Filter(f"DiMuon_Pt >= {pt_cuts[index]} && DiMuon_Pt < {pt_cuts[index + 1]}")
+            #     df_MCDYJets_q = df_MCDYJets_var.Filter(f"DiMuon_Pt >= {pt_cuts[index]} && DiMuon_Pt < {pt_cuts[index + 1]}")
+
+            #     df_SingleMuon_q = ApplyQuantileAndIP(df_SingleMuon_q, var, "MB")
+            #     df_MCDYJets_q = ApplyQuantileAndIP(df_MCDYJets_q, var, "MCMB")
+
+            df_SingleMuon_mass = df_SingleMuon_var.Filter(f"DiMuon_Mass >= {mass[0]} && DiMuon_Mass < {mass[1]}")
+            df_MCDYJets_mass = df_MCDYJets_var.Filter(f"DiMuon_Mass >= {mass[0]} && DiMuon_Mass < {mass[1]}")
+            colour = colours[idx]
 
 
-            NormaliseHist(h_SingleMuon, True)
-            NormaliseHist(h_MCDYJets, True)
+            for index, pt_cut in enumerate(pt_cuts):
             
+                canvas.cd()          
+
+                print(f"\n\nProcessing DiMuon pT cut: {pt_cut} GeV...\n")
+
+
+                if pt_cut is None or len(pt_cuts) == 0:
+                    print(f"\n\nNo DiMuon pT cut specified for quantile plot.\n")
+
+                    df_SingleMuon_q = df_SingleMuon_mass
+                    df_MCDYJets_q = df_MCDYJets_mass
+
+                else:
+                    pt_cut = int(pt_cut)
+                    print(f"\n\nApplying DiMuon pT cuts for quantile plot: {pt_cut} GeV...\n")
+
+                    df_SingleMuon_q = DiMuonPtCut(df_SingleMuon_mass, pt_cut)
+                    df_MCDYJets_q = DiMuonPtCut(df_MCDYJets_mass, pt_cut)
+
+                    
+
+                df_SingleMuon_q = ApplyQuantileAndIP(df_SingleMuon_q, var, "MB")
+                df_MCDYJets_q = ApplyQuantileAndIP(df_MCDYJets_q, var, "MCMB")
+
+                    
+
+                h_SingleMuon_ptr = df_SingleMuon_q.Histo1D(
+                    (
+                        f"h_SingleMuon_{var}_b_{pt_cut}GeV",
+                        f"; {plot_xlabel}; DY/ZeroBias",
+                        len(b_bins) - 1, b_bins
+                    ),
+                    b_column,
+                )
+                h_MCDYJets_ptr = df_MCDYJets_q.Histo1D(
+                    (
+                        f"h_MCDYJets_{var}_b_{pt_cut}GeV",
+                        f";{plot_xlabel}; DY/ZeroBias",
+                        len(b_bins) - 1, b_bins
+                    ),
+                    b_column,
+                )
+    
+
+                h_SingleMuon = h_SingleMuon_ptr.GetValue()
+                h_MCDYJets = h_MCDYJets_ptr.GetValue()
+
+
+                NormaliseHist(h_SingleMuon, True)
+                NormaliseHist(h_MCDYJets, True)
+                
+                
+                # pad1.cd()
+
+
+                ratio_Data = h_SingleMuon.Clone(f"Data_DYMinBias_final_{var}_{pt_cut}GeV")
+                ratio_Data.Divide(h_MinBias)
+                ratio_Data.SetLineColor(colour)
+                ratio_Data.SetMarkerColor(colour)
+                ratio_Data.SetLineWidth(2)
+                ratio_Data.SetDirectory(0)
+                ratio_Data.GetXaxis().SetTitle(plot_xlabel)
+                ratio_Data.GetXaxis().SetTitleSize(0.03)
+                ratio_Data.GetXaxis().SetLabelSize(0.03)
+                ratio_Data.GetXaxis().SetTickLength(0.04)
+                ratio_Data.GetYaxis().SetTitle("DY/MinBias")
+                ratio_Data.GetYaxis().SetTitleSize(0.03)
+                ratio_Data.GetYaxis().SetLabelSize(0.03)
+                ratio_Data.GetYaxis().SetTitleOffset(1.5)
+                ratio_Data.GetYaxis().SetNdivisions(505)
+                histos.append(ratio_Data)
+
+                ratio_MC = h_MCDYJets.Clone(f"MC_DYMinBias_final_{var}_{pt_cut}GeV")
+                ratio_MC.Divide(h_MCMinBias)
+                ratio_MC.SetLineColor(colour)
+                ratio_MC.SetMarkerColor(colour)
+                ratio_MC.SetLineStyle(2)
+                ratio_MC.SetLineWidth(2)
+                ratio_MC.SetDirectory(0)
+                # ratio_MC.SetMarkerStyle(20)
+                ratio_MC.SetMarkerSize(0.8)
+                ratio_MC.GetXaxis().SetTitle(plot_xlabel)
+                ratio_MC.GetXaxis().SetTitleSize(0.1)
+                ratio_MC.GetXaxis().SetTitleOffset(1.3)
+                ratio_MC.GetXaxis().SetLabelSize(0.085)
+                ratio_MC.GetXaxis().SetTickLength(0.07)
+                ratio_MC.GetYaxis().SetTitle("DY/MinBias")
+                ratio_MC.GetYaxis().SetTitleSize(0.1)
+                ratio_MC.GetYaxis().SetLabelSize(0.075)
+                ratio_MC.GetYaxis().SetTitleOffset(0.5)
+                ratio_MC.GetYaxis().SetNdivisions(10, False)
+
+                histos.append(ratio_MC)
+
+
+                # ratio_Data.Draw("hist e same")
+                if idx == 0:
+                    ratio_Data.Draw("hist")
+                else:
+                    ratio_Data.Draw("hist same")
+
+                ratio_MC.Draw("hist same")
+
+
+
+                # legend_ptcuts.AddEntry(dummy, f"#color[{colour}]{{#bf{{{int(pt_cuts[index])} GeV #leq p^{{#mu#mu}}_{{T}} < {int(pt_cuts[index + 1])} GeV}}}}", "")
+                legend_ptcuts.AddEntry(dummy, f"#color[{colour}]{{#bf{{{int(mass[0])} GeV #leq m_{{#mu#mu}} < {int(mass[1])} GeV}}}}", "")
+
+
+
+                print(f"Finished processing diMuon pT cut: {pt_cut} GeV!\n")
+
+
+                # canvas.cd()
+                # inset.cd()
+
+                
+                # # clone histograms so axis/range changes don't affect main pads
+                # h1 = ratio_Data.Clone(ratio_Data.GetName() + "_inset")
+                # h1MC = ratio_MC.Clone(ratio_MC.GetName() + "_inset") 
+
+                # h1.GetXaxis().SetTitle(plot_xlabel)
+                # h1.GetXaxis().SetLabelSize(0.03)
+                # h1.GetYaxis().SetLabelSize(0.06)
+                # h1.GetYaxis().SetTitle("DY/MinBias")
+                
+                # h1MC.GetXaxis().SetTitle(plot_xlabel)
+                # h1MC.GetXaxis().SetLabelSize(0.03)
+                # h1MC.GetYaxis().SetLabelSize(0.06)
+                # h1MC.GetYaxis().SetTitle("DY/MinBias")
+
+                # inset_histos.append((h1, h1MC))
+
             
-            pad1.cd()
+        # canvas.cd()
+        # inset.cd()
+
+        # xmin = 0
+        # xmax = 0.15
+        # yminInset_list = []
+        # ymaxInset_list = []
 
 
-            ratio_Data = h_SingleMuon.Clone(f"Data_DYMinBias_final_{var}_{pt_cut}GeV")
-            ratio_Data.Divide(h_MinBias)
-            ratio_Data.SetLineColor(colour)
-            ratio_Data.SetMarkerColor(colour)
-            ratio_Data.SetLineWidth(2)
-            ratio_Data.SetDirectory(0)
-            ratio_Data.GetXaxis().SetTitle(plot_xlabel)
-            ratio_Data.GetXaxis().SetTitleSize(0.03)
-            ratio_Data.GetXaxis().SetLabelSize(0.03)
-            ratio_Data.GetXaxis().SetTickLength(0.04)
-            ratio_Data.GetYaxis().SetTitle("DY/MinBias")
-            ratio_Data.GetYaxis().SetTitleSize(0.03)
-            ratio_Data.GetYaxis().SetLabelSize(0.03)
-            ratio_Data.GetYaxis().SetTitleOffset(1.5)
-            ratio_Data.GetYaxis().SetNdivisions(505)
-            histos.append(ratio_Data)
-
-            ratio_MC = h_MCDYJets.Clone(f"MC_DYMinBias_final_{var}_{pt_cut}GeV")
-            ratio_MC.Divide(h_MCMinBias)
-            ratio_MC.SetLineColor(colour)
-            ratio_MC.SetMarkerColor(colour)
-            ratio_MC.SetLineStyle(2)
-            ratio_MC.SetLineWidth(2)
-            ratio_MC.SetDirectory(0)
-            # ratio_MC.SetMarkerStyle(20)
-            ratio_MC.SetMarkerSize(0.8)
-            ratio_MC.GetXaxis().SetTitle(plot_xlabel)
-            ratio_MC.GetXaxis().SetTitleSize(0.1)
-            ratio_MC.GetXaxis().SetTitleOffset(1.3)
-            ratio_MC.GetXaxis().SetLabelSize(0.085)
-            ratio_MC.GetXaxis().SetTickLength(0.07)
-            ratio_MC.GetYaxis().SetTitle("DY/MinBias")
-            ratio_MC.GetYaxis().SetTitleSize(0.1)
-            ratio_MC.GetYaxis().SetLabelSize(0.075)
-            ratio_MC.GetYaxis().SetTitleOffset(0.5)
-            ratio_MC.GetYaxis().SetNdivisions(10, False)
-
-            histos.append(ratio_MC)
-
-
-            ratio_Data.Draw("hist e same")
-            ratio_MC.Draw("hist e same")
+        # for index, ih in enumerate(inset_histos):
+        #     if index == 0:
+        #         yminInset_list.append(min(ih.GetBinContent(i) for i in range(1, 5)))
+        #         ymaxInset_list.append(max(ih.GetBinContent(i) for i in range(1, 5)))
+        #     else:
+        #         yminInset_list.append(min(ih[0].GetBinContent(i) for i in range(1, 5)))
+        #         ymaxInset_list.append(max(ih[0].GetBinContent(i) for i in range(1, 5)))
 
 
 
-            legend_ptcuts.AddEntry(dummy, f"#color[{colour}]{{#bf{{{int(pt_cuts[index])} GeV #leq p^{{#mu#mu}}_{{T}} < {int(pt_cuts[index + 1])} GeV}}}}", "")
-
-
-
-            print(f"Finished processing diMuon pT cut: {pt_cut} GeV!\n")
-
-
-            canvas.cd()
-            inset.cd()
-
-            
-            # clone histograms so axis/range changes don't affect main pads
-            h1 = ratio_Data.Clone(ratio_Data.GetName() + "_inset")
-            h1MC = ratio_MC.Clone(ratio_MC.GetName() + "_inset") 
-
-            h1.GetXaxis().SetTitle(plot_xlabel)
-            h1.GetXaxis().SetLabelSize(0.03)
-            h1.GetYaxis().SetLabelSize(0.06)
-            h1.GetYaxis().SetTitle("DY/MinBias")
-            
-            h1MC.GetXaxis().SetTitle(plot_xlabel)
-            h1MC.GetXaxis().SetLabelSize(0.03)
-            h1MC.GetYaxis().SetLabelSize(0.06)
-            h1MC.GetYaxis().SetTitle("DY/MinBias")
-
-            inset_histos.append((h1, h1MC))
-
-            
-        canvas.cd()
-        inset.cd()
-
-        xmin = 0
-        xmax = 0.15
-        yminInset_list = []
-        ymaxInset_list = []
-
-
-        for index, ih in enumerate(inset_histos):
-            if index == 0:
-                yminInset_list.append(min(ih.GetBinContent(i) for i in range(1, 5)))
-                ymaxInset_list.append(max(ih.GetBinContent(i) for i in range(1, 5)))
-            else:
-                yminInset_list.append(min(ih[0].GetBinContent(i) for i in range(1, 5)))
-                ymaxInset_list.append(max(ih[0].GetBinContent(i) for i in range(1, 5)))
-
-
-
-        yminInset = min(yminInset_list) * 0.7
-        if yminInset <= 0:
-            yminInset = 0.0001
-        ymaxInset = max(ymaxInset_list) * 1.2
+        # yminInset = min(yminInset_list) * 0.7
+        # if yminInset <= 0:
+        #     yminInset = 0.0001
+        # ymaxInset = max(ymaxInset_list) * 1.2
 
         
-        frame = inset.DrawFrame(xmin, yminInset, xmax, ymaxInset)
-        frame.GetXaxis().SetLabelSize(0.05)
-        frame.GetYaxis().SetLabelSize(0.06)
-        frame.GetXaxis().SetTitleSize(0.05)
-        frame.GetYaxis().SetTitleSize(0.01)
-        frame.GetXaxis().SetLabelOffset(0)
-        frame.GetYaxis().SetNdivisions(505)
-        frame.GetXaxis().SetTitle("impact parameter b")
-        frame.GetYaxis().SetTitle("DY/MinBias")
-        frame.GetYaxis().SetTitleSize(0.06)
+        # frame = inset.DrawFrame(xmin, yminInset, xmax, ymaxInset)
+        # frame.GetXaxis().SetLabelSize(0.05)
+        # frame.GetYaxis().SetLabelSize(0.06)
+        # frame.GetXaxis().SetTitleSize(0.05)
+        # frame.GetYaxis().SetTitleSize(0.01)
+        # frame.GetXaxis().SetLabelOffset(0)
+        # frame.GetYaxis().SetNdivisions(505)
+        # frame.GetXaxis().SetTitle("impact parameter b")
+        # frame.GetYaxis().SetTitle("DY/MinBias")
+        # frame.GetYaxis().SetTitleSize(0.06)
 
-        frame.GetXaxis().SetTitleOffset(0.8)
-        frame.GetYaxis().SetTitleOffset(0.8)
+        # frame.GetXaxis().SetTitleOffset(0.8)
+        # frame.GetYaxis().SetTitleOffset(0.8)
 
-        frame.GetXaxis().SetRangeUser(xmin, xmax)
+        # frame.GetXaxis().SetRangeUser(xmin, xmax)
 
-        # inset_histos[0].GetXaxis().SetTitle("impact parameter b")
-        # inset_histos[0].GetYaxis().SetTitle("DY/MinBias")
-        # inset_histos[0].GetXaxis().SetLabelSize(0.01)
-        # inset_histos[0].GetXaxis().SetTitleSize(0.01)
-        # inset_histos[0].GetYaxis().SetLabelSize(0.08)
-        # inset_histos[0].GetXaxis().SetRangeUser(xmin, xmax)
-
-
-
-
-        for index, ih in enumerate(inset_histos):
-            if index == 0:
-                ih.Draw("hist e same")
-            else:
-                ih[0].Draw("hist e same")
-
-
-        max_hist = max(
-            h_pythia.GetMaximum(),
-            max(h.GetMaximum() for h in histos)
-        ) * 1.2
-
-        h_pythia.SetMaximum(max_hist)
+        # # inset_histos[0].GetXaxis().SetTitle("impact parameter b")
+        # # inset_histos[0].GetYaxis().SetTitle("DY/MinBias")
+        # # inset_histos[0].GetXaxis().SetLabelSize(0.01)
+        # # inset_histos[0].GetXaxis().SetTitleSize(0.01)
+        # # inset_histos[0].GetYaxis().SetLabelSize(0.08)
+        # # inset_histos[0].GetXaxis().SetRangeUser(xmin, xmax)
 
 
 
-        canvas.cd()
-        pad2.cd()
 
-        data_ref = histos[1].Clone("data_ref")
-        mc_ref   = histos[2].Clone("mc_ref")
-
-        data_ref.SetDirectory(0)
-        mc_ref.SetDirectory(0)
-
-        ratio_histos = []
-
-        for index, h in enumerate(histos):
-
-            if index == 0:
-                continue
-
-            ratio_left = h.Clone(f"{h.GetName()}_ratio_{index}")
-            ratio_left.SetDirectory(0)
-
-            if index % 2 != 0:
-                ratio_left.Divide(data_ref)
-            else:
-                ratio_left.Divide(mc_ref)
-
-            ratio_left.SetLineColor(h.GetLineColor())
-            ratio_left.SetMarkerColor(h.GetMarkerColor())
-            ratio_left.SetMarkerStyle(h.GetMarkerStyle())
-            ratio_left.SetMarkerSize(h.GetMarkerSize())
-            ratio_left.SetLineStyle(h.GetLineStyle())
-            ratio_left.SetLineWidth(2)
-
-            ratio_left.GetXaxis().SetTitle("")
-            ratio_left.GetXaxis().SetTitleSize(0)
-            ratio_left.GetXaxis().SetLabelSize(0.05)
-
-            ratio_left.GetYaxis().SetTitle("#frac{DY/MinBias for a p^{#mu#mu}_{T} interval}{DY/MinBias for lowest p^{#mu#mu}_{T} interval}")
-            ratio_left.GetYaxis().SetTitleSize(0.04)
-            ratio_left.GetYaxis().SetLabelSize(0.06)
-            ratio_left.GetYaxis().SetTitleOffset(1.4)
-
-            ratio_histos.append(ratio_left)
+        # for index, ih in enumerate(inset_histos):
+        #     if index == 0:
+        #         ih.Draw("hist e same")
+        #     else:
+        #         ih[0].Draw("hist e same")
 
 
-        x_cut = 0.3
+        # max_hist = max(
+        #     h_pythia.GetMaximum(),
+        #     max(h.GetMaximum() for h in histos)
+        # ) * 1.2
 
-        ymin_ratio_left = min(
-            h.GetBinContent(i)
-            for h in ratio_histos
-            for i in range(1, h.FindBin(x_cut)+1)
-            if h.GetBinContent(i) > 0
-        ) * 0.9
-
-        ymax_ratio_left = max(
-            h.GetBinContent(i)
-            for h in ratio_histos
-            for i in range(1, h.FindBin(x_cut)+1)
-        ) * 1.1
+        # h_pythia.SetMaximum(max_hist)
 
 
-        ratio_histos[0].GetXaxis().SetRangeUser(0, x_cut)
-        ratio_histos[0].GetYaxis().SetRangeUser(
-            ymin_ratio_left,
-            ymax_ratio_left
-        )
+
+        # canvas.cd()
+        # pad2.cd()
+
+        # data_ref = histos[1].Clone("data_ref")
+        # mc_ref   = histos[2].Clone("mc_ref")
+
+        # data_ref.SetDirectory(0)
+        # mc_ref.SetDirectory(0)
+
+        # ratio_histos = []
+
+        # for index, h in enumerate(histos):
+
+        #     if index == 0:
+        #         continue
+
+        #     ratio_left = h.Clone(f"{h.GetName()}_ratio_{index}")
+        #     ratio_left.SetDirectory(0)
+
+        #     if index % 2 != 0:
+        #         ratio_left.Divide(data_ref)
+        #     else:
+        #         ratio_left.Divide(mc_ref)
+
+        #     ratio_left.SetLineColor(h.GetLineColor())
+        #     ratio_left.SetMarkerColor(h.GetMarkerColor())
+        #     ratio_left.SetMarkerStyle(h.GetMarkerStyle())
+        #     ratio_left.SetMarkerSize(h.GetMarkerSize())
+        #     ratio_left.SetLineStyle(h.GetLineStyle())
+        #     ratio_left.SetLineWidth(2)
+
+        #     ratio_left.GetXaxis().SetTitle("")
+        #     ratio_left.GetXaxis().SetTitleSize(0)
+        #     ratio_left.GetXaxis().SetLabelSize(0.05)
+
+        #     ratio_left.GetYaxis().SetTitle("#frac{DY/MinBias for a p^{#mu#mu}_{T} interval}{DY/MinBias for lowest p^{#mu#mu}_{T} interval}")
+        #     ratio_left.GetYaxis().SetTitleSize(0.04)
+        #     ratio_left.GetYaxis().SetLabelSize(0.06)
+        #     ratio_left.GetYaxis().SetTitleOffset(1.4)
+
+        #     ratio_histos.append(ratio_left)
 
 
-        # draw first histogram as frame
-        ratio_histos[0].Draw("hist e")
+        # x_cut = 0.3
 
-        for ratio in ratio_histos[1:]:
-            ratio.Draw("hist e same")
+        # ymin_ratio_left = min(
+        #     h.GetBinContent(i)
+        #     for h in ratio_histos
+        #     for i in range(1, h.FindBin(x_cut)+1)
+        #     if h.GetBinContent(i) > 0
+        # ) * 0.9
+
+        # ymax_ratio_left = max(
+        #     h.GetBinContent(i)
+        #     for h in ratio_histos
+        #     for i in range(1, h.FindBin(x_cut)+1)
+        # ) * 1.1
+
+
+        # ratio_histos[0].GetXaxis().SetRangeUser(0, x_cut)
+        # ratio_histos[0].GetYaxis().SetRangeUser(
+        #     ymin_ratio_left,
+        #     ymax_ratio_left
+        # )
+
+
+        # # draw first histogram as frame
+        # ratio_histos[0].Draw("hist e")
+
+        # for ratio in ratio_histos[1:]:
+        #     ratio.Draw("hist e same")
 
         
 
+        # canvas.cd()
+        # pad3.cd()
+
+        # ratio_histos_right = []
+
+        # for h in ratio_histos:
+
+        #     ratio_right = h.Clone(f"{h.GetName()}_right")
+        #     ratio_right.SetDirectory(0)
+
+        #     ratio_right.SetLineColor(h.GetLineColor())
+        #     ratio_right.SetMarkerColor(h.GetMarkerColor())
+        #     ratio_right.SetMarkerStyle(h.GetMarkerStyle())
+        #     ratio_right.SetMarkerSize(h.GetMarkerSize())
+        #     ratio_right.SetLineStyle(h.GetLineStyle())
+        #     ratio_right.SetLineWidth(2)
+
+
+        #     ratio_right.GetXaxis().SetTitle(plot_xlabel)
+        #     ratio_right.GetXaxis().SetTitleSize(0.05)
+        #     ratio_right.GetXaxis().SetTitleOffset(0.95)
+        #     ratio_right.GetXaxis().SetLabelSize(0.05)
+
+        #     ratio_right.GetYaxis().SetTitle("")
+        #     ratio_right.GetYaxis().SetTitleSize(0)
+        #     ratio_right.GetYaxis().SetLabelSize(0.06)
+        #     ratio_right.GetYaxis().SetLabelOffset(0.007)
+
+
+        #     ratio_histos_right.append(ratio_right)
+
+
+
+        # ymin_ratio_right = min(
+        #     h.GetBinContent(i)
+        #     for h in ratio_histos_right
+        #     for i in range(h.FindBin(x_cut), h.GetNbinsX()+1)
+        #     if h.GetBinContent(i) > 0
+        # ) * 0.9
+
+
+        # ymax_ratio_right = max(
+        #     h.GetBinContent(i)
+        #     for h in ratio_histos_right
+        #     for i in range(h.FindBin(x_cut), h.GetNbinsX()+1)
+        # ) * 1.1
+
+
+        # ratio_histos_right[0].GetXaxis().SetRangeUser(x_cut, 1)
+        # ratio_histos_right[0].GetYaxis().SetRangeUser(
+        #     ymin_ratio_right,
+        #     ymax_ratio_right
+        # )
+
+
+        # # draw first histogram as frame
+        # ratio_histos_right[0].Draw("hist e")
+
+        # for ratio in ratio_histos_right[1:]:
+        #     ratio.Draw("hist e same")
+
+
         canvas.cd()
-        pad3.cd()
-
-        ratio_histos_right = []
-
-        for h in ratio_histos:
-
-            ratio_right = h.Clone(f"{h.GetName()}_right")
-            ratio_right.SetDirectory(0)
-
-            ratio_right.SetLineColor(h.GetLineColor())
-            ratio_right.SetMarkerColor(h.GetMarkerColor())
-            ratio_right.SetMarkerStyle(h.GetMarkerStyle())
-            ratio_right.SetMarkerSize(h.GetMarkerSize())
-            ratio_right.SetLineStyle(h.GetLineStyle())
-            ratio_right.SetLineWidth(2)
-
-
-            ratio_right.GetXaxis().SetTitle(plot_xlabel)
-            ratio_right.GetXaxis().SetTitleSize(0.05)
-            ratio_right.GetXaxis().SetTitleOffset(0.95)
-            ratio_right.GetXaxis().SetLabelSize(0.05)
-
-            ratio_right.GetYaxis().SetTitle("")
-            ratio_right.GetYaxis().SetTitleSize(0)
-            ratio_right.GetYaxis().SetLabelSize(0.06)
-            ratio_right.GetYaxis().SetLabelOffset(0.007)
-
-
-            ratio_histos_right.append(ratio_right)
-
-
-
-        ymin_ratio_right = min(
-            h.GetBinContent(i)
-            for h in ratio_histos_right
-            for i in range(h.FindBin(x_cut), h.GetNbinsX()+1)
-            if h.GetBinContent(i) > 0
-        ) * 0.9
-
-
-        ymax_ratio_right = max(
-            h.GetBinContent(i)
-            for h in ratio_histos_right
-            for i in range(h.FindBin(x_cut), h.GetNbinsX()+1)
-        ) * 1.1
-
-
-        ratio_histos_right[0].GetXaxis().SetRangeUser(x_cut, 1)
-        ratio_histos_right[0].GetYaxis().SetRangeUser(
-            ymin_ratio_right,
-            ymax_ratio_right
-        )
-
-
-        # draw first histogram as frame
-        ratio_histos_right[0].Draw("hist e")
-
-        for ratio in ratio_histos_right[1:]:
-            ratio.Draw("hist e same")
-
-
-        canvas.cd()
-        pad1.cd()
+        # pad1.cd()
 
         legend_ptcuts.Draw()
         legend_var.Draw()
@@ -4640,14 +4708,39 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
         h_MinBias = h_MinBias_ptr.GetValue()
         h_MCMinBias = h_MCMinBias_ptr.GetValue()
 
-        # NormaliseHist(h_MinBias, binweight)
-        # NormaliseHist(h_MCMinBias, binweight)
+        NormaliseHist(h_MinBias, binweight)
+        NormaliseHist(h_MCMinBias, binweight)
 
         x_values = []
 
         sigma_eff_data_values = []
         sigma_eff_mc_values = []
-        inv_mass = [(0, 15), (15, 20), (20, 30), (30, 40), (40, 50), (50, 60), (60, 70), (70, 86), (86, 96), (96, 100), (100, 110), (110, 120), (120, 130), (130, 140), (140, 150)]
+        sigma_eff_data_errors = []
+        sigma_eff_mc_errors = []
+        # inv_mass = [(0, 15), (15, 20), (20, 30), (30, 40), (40, 50), (50, 60), (60, 70), (70, 86), (86, 96), (96, 100), (100, 110), (110, 120), (120, 130), (130, 140), (140, 150)]
+        # inv_mass = [(0, 10), (10, 20), (20, 30), (30, 40), (40, 50), (50, 60), (60, 70), (70, 80), (80, 90), (90, 100), (100, 110), (110, 120), (120, 130), (130, 140), (140, 150)]
+        inv_mass = [(86, 96), 
+                    # (0, 10),
+                    # # (10, 20), 
+                    # # (20, 30), 
+                    # # (30, 40), 
+                    # # (40, 50), 
+                    # (50, 60), 
+                    # (60, 70), 
+                    # (70, 86), 
+                    # (96, 100), 
+                    # (100, 110), 
+                    # (110, 120), 
+                    # (120, 130), 
+                    # (130, 140), 
+                    # (140, 150)
+                    (0, 30),
+                    (30, 70),
+                    (70, 86),
+                    (96, 110),
+                    (110, 130),
+                    (130, 150)
+                    ]
 
 
 
@@ -4655,8 +4748,8 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
 
             print(f"\n\nProcessing DiMuon mass range: {mass[0]} - {mass[1]} GeV...\n")
    
-            df_SingleMuon_mass = df_SingleMuon_var.Filter(f"DiMuon_Mass >= {mass[0]} && DiMuon_Mass <= {mass[1]}")
-            df_MCDYJets_mass = df_MCDYJets_var.Filter(f"DiMuon_Mass >= {mass[0]} && DiMuon_Mass <= {mass[1]}")
+            df_SingleMuon_mass = df_SingleMuon_var.Filter(f"DiMuon_Mass >= {mass[0]} && DiMuon_Mass < {mass[1]}")
+            df_MCDYJets_mass = df_MCDYJets_var.Filter(f"DiMuon_Mass >= {mass[0]} && DiMuon_Mass < {mass[1]}")
 
             for index, pt_cut in enumerate(pt_cuts):
             
@@ -4693,8 +4786,8 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
                 h_SingleMuon = h_SingleMuon_ptr.GetValue()
                 h_MCDYJets = h_MCDYJets_ptr.GetValue()
 
-                # NormaliseHist(h_SingleMuon, binweight)
-                # NormaliseHist(h_MCDYJets, binweight)
+                NormaliseHist(h_SingleMuon, binweight)
+                NormaliseHist(h_MCDYJets, binweight)
 
 
 
@@ -4716,55 +4809,17 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
                 ratio_MC.GetYaxis().SetTitle(y_title)
 
 
-
-
-                # Calculate the integral of DY/MinBias for Data and MC
-                integral_Data = 0
-                integral_MC = 0
-
-
-
-                # for ratio_hists in [ratio_Data, ratio_MC]:
-
-                #     for i in range(1, ratio_hists.GetNbinsX()+1):
-
-                #         content = ratio_hists.GetBinContent(i)
-                #         width = ratio_hists.GetBinWidth(i)
-
-                #         if ratio_hists == ratio_Data:
-                #             integral_Data += content * content * width * width
-                #         else:
-                #             integral_MC += content * content * width * width
-
-
-
-
-
-                # for i in range(1, ratio_Data.GetNbinsX() + 1):
-
-                #     b_low = ratio_Data.GetBinLowEdge(i)
-                #     b_high = b_low + ratio_Data.GetBinWidth(i)
-
-                #     delta_b2 = b_high**2 - b_low**2
-
-                #     content_Data = ratio_Data.GetBinContent(i)
-                #     content_MC = ratio_MC.GetBinContent(i)
-
-                #     integral_Data += content_Data**2 * delta_b2
-                #     integral_MC += content_MC**2 * delta_b2
-
-
-                # # Calculate sigma_eff for Data and MC
-                # sigma_eff_Data = (sigma0 * sigma0) / (integral_Data) if integral_Data != 0 else 0
-                # sigma_eff_MC = (sigma0 * sigma0) / (integral_MC) if integral_MC != 0 else 0
-
-
-
-            
+            width_list = []
             normalization_Data = 0.0
             normalization_MC = 0.0
             integral_Data = 0.0
             integral_MC = 0.0
+            bin_values = []
+            E_Data_list = []
+            E_MC_list = []
+            EError_Data_list = []
+            EError_MC_list = []
+
 
             for i in range(1, ratio_Data.GetNbinsX() + 1):
 
@@ -4773,10 +4828,17 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
 
                 # Calculate the width each bin
                 width = np.pi * (b_high**2 - b_low**2)
+                width_list.append(width)
 
                 # Enhancement factor (i.e. DY/MinBias) in each bin of the ratio histogram 
                 E_Data = ratio_Data.GetBinContent(i)
                 E_MC = ratio_MC.GetBinContent(i)
+                EError_Data = ratio_Data.GetBinError(i)
+                EError_MC = ratio_MC.GetBinError(i)
+                E_Data_list.append(E_Data)
+                E_MC_list.append(E_MC)
+                EError_Data_list.append(EError_Data)
+                EError_MC_list.append(EError_MC)
 
                 # Calculate the normalization and integral for Data and MC
                 normalization_Data += width * E_Data
@@ -4785,20 +4847,52 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
                 integral_Data += width * E_Data**2
                 integral_MC += width * E_MC**2
 
-            sigma_eff_Data = (normalization_Data / integral_Data if integral_Data != 0 else 0) * sigma0
-            sigma_eff_MC = (normalization_MC / integral_MC if integral_MC != 0 else 0) * sigma0
+                bin_values.append((width, E_Data, EError_Data, E_MC, EError_MC))
 
-            # sigma_eff_Data = (normalization_Data / integral_Data if integral_Data != 0 else 0)
-            # sigma_eff_MC = (normalization_MC / integral_MC if integral_MC != 0 else 0)
+            sigma_eff_Data = (normalization_Data / integral_Data if integral_Data != 0 else 0)
+            sigma_eff_MC = (normalization_MC / integral_MC if integral_MC != 0 else 0)
+
+       
+            def sigma_eff_error(width_list, E_list, Eerror_list):
+                """
+                Gaussian error propagation for
+
+                    sigma_eff = sum(width_i * E_i) / sum(width_i * E_i^2)
+
+                assuming only E_i has an uncertainty and the E_i uncertainties are statistically independent.
+                """
+
+                normalization = sum(width * E for width, E in zip(width_list, E_list))
+
+                integral = sum(width * E**2 for width, E in zip(width_list, E_list))
+
+                if integral == 0:
+                    return 0
+
+                sigma_eff = normalization / integral
+
+                error_squared = 0.0
+
+                for width, E, Eerror in zip(width_list, E_list, Eerror_list):
+
+                    derivative = (width * (1 - 2 * E * sigma_eff)/integral)
+
+                    error_squared += (derivative * Eerror)**2
+
+                return np.sqrt(error_squared)
+            
 
             sigma_eff_data_values.append(sigma_eff_Data)
             sigma_eff_mc_values.append(sigma_eff_MC)
+
+            sigma_eff_error_Data = sigma_eff_error(width_list, E_Data_list, EError_Data_list)
+            sigma_eff_error_MC = sigma_eff_error(width_list, E_MC_list, EError_MC_list)
                     
                         
 
 
-
-
+        print(f"\nNormalization for Data: {normalization_Data}\n\n")
+        print(f"Normalization for MC: {normalization_MC}\n\n")
 
         print(f"\n\nSigma_eff values for Data: {sigma_eff_data_values}")
         print(f"\n\nSigma_eff values for MC: {sigma_eff_mc_values}\n\n")
@@ -4812,78 +4906,30 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
             edge for bin_range in inv_mass for edge in bin_range
         ))
 
-        fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+        plt.figure(figsize=(10, 6))
+        plt.grid(zorder=0)
+        # plt.plot(inv_mass_centers, sigma_eff_data_values, 'o-', label='Data DY/MinBias', color='blue', zorder=3)
+        # plt.plot(inv_mass_centers, sigma_eff_mc_values, 'o-', label='MC DY/MinBias', color='red', zorder=3)
 
-        # Data
-        axes[0].grid(zorder=0)
-
-        for edge in mass_edges:
-            axes[0].axvline(
-                edge,
-                linestyle="--",
-                linewidth=1,
-                color="gray",
-                zorder=1
-            )
-
-        axes[0].scatter(
-            inv_mass_centers,
-            sigma_eff_data_values,
-            marker='o',
-            label='Data DY/MinBias',
-            color='blue',
-            zorder=3
-        )
-
-        axes[0].set_xlabel(fr'$m_{{\mu\mu}}$ [GeV]')
-        axes[0].set_ylabel(
-            fr'$\frac{{\sigma_{{\mathrm{{eff}}}}}}{{\sigma_{{0}}}}$',
-            fontsize=20
-        )
-        axes[0].set_xticks(mass_edges)
-        axes[0].legend(
-            title=f'{VARIABLESFORPYTHON[var]}',
-            loc='upper left'
-        )
-
- 
-
-        # MC
-        axes[1].grid(zorder=0)
-
-        for edge in mass_edges:
-            axes[1].axvline(
-                edge,
-                linestyle="--",
-                linewidth=1,
-                color="gray",
-                zorder=1
-            )
-
-        axes[1].scatter(
-            inv_mass_centers,
-            sigma_eff_mc_values,
-            marker='o',
-            label='MC DY/MinBias',
-            color='red',
-            zorder=3
-        )
-
-        axes[1].set_xlabel(fr'$m_{{\mu\mu}}$ [GeV]')
-        axes[1].set_xticks(mass_edges)
-        axes[1].legend(
-            title=f'{VARIABLESFORPYTHON[var]}',
-            loc='upper left'
-        )
-
-        axes[0].set_ylim(0, max(sigma_eff_data_values) * 1.1)
-        axes[1].set_ylim(0, max(sigma_eff_mc_values) * 1.1)
-
-   
-
+        plt.errorbar(inv_mass_centers, sigma_eff_data_values, yerr=sigma_eff_error_Data, fmt='o', capsize=3, label='Data DY/MinBias', color='blue', zorder=3)
+        plt.errorbar(inv_mass_centers, sigma_eff_mc_values, yerr=sigma_eff_error_MC, fmt='o', capsize=3, label='MC DY/MinBias', color='red', zorder=3)
+        
+        plt.xlabel(fr'$m_{{\mu\mu}}$ [GeV]', fontsize=15)
+        plt.ylabel(fr'$\frac{{\sigma_{{\mathrm{{eff}}}}}}{{\sigma_{{0}}}}$', fontsize=20)
+        plt.xticks(mass_edges)
+        plt.yscale('log')
+        positive_sigma_eff_values = [value for value in sigma_eff_data_values + sigma_eff_mc_values if value > 0]
+        plt.ylim(min(positive_sigma_eff_values) * 0.9, max(positive_sigma_eff_values) * 1.1)
+        plt.grid(which='both', axis='y', zorder=0, alpha=0.5)
+        plt.tick_params(axis='both', which='both', left=True, length=6, width=0.8, direction='in')
+        plt.legend(title=fr"{VARIABLESFORPYTHON[var]}; $p^{{\mu\mu}}_{{\mathrm{{T}}}} < 4 \, \mathrm{{GeV}}$", fontsize=12, loc='upper left', frameon=True, alignment = "left", handletextpad=0.1, title_fontsize=12)
         plt.tight_layout()
 
-        output_dir = f"new_plots/sigma_eff/{var}_SigmaEff{out_suffix}.pdf"
+        if pt_cut is None or len(pt_cuts) == 0:
+            output_dir = f"new_plots/sigma_eff/{var}_SigmaEff{out_suffix}.pdf"
+        else:
+            output_dir = f"new_plots/sigma_eff/{var}_SigmaEff_{pt_cut}GeVZPtCut{out_suffix}.pdf"
+
         plt.savefig(output_dir)
         print(f"Saved plot: {output_dir}")
 
@@ -4902,13 +4948,334 @@ def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_va
 
 
 
+
+
+
+def EnhancementFactorRatioToZ(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, bins, b_bins, binweight):
+
+    quantile_bins = array.array("d", bins)
+
+    if b_bins is None:
+        b_bins = array.array("d", np.linspace(0, 1, 50))
+        # b_bins = array.array("d", np.concatenate([
+        #                           np.arange(0.00, 0.10, 0.01),
+        #                           np.arange(0.10, 0.20, 0.01),
+        #                           np.arange(0.20, 1.05, 0.05)
+        #                         ])
+        #                     )
+    else:
+        b_bins = array.array("d", b_bins)
+
+    pt_cuts = parse_pt_cuts(pt_cuts)
+
+    def colors_func(n):
+        base = [
+            ROOT.kViolet - 6,
+            ROOT.kBlue + 1,
+            ROOT.kGreen + 2,
+            ROOT.kMagenta + 1,
+            ROOT.kOrange + 7,
+            ROOT.kCyan + 1,
+            ROOT.kViolet + 1,
+            ROOT.kAzure + 1,
+            ROOT.kPink + 7,
+            ROOT.kTeal + 3,
+            ROOT.kSpring + 5,
+            ROOT.kYellow + 2,
+            ROOT.kGray + 2,
+            ROOT.kBlack,
+            ROOT.kRed,
+            ROOT.kOrange - 3,
+            ROOT.kGreen - 3,
+            ROOT.kMagenta - 3,
+            ROOT.kCyan - 3,
+            ROOT.kViolet - 3,
+            ROOT.kAzure - 3,
+            ROOT.kPink - 3,
+
+        ]
+        return [base[i % len(base)] for i in range(n)]
+
+    colours = [
+        ROOT.kViolet - 6,
+        ROOT.kBlue + 1,
+        ROOT.kGreen + 2,
+        ROOT.kMagenta + 1,
+        ROOT.kOrange + 7,
+        ROOT.kCyan + 1,
+        ROOT.kAzure + 1,
+        ROOT.kPink + 7,
+        ROOT.kTeal + 3,
+        ROOT.kSpring + 5,
+        ROOT.kYellow + 2,
+        ROOT.kGray + 2,
+        ROOT.kBlack,
+        ROOT.kRed,
+        ROOT.kOrange - 3,
+        ROOT.kGreen - 3,
+        ROOT.kMagenta - 3,
+        ROOT.kCyan - 3,
+        ROOT.kViolet - 3,
+        ROOT.kAzure - 3,
+        ROOT.kPink - 3,
+        ]
+    
+
+    sigma0 = 70  # mb
+    
+    for var in variables:
+        if var in ["PFCands_pt", "PFCands_eta", "PFCands_phi", "PFCands_pvAssocQuality"]:
+            continue
+
+        label = VARIABLES[var]
+        binning = BINNING[var]
+        y_title = "DY/MinBias relative to (DY/MinBias)_{Z}"
+
+        q_column = f"{var}_InvQ"
+        plot_xlabel = f"impact parameter b"
+        b_column = f"{var}_b"
+
+        dummy = ROOT.TObject()
+
+
+        canvas = ROOT.TCanvas(f"c_quantile_ptscan_{var}", "", 1500, 1400)
+        canvas.cd()
+        canvas.SetBottomMargin(0.1)
+        canvas.SetRightMargin(0.05)
+        canvas.SetLeftMargin(0.1)
+        canvas.SetTopMargin(0.05)
+
+        legend = ROOT.TLegend(0.35, 0.65, 0.55, 0.95)
+        legend.SetTextSize(0.02)
+        legend.SetBorderSize(0)
+        legend.SetFillStyle(0)
+        
+        legend_var = ROOT.TLegend(0.15, 0.85, 0.55, 0.95)
+        legend_var.SetTextSize(0.02)
+        legend_var.SetBorderSize(0)
+        legend_var.SetFillStyle(0)
+        legend_var.AddEntry(dummy, f"#bf{{{label}}}", "")
+
+        legend_DataStyle = ROOT.TLine(0.0, 0.0, 0.5, 0.0)
+        legend_DataStyle.SetLineColor(ROOT.kBlack)
+        legend_DataStyle.SetLineWidth(2)
+        legend_DataStyle.SetLineStyle(1)
+
+        legend_MCStyle = ROOT.TLine(0.0, 0.0, 0.5, 0.0)
+        legend_MCStyle.SetLineColor(ROOT.kBlack)
+        legend_MCStyle.SetLineWidth(2)
+        legend_MCStyle.SetLineStyle(2)
+
+        legend.AddEntry(legend_DataStyle, "#bf{Data}", "l")
+        legend.AddEntry(legend_MCStyle, "#bf{MC}", "l")
+
+
+
+        BuildQuantile(df_MinBias_var, var, "MB")
+        BuildQuantile(df_MCMinBias_var, var, "MCMB")
+
+        df_MinBias_q = ApplyQuantileAndIP(df_MinBias_var, var, "MB")
+        df_MCMinBias_q = ApplyQuantileAndIP(df_MCMinBias_var, var, "MCMB")
+
+        h_MinBias_ptr = df_MinBias_q.Histo1D((f"h_MinBias_{var}_quantile", f"; {plot_xlabel}; {y_title}", len(b_bins) - 1, b_bins), b_column)
+        h_MCMinBias_ptr = df_MCMinBias_q.Histo1D((f"h_MCMinBias_{var}_quantile", f"; {plot_xlabel}; {y_title}", len(b_bins) - 1, b_bins), b_column)
+
+        h_MinBias = h_MinBias_ptr.GetValue()
+        h_MCMinBias = h_MCMinBias_ptr.GetValue()
+
+        NormaliseHist(h_MinBias, binweight)
+        NormaliseHist(h_MCMinBias, binweight)
+
+
+
+
+        df_SingleMuon_Z = df_SingleMuon_var.Filter("DiMuon_Mass >= 86 && DiMuon_Mass < 96")
+        df_MCDYJets_Z = df_MCDYJets_var.Filter("DiMuon_Mass >= 86 && DiMuon_Mass < 96")
+
+        df_SingleMuon_Z = DiMuonPtCut(df_SingleMuon_Z, 4)
+        df_MCDYJets_Z = DiMuonPtCut(df_MCDYJets_Z, 4)
+
+        df_SingleMuon_Z = ApplyQuantileAndIP(df_SingleMuon_Z, var, "MB")
+        df_MCDYJets_Z = ApplyQuantileAndIP(df_MCDYJets_Z, var, "MCMB")
+
+        h_Z_ptr = df_SingleMuon_Z.Histo1D(
+            (
+                f"h_Z_{var}",
+                f"; {plot_xlabel}; {y_title}",
+                len(b_bins) - 1,
+                b_bins
+            ),
+            b_column
+        )
+
+        h_MCZ_ptr = df_MCDYJets_Z.Histo1D(
+            (
+                f"h_MCZ_{var}",
+                f"; {plot_xlabel}; {y_title}",
+                len(b_bins) - 1,
+                b_bins
+            ),
+            b_column
+        )
+
+        h_Z = h_Z_ptr.GetValue()
+        h_MCZ = h_MCZ_ptr.GetValue()
+
+        NormaliseHist(h_Z, binweight)
+        NormaliseHist(h_MCZ, binweight)
+
+        ratio_Z_Data = h_Z.Clone(f"ratio_Z_Data_{var}")
+        ratio_Z_Data.Divide(h_MinBias)
+
+        ratio_Z_MC = h_MCZ.Clone(f"ratio_Z_MC_{var}")
+        ratio_Z_MC.Divide(h_MCMinBias)
+
+        x_values = []
+
+        sigma_eff_data_values = []
+        sigma_eff_mc_values = []
+        sigma_eff_data_errors = []
+        sigma_eff_mc_errors = []
+        # inv_mass = [(0, 15), (15, 20), (20, 30), (30, 40), (40, 50), (50, 60), (60, 70), (70, 86), (86, 96), (96, 100), (100, 110), (110, 120), (120, 130), (130, 140), (140, 150)]
+        # inv_mass = [(0, 10), (10, 20), (20, 30), (30, 40), (40, 50), (50, 60), (60, 70), (70, 80), (80, 90), (90, 100), (100, 110), (110, 120), (120, 130), (130, 140), (140, 150)]
+        inv_mass = [(86, 96), 
+                    # (0, 10),
+                    # # (10, 20), 
+                    # # (20, 30), 
+                    # # (30, 40), 
+                    # # (40, 50), 
+                    # (50, 60), 
+                    # (60, 70), 
+                    # (70, 86), 
+                    # (96, 100), 
+                    # (100, 110), 
+                    # (110, 120), 
+                    # (120, 130), 
+                    # (130, 140), 
+                    # (140, 150)
+                    (0, 30),
+                    (30, 70),
+                    (70, 86),
+                    (96, 110),
+                    (110, 130),
+                    (130, 150)
+                    ]
+
+        ratios_Data = []
+        ratios_MC = []
+        ratios_toZ_Data = []
+        ratios_toZ_MC = []
+
+
+        
+
+        
+
+        for index, pt_cut in enumerate(pt_cuts):
+        
+            canvas.cd()          
+
+            print(f"\n\nProcessing DiMuon pT cut: {pt_cut} GeV...\n")
+
+
+            if pt_cut is None or len(pt_cuts) == 0:
+                print(f"\n\nNo DiMuon pT cut specified for quantile plot.\n")
+
+                df_SingleMuon_q = df_SingleMuon_var
+                df_MCDYJets_q = df_MCDYJets_var
+
+            else:
+                pt_cut = int(pt_cut)
+                print(f"\n\nApplying DiMuon pT cuts for quantile plot: {pt_cut} GeV...\n")
+
+                df_SingleMuon_q = DiMuonPtCut(df_SingleMuon_var, pt_cut)
+                df_MCDYJets_q = DiMuonPtCut(df_MCDYJets_var, pt_cut)
+                
+    
+            df_SingleMuon_q = ApplyQuantileAndIP(df_SingleMuon_q, var, "MB")
+            df_MCDYJets_q = ApplyQuantileAndIP(df_MCDYJets_q, var, "MCMB")
+
+            for idx, mass in enumerate(inv_mass):   
+
+                print(f"\n\nProcessing DiMuon mass range: {mass[0]} - {mass[1]} GeV...\n")
+    
+                df_SingleMuon_mass = df_SingleMuon_q.Filter(f"DiMuon_Mass >= {mass[0]} && DiMuon_Mass < {mass[1]}")
+                df_MCDYJets_mass = df_MCDYJets_q.Filter(f"DiMuon_Mass >= {mass[0]} && DiMuon_Mass < {mass[1]}")
+
+                colour = colours[idx]
+                print(f"\n\nUsing colour {colour} for DiMuon mass range: {mass[0]} - {mass[1]} GeV...\n")
+
+        
+
+                
+                h_SingleMuon_ptr = df_SingleMuon_mass.Histo1D((f"h_SingleMuon_{var}_{mass[0]}_{mass[1]}_{pt_cut}", f"; {plot_xlabel}; {y_title}", len(b_bins) - 1, b_bins), b_column)
+                h_MCDYJets_ptr = df_MCDYJets_mass.Histo1D((f"h_MCDYJets_{var}_{mass[0]}_{mass[1]}_{pt_cut}", f"; {plot_xlabel}; {y_title}", len(b_bins) - 1, b_bins), b_column)
+
+                h_SingleMuon = h_SingleMuon_ptr.GetValue()
+                h_MCDYJets = h_MCDYJets_ptr.GetValue()
+
+                NormaliseHist(h_SingleMuon, binweight)
+                NormaliseHist(h_MCDYJets, binweight)
+
+
+                ratio_Data = h_SingleMuon.Clone(f"ratio_sigmaeff_ptscan_data_{var}_pt{pt_cut}")
+                ratio_Data.Divide(h_MinBias)
+                ratios_Data.append(ratio_Data)
+                
+                ratio_MC = h_MCDYJets.Clone(f"ratio_sigmaeff_ptscan_mc_{var}_pt{pt_cut}")
+                ratio_MC.Divide(h_MCMinBias)
+                ratios_MC.append(ratio_MC)
+
+
+                ratio_toZ_Data = ratio_Data.Clone(f"ratio_toZ_sigmaeff_ptscan_data_{var}_pt{pt_cut}")
+                ratio_toZ_MC = ratio_MC.Clone(f"ratio_toZ_sigmaeff_ptscan_mc_{var}_pt{pt_cut}")
+                ratio_toZ_Data.Divide(ratio_Z_Data)
+                ratio_toZ_MC.Divide(ratio_Z_MC)
+
+                ratio_toZ_Data.SetLineColor(colour)
+                ratio_toZ_Data.SetLineWidth(2)
+                ratio_toZ_Data.SetMarkerColor(colour)
+                ratio_toZ_Data.GetXaxis().SetTitle(plot_xlabel)
+                ratio_toZ_Data.GetYaxis().SetTitle(y_title)
+                ratios_toZ_Data.append(ratio_toZ_Data)
+
+                ratio_toZ_MC.SetLineColor(colour)
+                ratio_toZ_MC.SetLineWidth(2)
+                ratio_toZ_MC.SetLineStyle(2)
+                ratio_toZ_MC.SetMarkerColor(colour)
+                ratios_toZ_MC.append(ratio_toZ_MC)
+
+                if idx == 0:
+                    ratio_toZ_Data.Draw("hist")
+                else:
+                    ratio_toZ_Data.Draw("hist same")
+                ratio_toZ_MC.Draw("hist same")
+
+
+                legend.AddEntry(dummy, f"#color[{colour}]{{{mass[0]} GeV < m_{{#mu#mu}} < {mass[1]} GeV}}", "")
+            legend_var.AddEntry(dummy, f"p^{{#mu#mu}}_{{T}} < {pt_cut} GeV", "")
+            
+
+        legend.Draw()
+        legend_var.Draw()
+
+        output_dir = f"new_plots/sigma_eff"
+        os.makedirs(output_dir, exist_ok=True)
+
+        output_name = f"{output_dir}/{var}_EnhFactorRatioToZ{out_suffix}.pdf"
+        canvas.SaveAs(output_name)
+
+        canvas.Close()
+
+
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Combined plotting driver for NanoAOD PF-candidate studies"
     )
     parser.add_argument(
         "--mode",
-        choices=["compare", "compare-quantilebinning", "ptscan", "ptscan-quantilebinning", "quantile", "quantile-ptscan", "quantile-all", "DYMinBias", "quantile-all-ptscan", "quantiles", "momentumfractions", "mllyll", "sigmaeff", "all"],
+        choices=["compare", "compare-quantilebinning", "ptscan", "ptscan-quantilebinning", "quantile", "quantile-ptscan", "quantile-all", "DYMinBias", "quantile-all-ptscan", "quantiles", "momentumfractions", "mllyll", "sigmaeff", "enhfactorratiotoz", "all"],
         default="all",
         help="Run compare plots, diMuon pT scan plots, quantile plots, quantile pT scan plots, all-together quantile plots, all-together quantile pT-cut plots, or all",
     )
@@ -5109,7 +5476,7 @@ def main():
         QuantilePerObservable(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix, args.quantile_bins, args.b_bins, args.pt_cuts, args.binweight)
 
     if args.mode in ["DYMinBias", "quantiles", "all"]:    
-        DYMinBiasPerObservableRatio(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix, args.quantile_bins, args.b_bins, args.pt_cuts, args.binweight)
+        DYMinBiasPerObservableRatio(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix, args.quantile_bins, args.b_bins, args.pt_cuts, args.binweight, args.dimuonmass_cut)
 
     if args.mode in ["quantile-ptscan", "quantiles", "all"]:
         Quantile_DiMuonPtCut(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, args.quantile_bins, args.b_bins)
@@ -5128,6 +5495,9 @@ def main():
 
     if args.mode in ["sigmaeff", "all"]:
         SigmaEff(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, args.quantile_bins, args.b_bins, args.binweight)
+    
+    if args.mode in ["enhfactorratiotoz", "all"]:
+        EnhancementFactorRatioToZ(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, args.quantile_bins, args.b_bins, args.binweight)
 
     end = time.time()
     elapsed_time = end - start
