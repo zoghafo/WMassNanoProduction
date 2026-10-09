@@ -11,21 +11,31 @@ ratio="DYMinBias"
 slurm_flag="--slurm"
 nthreads="32"
 
-for kin_filter in "${kin_filters[@]}"; do
+n=${#kin_filters[@]}
+
+# loop over every non-empty subset of kin_filters via bitmask (2^n - 1 subsets)
+for (( mask=1; mask<(1<<n); mask++ )); do
+    combo=()
+    for (( i=0; i<n; i++ )); do
+        if (( (mask >> i) & 1 )); then
+            combo+=("${kin_filters[i]}")
+        fi
+    done
+cd ...
+    (( ${#combo[@]} > 2 )) && continue   # skip the 3-filter combination
+
+
     for axis in "${axes[@]}"; do
-        # echo "Running: kin-filter=$kin_filter, axis=$axis"
-        
+        echo "Running: kin-filter=${combo[*]}, axis=$axis"
+
         sbw PlottingSubmission.sh \
             --mode histograms \
             --vars "$vars" \
-            --kin-filter "$kin_filter" \
+            --kin-filter "${combo[@]}" \
             --ratio "$ratio" \
             --axis "$axis" \
             "$slurm_flag" \
             --nthreads "$nthreads"
-        
-        # echo "Completed: kin-filter=$kin_filter, axis=$axis"
-        # echo "---"
     done
 done
 
