@@ -12,6 +12,7 @@ import h5py
 import matplotlib.pyplot as plt
 import itertools
 from matplotlib.ticker import LogLocator
+import matplotlib.lines as mlines
 
 ROOT.gROOT.SetBatch(True)
 
@@ -1547,75 +1548,7 @@ def AverageObservablesVsZpT(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, 
         canvas.Close()
 
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-import numpy as np
-
-# def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, out_suffix, weight):
-
-#     df_SingleMuon_var = VarianceCalculation(df_SingleMuon_var, "SingleMuon", weight)
-#     df_MinBias_var = VarianceCalculation(df_MinBias_var, "MinBias", weight)
-#     df_MCDYJets_var = VarianceCalculation(df_MCDYJets_var, "MCDYJets", weight)
-#     df_MCMinBias_var = VarianceCalculation(df_MCMinBias_var, "MCMinBias", weight)
-
-#     Ht_edges = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]
-#     Ht_centers = [(Ht_edges[i] + Ht_edges[i+1]) / 2.0 for i in range(len(Ht_edges) - 1)]
-#     Ht_slices = [(Ht_edges[i], Ht_edges[i+1]) for i in range(len(Ht_edges) - 1)]
-
-#     color_DY = "#7B2D8B"
-#     color_MinBias = "#C84B00"
-
-#     datasets = [
-#         ("DY", df_SingleMuon_var, color_DY, "-",  "o"),
-#         ("MC DY", df_MCDYJets_var, color_DY, "--", "o"),
-#         ("MinBias", df_MinBias_var, color_MinBias, "-", "s"),
-#         ("MC MinBias", df_MCMinBias_var, color_MinBias, "--", "s"),
-#     ]
-
-#     fig, ax = plt.subplots(figsize=(9, 5))
-
-#     # Add dotted grey lines to the Ht bins
-#     for edge in Ht_edges:
-#         ax.axvline(edge, color='grey', linestyle='--', linewidth=0.5)
-
-#     # Change the x labels to show the bin ranges instead of the bin edges and make them central to the bins
-#     ax.set_xticks([(Ht_edges[i] + Ht_edges[i+1]) / 2.0 for i in range(len(Ht_edges) - 1)])
-#     ax.set_xticklabels([f"{Ht_edges[i]}-{Ht_edges[i+1]}" for i in range(len(Ht_edges) - 1)])
-
-#     for name, df, color, ls, marker in datasets:
-#         variances = []
-#         for low, high in Ht_slices:
-#             cut   = f"PFSelection_PFCands_Ht >= {low} && PFSelection_PFCands_Ht < {high}"
-#             stats = df.Filter(cut).Stats("PFSelection_PFCands_EventRapidity").GetValue()
-#             if stats.GetVar() == 0:
-#                 print(f"Warning: Variance is zero for {name} in Ht range [{low}, {high})")
-#             variances.append(1 / stats.GetVar() if stats.GetVar() != 0 else 0)
-
-#         ax.plot(Ht_centers, variances, color=color, linestyle=ls, marker=marker, linewidth=1.8, markersize=6, label=name)
-
-#     ax.set_xlabel(r"$H_T$ [GeV]", fontsize=13)
-#     ax.set_ylabel(r"Rapidity Variance per $H_{T}$ Bin", fontsize=13)
-#     ax.set_xlim(Ht_edges[0] - 2, Ht_edges[-1] + 2)
-#     ax.set_ylim(bottom=0)
-#     ax.legend(frameon=False, fontsize=11, ncol=2)
-#     ax.tick_params(axis='y', labelsize=10)
-
-    
-
-#     fig.tight_layout()
-
-#     output_dir = "new_plots"
-#     os.makedirs(output_dir, exist_ok=True)
-#     plt.savefig(f"{output_dir}/EventRapidityVariance{out_suffix}.pdf", bbox_inches='tight')
-#     plt.close(fig)
-#     print(f"\nSaved plot: {output_dir}/EventRapidityVariance{out_suffix}.pdf")
-
-
-def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var,
-                            df_MCDYJets_var, df_MCMinBias_var,
-                            out_suffix, weight):
+def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, out_suffix, weight):
 
     df_SingleMuon_var = VarianceCalculation(df_SingleMuon_var, "SingleMuon", weight)
     df_MinBias_var = VarianceCalculation(df_MinBias_var, "MinBias", weight)
@@ -1626,65 +1559,357 @@ def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var,
     Ht_centers = [(Ht_edges[i]+Ht_edges[i+1])/2.0 for i in range(len(Ht_edges)-1)]
     Ht_slices = [(Ht_edges[i], Ht_edges[i+1]) for i in range(len(Ht_edges)-1)]
 
-    color_DY = "#7B2D8B"
-    color_MinBias = "#C84B00"
+    colour_DY = "#7B2D8B"
+    colour_MinBias = "#C84B00"
+
+    KIN_COL = {"mass": "DiMuon_Mass", "pt": "DiMuon_Pt"}
+    KIN_LABEL = {"mass": r"$m_{\mu\mu}$", "pt": r"$p^{\mu\mu}_T$"}
+    KIN_CUTS = {
+        "mass": [
+                (50,70),
+                (70,86),
+                (86,96),
+                (96,110),
+                (110,130),
+                (130,150)
+                ],
+        "pt":   [
+                (0,1),
+                (1,2),
+                (2,3),
+                (3,4),
+                (4,5),
+                (5,6),
+                (6,7),
+                (7,8),
+                (8,9),
+                (9,10)
+                ],
+        "none": [None],
+    }
+
+    DY_names = {"DY", "MC DY"}
 
     datasets = [
-        ("DY", df_SingleMuon_var, color_DY, "-",  "o"),
-        ("MC DY", df_MCDYJets_var, color_DY, "--", "o"),
-        ("MinBias", df_MinBias_var, color_MinBias, "-",  "s"),
-        ("MC MinBias", df_MCMinBias_var, color_MinBias, "--", "s"),
+        ("DY", df_SingleMuon_var, colour_DY, "-",  "o"),
+        ("MC DY", df_MCDYJets_var, colour_DY, "--", "o"),
+        ("MinBias", df_MinBias_var, colour_MinBias, "-",  "s"),
+        ("MC MinBias", df_MCMinBias_var,  colour_MinBias, "--", "s"),
     ]
 
-    # Define all result pointers, trigger nothing
-    stats_ptrs = {}   # {name: [ResultPtr, ...]}
-    for name, df, *_ in datasets:
-        ptrs = []
-        for low, high in Ht_slices:
-            cut = (f"PFSelection_PFCands_Ht >= {low} && "
-                   f"PFSelection_PFCands_Ht < {high}")
-            ptrs.append(df.Filter(cut).Stats("PFSelection_PFCands_EventRapidity"))
-        stats_ptrs[name] = ptrs
+    # Build all result pointers for all cuts × datasets × Ht bins
+    stats_ptrs = {}   # {(kin_axis, cut, name): [ResultPtr, ...]}
+    for kin_axis, cuts in KIN_CUTS.items():
+        for cut in cuts:
+            for name, df, *_ in datasets:
+                if cut is not None and name in DY_names:
+                    lo, hi = cut
+                    df_cut = df.Filter(f"{KIN_COL[kin_axis]} >= {lo} && {KIN_COL[kin_axis]} < {hi}")
+                else:
+                    df_cut = df
+                ptrs = []
+                for low, high in Ht_slices:
+                    ht_cut = (f"PFSelection_PFCands_Ht >= {low} && "
+                              f"PFSelection_PFCands_Ht < {high}")
+                    ptrs.append(df_cut.Filter(ht_cut).Stats("PFSelection_PFCands_EventRapidity"))
+                stats_ptrs[(kin_axis, cut, name)] = ptrs
 
-    # Run all graphs in parallel (one event loop per df) all four dfs concurrent with ImplicitMT
+    # Single RunGraphs call — one event loop per df
     all_ptrs = [p for ptrs in stats_ptrs.values() for p in ptrs]
     ROOT.RDF.RunGraphs(all_ptrs)
 
-    # Plot
-    fig, ax = plt.subplots(figsize=(9, 5))
+    # Plot (one figure per cut)
+    for kin_axis, cuts in KIN_CUTS.items():
+        
+        for cut in cuts:
+            fig, ax = plt.subplots(figsize=(9, 5))
 
-    for edge in Ht_edges:
-        ax.axvline(edge, color='grey', linestyle='--', linewidth=0.5)
+            for edge in Ht_edges:
+                ax.axvline(edge, color='grey', linestyle='--', linewidth=0.5)
 
-    ax.set_xticks([(Ht_edges[i]+Ht_edges[i+1])/2.0 for i in range(len(Ht_edges)-1)])
-    ax.set_xticklabels([f"{Ht_edges[i]}-{Ht_edges[i+1]}" for i in range(len(Ht_edges)-1)])
+            ax.set_xticks(Ht_edges)
+            ax.set_xticklabels(Ht_edges)
 
-    for name, df, color, ls, marker in datasets:
-        variances = []
-        for i, (low, high) in enumerate(Ht_slices):
-            v = stats_ptrs[name][i].GetValue().GetVar()
-            if v == 0:
-                print(f"Warning: Var=0 for {name}, Ht [{low},{high})")
-            variances.append(1/v if v != 0 else 0)
+            for name, df, color, ls, marker in datasets:
+                
+                variances = []
+                
+                for i, (low, high) in enumerate(Ht_slices):
+                    
+                    v = stats_ptrs[(kin_axis, cut, name)][i].GetValue().GetVar()
+                    
+                    if v == 0:
+                        print(f"Warning: Var=0 for {name}, Ht [{low},{high})")
+                    variances.append(1/v if v != 0 else 0)
 
-        ax.plot(Ht_centers, variances, color=color, linestyle=ls,
-                marker=marker, linewidth=1.8, markersize=6, label=name)
+                ax.plot(Ht_centers, variances, color=color, linestyle=ls, marker=marker, linewidth=1.8, markersize=6, label=name)
 
-    ax.set_xlabel(r"$H_T$ [GeV]", fontsize=13)
-    ax.set_ylabel(r"Inverse of Rapidity Variance per $H_{T}$ Bin", fontsize=13)
-    ax.set_xlim(Ht_edges[0]-2, Ht_edges[-1]+2)
-    ax.set_ylim(bottom=0)
-    ax.legend(frameon=False, fontsize=11, ncol=2)
-    ax.tick_params(axis='y', labelsize=10)
-    fig.tight_layout()
+            ax.set_xlabel(r"$H_T$ [GeV]", fontsize=13)
+            ax.set_ylabel(r"Inverse of Rapidity Variance per $H_{T}$ Bin", fontsize=13)
+            ax.set_xlim(Ht_edges[0]-2, Ht_edges[-1]+2)
+            ax.set_ylim(bottom=0)
+            ax.legend(frameon=False, fontsize=11, ncol=2)
+            ax.tick_params(axis='y', labelsize=10)
 
-    output_dir = "new_plots"
-    os.makedirs(output_dir, exist_ok=True)
-    plt.savefig(f"{output_dir}/EventRapidityVariance{out_suffix}.pdf", bbox_inches='tight')
-    plt.close(fig)
-    print(f"\nSaved plot: {output_dir}/EventRapidityVariance{out_suffix}.pdf")
+            handles, labels = ax.get_legend_handles_labels()
+            if cut is not None:
+                lo, hi = cut
+                cut_label = f"{KIN_LABEL[kin_axis]} $\\in [{lo},\\,{hi})$ GeV"
+                cut_tag = f"{kin_axis.capitalize()}_{lo}_{hi}"
+            else:
+                cut_label = "No Kinematic Cut on DY"
+                cut_tag = "Inclusive"
+
+            ax.legend(handles=handles, labels=labels, frameon=False, fontsize=11, ncol=2, loc="upper left", handlelength=2.5, handletextpad=0.4)
+            ax.text(0.015, 0.86, cut_label, transform=ax.transAxes, fontsize=11, color=colour_DY, va='top')
+
+            fig.tight_layout()
+
+            output_dir = "new_plots/RapidityVarianceMethod"
+            os.makedirs(output_dir, exist_ok=True)
+
+            output = f"{output_dir}/EventRapidityVariance_{cut_tag}{out_suffix}.pdf"
+            plt.savefig(output, bbox_inches='tight')
+            plt.close(fig)
+
+            print(f"\nSaved plot: {output}")
 
 
+
+
+
+def RapidityVarianceKinematics3D(df_SingleMuon_var, df_MCDYJets_var, out_suffix, weight):
+    """
+    3-variable heatmap: H_T (x) × kinematic variable (y) × 1/Var(y_had) (colour).
+
+    kinematic_axes : list of "mass" and/or "pt" — one figure is produced per entry.
+                     Defaults to ["mass", "pt"].
+
+    Only DY datasets are used because MinBias has no di-muon kinematics.
+    """
+
+
+    df_SingleMuon_var = VarianceCalculation(df_SingleMuon_var, "SingleMuon", weight)
+    df_MCDYJets_var   = VarianceCalculation(df_MCDYJets_var,   "MCDYJets",   weight)
+
+    datasets = [("DY", df_SingleMuon_var), ("MC DY", df_MCDYJets_var)]
+
+
+    Ht_edges   = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]
+    Ht_slices  = [(Ht_edges[i], Ht_edges[i+1]) for i in range(len(Ht_edges)-1)]
+    Ht_centers = [(lo + hi) / 2.0 for lo, hi in Ht_slices]
+    Ht_edges_arr = np.array(Ht_edges, dtype=float)
+
+    kinematic_axes = ["mass", "pt"]
+
+    KIN_BINS = {
+        "mass": [
+            (50, 70),
+            (70, 86),
+            (86, 96),
+            (96, 110),
+            (110, 130),
+            (130, 150),
+        ],
+        "pt": [
+            (0, 1),
+            (1, 2),
+            (2, 3),
+            (3, 4),
+            (4, 5),
+            (5, 6),
+            (6, 7),
+            (7, 8),
+            (8, 9),
+            (9, 10),
+        ],
+    }
+
+    KIN_COL = {
+        "mass": "DiMuon_Mass",
+        "pt": "DiMuon_Pt",
+    }
+    
+    KIN_LABEL = {
+        "mass": r"$m_{\mu\mu}\,[\mathrm{GeV}]$",
+        "pt": r"$p^{\mu\mu}_{T}\,[\mathrm{GeV}]$",
+    }
+
+    for ax in kinematic_axes:
+        if ax not in KIN_BINS:
+            raise ValueError(f"Unknown kinematic_axis '{ax}'. Choose 'mass' or 'pt'.")
+
+
+
+    """
+        stats_ptrs is a dictionary mapping (kin_axis, dataset_name) tuples to their corresponding ptr_grid (2D list of ResultPtr objects).
+
+        After the full loop over all kinematic axes and datasets, stats_ptrs contains 4 entries (2 axes × 2 datasets):
+
+        stats_ptrs
+        ├── ("mass", "DY")
+        │     ├── row 0  [mass: 50– 70]  →  [Stats(Ht:0-10), Stats(Ht:10-20), ..., Stats(Ht:110-120)]
+        │     ├── row 1  [mass: 70– 86]  →  [Stats(Ht:0-10), Stats(Ht:10-20), ..., Stats(Ht:110-120)]
+        │     ├── ...
+        │     └── row 5  [mass:130–150]  →  [Stats(Ht:0-10), Stats(Ht:10-20), ..., Stats(Ht:110-120)]
+        │
+        ├── ("mass", "MC DY")
+        │     └── (same structure as above, but for MC events)
+        │
+        ├── ("pt", "DY")
+        │     ├── row 0  [pt: 0–1]       →  [Stats(Ht:0-10), Stats(Ht:10-20), ..., Stats(Ht:110-120)]
+        │     ├── row 1  [pt: 1–2]       →  [Stats(Ht:0-10), Stats(Ht:10-20), ..., Stats(Ht:110-120)]
+        │     ├── ...
+        │     └── row 9  [pt: 9–10]      →  [Stats(Ht:0-10), Stats(Ht:10-20), ..., Stats(Ht:110-120)]
+        │
+        └── ("pt", "MC DY")
+            └── (same structure as above, but for MC events)
+
+        Total ResultPtr objects: (6+6+10+10) × 12 = 384 lazy pointers.
+
+        Access: stats_ptrs[(kin_axis, name)][i][j] → Stats pointer for events satisfying both the i-th kinematic bin and the j-th Ht bin, for the given dataset.
+    """
+    stats_ptrs = {}
+
+    #Loop over the kinematic filter: DiMuon_Pt and DiMuon_Mass, i.e. "pt" and "mass"
+    for kin_axis in kinematic_axes:
+
+        # Define the kinematic slices and the corresponding column name, i.e. DiMuon_Pt and DiMuon_Mass
+        kin_slices = KIN_BINS[kin_axis]
+        kin_col = KIN_COL[kin_axis]
+
+        # Loop over the datasets, i.e. DY and MCDY
+        for name, df in datasets:
+
+            # Define a fresh grid for this particular (kin_axis, dataset) combination to store the ResultPtr objects for each kinematic slice and Ht slice
+            # This will become a list of rows, where each row is a list of pointers corresponding to the Ht slices for a given kinematic slice
+            # It will look like this: 
+            """
+                ptr_grid is a 2D list (list of rows) built for a specific (kin_axis, dataset) pair.
+                Each row corresponds to one kinematic bin (e.g. a DiMuon_Mass or DiMuon_Pt slice),
+                and each element within that row is a ResultPtr for the variance of
+                PFSelection_PFCands_EventRapidity in a specific Ht bin.
+
+                After all kinematic bins are looped, ptr_grid has shape [n_kin_bins × n_Ht_bins].
+
+                Example for kin_axis="mass", dataset="DY"  →  6 rows × 12 columns:
+
+                                    Ht: 0–10    10–20    20–30    30–40  ...  110–120
+                                    ┌──────────────────────────────────────────────────
+                mass:  50– 70  (i=0) │  Stats()   Stats()  Stats()  Stats() ...  Stats()
+                mass:  70– 86  (i=1) │  Stats()   Stats()  Stats()  Stats() ...  Stats()
+                mass:  86– 96  (i=2) │  Stats()   Stats()  Stats()  Stats() ...  Stats()
+                mass:  96–110  (i=3) │  Stats()   Stats()  Stats()  Stats() ...  Stats()
+                mass: 110–130  (i=4) │  Stats()   Stats()  Stats()  Stats() ...  Stats()
+                mass: 130–150  (i=5) │  Stats()   Stats()  Stats()  Stats() ...  Stats()
+                                         (j=0)      (j=1)    (j=2)    (j=3)        (j=11)
+
+                Access: ptr_grid[i][j]  →  Stats pointer for events with
+                        KIN_BINS[kin_axis][i][0] ≤ kin_col < KIN_BINS[kin_axis][i][1]
+                        AND
+                        Ht_slices[j][0] ≤ PFSelection_PFCands_Ht < Ht_slices[j][1]
+
+                No computation is triggered here — ptr_grid holds lazy ResultPtr objects.
+                """
+
+            ptr_grid = []
+
+            # Loop over the kinematic slices, i.e. the bins in DiMuon_Pt or DiMuon_Mass
+            for kin_low, kin_high in kin_slices:
+                df_kin = df.Filter(f"{kin_col} >= {kin_low} && {kin_col} < {kin_high}")
+
+                # For each kinematic slice (i.e. each DiMuon_Pt or DiMuon_Mass bin), we will create a row in the grid that contains the ResultPtr objects for each Ht slice
+                # It will look like this: [[ptr_kin1_ht1, ptr_kin1_ht2, ...], [ptr_kin2_ht1, ptr_kin2_ht2, ...], ...]
+                """
+                    Per kinematic bin, i.e. a specific bin of DiMuon_Pt or DiMuon_Mass, we create a row in the grid.
+                    Each element in the row is a ResultPtr object representing the variance of PFSelection_PFCands_EventRapidity in a specific Ht bin.
+
+                    row = [
+                        Stats(Ht: 0–10),   Stats(Ht: 10–20),  Stats(Ht: 20–30),
+                        Stats(Ht: 30–40),  Stats(Ht: 40–50),  Stats(Ht: 50–60),
+                        Stats(Ht: 60–70),  Stats(Ht: 70–80),  Stats(Ht: 80–90),
+                        Stats(Ht: 90–100), Stats(Ht: 100–110), Stats(Ht: 110–120)
+                    ]
+                """
+                row = []
+
+                # Loop over the Ht slices, i.e. the bins in PFSelection_PFCands_Ht, and create a ResultPtr for the variance of PFSelection_PFCands_EventRapidity in that Ht slice
+                for ht_low, ht_high in Ht_slices:
+                    df_cell = df_kin.Filter(f"PFSelection_PFCands_Ht >= {ht_low} && " f"PFSelection_PFCands_Ht < {ht_high}")
+                    row.append(df_cell.Stats("PFSelection_PFCands_EventRapidity"))
+
+                # After processing all Ht slices for this kinematic slice, we append the row to the ptr_grid
+                ptr_grid.append(row)
+
+            stats_ptrs[(kin_axis, name)] = ptr_grid
+
+    # Single RunGraphs call — one event loop per df
+    all_ptrs = [ptr for grid in stats_ptrs.values() for row in grid for ptr in row]
+    
+    # Compute all pointers in parallel (one event loop per df)
+    ROOT.RDF.RunGraphs(all_ptrs)
+
+
+
+    for kin_axis in kinematic_axes:
+        kin_slices  = KIN_BINS[kin_axis]
+        kin_label   = KIN_LABEL[kin_axis]
+        kin_centers = [(lo + hi) / 2.0 for lo, hi in kin_slices]
+        kin_edges_arr = np.array(sorted(set(e for b in kin_slices for e in b)), dtype=float)
+
+        def extract_grid(name):
+            grid = np.zeros((len(kin_slices), len(Ht_slices)))
+            for i, (kin_low, kin_high) in enumerate(kin_slices):
+                for j, (ht_low, ht_high) in enumerate(Ht_slices):
+                    var = stats_ptrs[(kin_axis, name)][i][j].GetValue().GetVar()
+                    if var == 0:
+                        print(f"Warning: Var=0 for {name}, {kin_axis} in [{kin_low},{kin_high}), Ht in [{ht_low},{ht_high})")
+                    grid[i, j] = 1 / var if var != 0 else 0.0
+            return grid
+
+        Data_grid = extract_grid("DY")
+        MC_grid = extract_grid("MC DY")
+
+        # Plot 
+        vmin = min(Data_grid.min(), MC_grid.min())
+        vmax = max(Data_grid.max(), MC_grid.max())
+        # vmax = 100
+
+        fig, (ax_Data, ax_MC) = plt.subplots(1, 2, figsize=(16, 6))
+
+        def draw_panel(ax, Z, title):
+            mesh = ax.pcolormesh(Ht_edges_arr, kin_edges_arr, Z, cmap='viridis', vmin=vmin, vmax=vmax)
+            cbar = fig.colorbar(mesh, ax=ax)
+            cbar.set_label(r"$1/\mathrm{Var}(y_\mathrm{had})$", fontsize=11)
+            ax.set_title(title, fontsize=14, fontweight='bold')
+            ax.set_xlabel(r"$H_T\,[\mathrm{GeV}]$", fontsize=12)
+            ax.set_ylabel(kin_label, fontsize=12)
+            ax.set_xticks(Ht_edges)
+            ax.set_xticklabels([str(e) for e in Ht_edges], ha='center', fontsize=8)
+            ax.set_yticks(kin_edges_arr)
+
+            threshold = (vmin + vmax) / 2.0
+            for i, y_c in enumerate(kin_centers):
+                for j, x_c in enumerate(Ht_centers):
+                    val = Z[i, j]
+                    txt_color = "white" if val < threshold else "black"
+                    ax.text(x_c, y_c, f"{val:.2f}", ha="center", va="center", color=txt_color, fontsize=8)
+
+        draw_panel(ax_Data, Data_grid, "Data DY")
+        draw_panel(ax_MC, MC_grid, "MC DY")
+
+        fig.suptitle("")
+        fig.tight_layout()
+
+        # Extract grids and plot one figure per kinematic axis
+        output_dir = "new_plots/RapidityVarianceMethod"
+        os.makedirs(output_dir, exist_ok=True)
+
+        output = (f"{output_dir}/RapidityVarianceKinematics3D_Ht_{kin_axis.capitalize()}{out_suffix}.pdf")
+        plt.savefig(output, bbox_inches='tight')
+        plt.close(fig)
+
+        print(f"\nSaved: {output}")
 
 
 
@@ -6482,7 +6707,7 @@ def parse_args():
     )
     parser.add_argument(
         "--mode",
-        choices=["compare", "compare-quantilebinning", "ptscan", "ptscan-quantilebinning", "quantile", "quantile-ptscan", "quantile-all", "DYMinBias", "quantile-all-ptscan", "quantiles", "momentumfractions", "mllyll", "sigmaeff", "enhfactorratiotoz", "massrappt", "histograms", "averageobservablesvszpt", "variancemethod", "all"],
+        choices=["compare", "compare-quantilebinning", "ptscan", "ptscan-quantilebinning", "quantile", "quantile-ptscan", "quantile-all", "DYMinBias", "quantile-all-ptscan", "quantiles", "momentumfractions", "mllyll", "sigmaeff", "enhfactorratiotoz", "massrappt", "histograms", "averageobservablesvszpt", "variancemethod", "rapidityvariancekinematics3d", "all"],
         default="all",
         help="Run compare plots, diMuon pT scan plots, quantile plots, quantile pT scan plots, all-together quantile plots, all-together quantile pT-cut plots, or all",
     )
@@ -6761,6 +6986,9 @@ def main():
     
     if args.mode in ["variancemethod", "all"]:
         RapidityVarianceMethod(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.output_suffix, args.weight)
+
+    if args.mode in ["rapidityvariancekinematics3d", "all"]:
+        RapidityVarianceKinematics3D(df_SingleMuon, df_MCDYJets, args.output_suffix, args.weight)
 
     end = time.time()
     elapsed_time = end - start
