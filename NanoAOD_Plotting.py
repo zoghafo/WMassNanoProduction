@@ -1553,7 +1553,69 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 
-def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, out_suffix, weight):
+# def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, out_suffix, weight):
+
+#     df_SingleMuon_var = VarianceCalculation(df_SingleMuon_var, "SingleMuon", weight)
+#     df_MinBias_var = VarianceCalculation(df_MinBias_var, "MinBias", weight)
+#     df_MCDYJets_var = VarianceCalculation(df_MCDYJets_var, "MCDYJets", weight)
+#     df_MCMinBias_var = VarianceCalculation(df_MCMinBias_var, "MCMinBias", weight)
+
+#     Ht_edges = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]
+#     Ht_centers = [(Ht_edges[i] + Ht_edges[i+1]) / 2.0 for i in range(len(Ht_edges) - 1)]
+#     Ht_slices = [(Ht_edges[i], Ht_edges[i+1]) for i in range(len(Ht_edges) - 1)]
+
+#     color_DY = "#7B2D8B"
+#     color_MinBias = "#C84B00"
+
+#     datasets = [
+#         ("DY", df_SingleMuon_var, color_DY, "-",  "o"),
+#         ("MC DY", df_MCDYJets_var, color_DY, "--", "o"),
+#         ("MinBias", df_MinBias_var, color_MinBias, "-", "s"),
+#         ("MC MinBias", df_MCMinBias_var, color_MinBias, "--", "s"),
+#     ]
+
+#     fig, ax = plt.subplots(figsize=(9, 5))
+
+#     # Add dotted grey lines to the Ht bins
+#     for edge in Ht_edges:
+#         ax.axvline(edge, color='grey', linestyle='--', linewidth=0.5)
+
+#     # Change the x labels to show the bin ranges instead of the bin edges and make them central to the bins
+#     ax.set_xticks([(Ht_edges[i] + Ht_edges[i+1]) / 2.0 for i in range(len(Ht_edges) - 1)])
+#     ax.set_xticklabels([f"{Ht_edges[i]}-{Ht_edges[i+1]}" for i in range(len(Ht_edges) - 1)])
+
+#     for name, df, color, ls, marker in datasets:
+#         variances = []
+#         for low, high in Ht_slices:
+#             cut   = f"PFSelection_PFCands_Ht >= {low} && PFSelection_PFCands_Ht < {high}"
+#             stats = df.Filter(cut).Stats("PFSelection_PFCands_EventRapidity").GetValue()
+#             if stats.GetVar() == 0:
+#                 print(f"Warning: Variance is zero for {name} in Ht range [{low}, {high})")
+#             variances.append(1 / stats.GetVar() if stats.GetVar() != 0 else 0)
+
+#         ax.plot(Ht_centers, variances, color=color, linestyle=ls, marker=marker, linewidth=1.8, markersize=6, label=name)
+
+#     ax.set_xlabel(r"$H_T$ [GeV]", fontsize=13)
+#     ax.set_ylabel(r"Rapidity Variance per $H_{T}$ Bin", fontsize=13)
+#     ax.set_xlim(Ht_edges[0] - 2, Ht_edges[-1] + 2)
+#     ax.set_ylim(bottom=0)
+#     ax.legend(frameon=False, fontsize=11, ncol=2)
+#     ax.tick_params(axis='y', labelsize=10)
+
+    
+
+#     fig.tight_layout()
+
+#     output_dir = "new_plots"
+#     os.makedirs(output_dir, exist_ok=True)
+#     plt.savefig(f"{output_dir}/EventRapidityVariance{out_suffix}.pdf", bbox_inches='tight')
+#     plt.close(fig)
+#     print(f"\nSaved plot: {output_dir}/EventRapidityVariance{out_suffix}.pdf")
+
+
+def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var,
+                            df_MCDYJets_var, df_MCMinBias_var,
+                            out_suffix, weight):
 
     df_SingleMuon_var = VarianceCalculation(df_SingleMuon_var, "SingleMuon", weight)
     df_MinBias_var = VarianceCalculation(df_MinBias_var, "MinBias", weight)
@@ -1561,8 +1623,8 @@ def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, d
     df_MCMinBias_var = VarianceCalculation(df_MCMinBias_var, "MCMinBias", weight)
 
     Ht_edges = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]
-    Ht_centers = [(Ht_edges[i] + Ht_edges[i+1]) / 2.0 for i in range(len(Ht_edges) - 1)]
-    Ht_slices = [(Ht_edges[i], Ht_edges[i+1]) for i in range(len(Ht_edges) - 1)]
+    Ht_centers = [(Ht_edges[i]+Ht_edges[i+1])/2.0 for i in range(len(Ht_edges)-1)]
+    Ht_slices = [(Ht_edges[i], Ht_edges[i+1]) for i in range(len(Ht_edges)-1)]
 
     color_DY = "#7B2D8B"
     color_MinBias = "#C84B00"
@@ -1570,40 +1632,50 @@ def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, d
     datasets = [
         ("DY", df_SingleMuon_var, color_DY, "-",  "o"),
         ("MC DY", df_MCDYJets_var, color_DY, "--", "o"),
-        ("MinBias", df_MinBias_var, color_MinBias, "-", "s"),
+        ("MinBias", df_MinBias_var, color_MinBias, "-",  "s"),
         ("MC MinBias", df_MCMinBias_var, color_MinBias, "--", "s"),
     ]
 
+    # Define all result pointers, trigger nothing
+    stats_ptrs = {}   # {name: [ResultPtr, ...]}
+    for name, df, *_ in datasets:
+        ptrs = []
+        for low, high in Ht_slices:
+            cut = (f"PFSelection_PFCands_Ht >= {low} && "
+                   f"PFSelection_PFCands_Ht < {high}")
+            ptrs.append(df.Filter(cut).Stats("PFSelection_PFCands_EventRapidity"))
+        stats_ptrs[name] = ptrs
+
+    # Run all graphs in parallel (one event loop per df) all four dfs concurrent with ImplicitMT
+    all_ptrs = [p for ptrs in stats_ptrs.values() for p in ptrs]
+    ROOT.RDF.RunGraphs(all_ptrs)
+
+    # Plot
     fig, ax = plt.subplots(figsize=(9, 5))
 
-    # Add dotted grey lines to the Ht bins
     for edge in Ht_edges:
         ax.axvline(edge, color='grey', linestyle='--', linewidth=0.5)
 
-    # Change the x labels to show the bin ranges instead of the bin edges and make them central to the bins
-    ax.set_xticks([(Ht_edges[i] + Ht_edges[i+1]) / 2.0 for i in range(len(Ht_edges) - 1)])
-    ax.set_xticklabels([f"{Ht_edges[i]}-{Ht_edges[i+1]}" for i in range(len(Ht_edges) - 1)])
+    ax.set_xticks([(Ht_edges[i]+Ht_edges[i+1])/2.0 for i in range(len(Ht_edges)-1)])
+    ax.set_xticklabels([f"{Ht_edges[i]}-{Ht_edges[i+1]}" for i in range(len(Ht_edges)-1)])
 
     for name, df, color, ls, marker in datasets:
         variances = []
-        for low, high in Ht_slices:
-            cut   = f"PFSelection_PFCands_Ht >= {low} && PFSelection_PFCands_Ht < {high}"
-            stats = df.Filter(cut).Stats("PFSelection_PFCands_EventRapidity").GetValue()
-            if stats.GetVar() == 0:
-                print(f"Warning: Variance is zero for {name} in Ht range [{low}, {high})")
-            variances.append(1 / stats.GetVar() if stats.GetVar() != 0 else 0)
+        for i, (low, high) in enumerate(Ht_slices):
+            v = stats_ptrs[name][i].GetValue().GetVar()
+            if v == 0:
+                print(f"Warning: Var=0 for {name}, Ht [{low},{high})")
+            variances.append(1/v if v != 0 else 0)
 
-        ax.plot(Ht_centers, variances, color=color, linestyle=ls, marker=marker, linewidth=1.8, markersize=6, label=name)
+        ax.plot(Ht_centers, variances, color=color, linestyle=ls,
+                marker=marker, linewidth=1.8, markersize=6, label=name)
 
     ax.set_xlabel(r"$H_T$ [GeV]", fontsize=13)
-    ax.set_ylabel(r"Rapidity Variance per $H_{T}$ Bin", fontsize=13)
-    ax.set_xlim(Ht_edges[0] - 2, Ht_edges[-1] + 2)
+    ax.set_ylabel(r"Inverse of Rapidity Variance per $H_{T}$ Bin", fontsize=13)
+    ax.set_xlim(Ht_edges[0]-2, Ht_edges[-1]+2)
     ax.set_ylim(bottom=0)
     ax.legend(frameon=False, fontsize=11, ncol=2)
     ax.tick_params(axis='y', labelsize=10)
-
-    
-
     fig.tight_layout()
 
     output_dir = "new_plots"
@@ -1611,7 +1683,6 @@ def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, d
     plt.savefig(f"{output_dir}/EventRapidityVariance{out_suffix}.pdf", bbox_inches='tight')
     plt.close(fig)
     print(f"\nSaved plot: {output_dir}/EventRapidityVariance{out_suffix}.pdf")
-
 
 
 
