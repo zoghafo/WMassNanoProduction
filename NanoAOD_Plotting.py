@@ -552,17 +552,27 @@ def VarianceCalculation(df, df_name, weight = False):
 
     col_names = list(df.GetColumnNames())
 
-    if "PFSelection_PFCands_pz" not in col_names:
-        df = df.Define("PFSelection_PFCands_pz", "PFSelection_PFCands_pt * sinh(PFSelection_PFCands_eta)")
-        print(f"\nPFSelection_PFCands_pz column created in {df_name} Dataframe.")
-
     if "PFSelection_PFCands_E" not in col_names:
         df = df.Define("PFSelection_PFCands_E", "PFSelection_PFCands_pt * cosh(PFSelection_PFCands_eta)")
         print(f"PFSelection_PFCands_E column created in {df_name} Dataframe.")
 
-    if "PFSelection_PFCands_Rapidity" not in col_names:
-        df = df.Define("PFSelection_PFCands_Rapidity", "0.5 * log((PFSelection_PFCands_E + PFSelection_PFCands_pz) / (PFSelection_PFCands_E - PFSelection_PFCands_pz))")
-        print(f"PFSelection_PFCands_Rapidity column created in {df_name} Dataframe.")
+    if "PFSelection_PFCands_P" not in col_names:
+        df = df.Define("PFSelection_PFCands_P",
+            """ROOT::VecOps::Construct<ROOT::Math::PtEtaPhiEVector>(
+            PFSelection_PFCands_pt,
+            PFSelection_PFCands_eta,
+            PFSelection_PFCands_phi,
+            PFSelection_PFCands_E)""")
+        print(f"PFSelection_PFCands_P column created in {df_name} Dataframe.")
+
+    if "PFSelection_PFCands_SumP" not in col_names:
+        df = df.Define("PFSelection_PFCands_SumP", "ROOT::VecOps::Sum(PFSelection_PFCands_P, ROOT::Math::PtEtaPhiEVector())")
+        print(f"PFSelection_PFCands_SumP column created in {df_name} Dataframe.")
+
+    if "PFSelection_PFCands_EventRapidity" not in col_names:
+        df = df.Define("PFSelection_PFCands_EventRapidity", "PFSelection_PFCands_SumP.Rapidity()")
+        print(f"PFSelection_PFCands_EventRapidity column created in {df_name} Dataframe.")
+
 
     if "PFSelection_PFCands_pToverE" not in col_names:
         df = df.Define("PFSelection_PFCands_pToverE", "PFSelection_PFCands_pt / PFSelection_PFCands_E")
@@ -570,45 +580,45 @@ def VarianceCalculation(df, df_name, weight = False):
 
 # ----------------------------------------------
 
-    if weight == True:
+    # if weight == True:
 
-        # pT-weighted mean and variance
+    #     # pT-weighted mean and variance
 
-        if "Rapidity_wMean" not in col_names:
-            df = df.Define("Rapidity_wMean", "Sum(PFSelection_PFCands_pt * PFSelection_PFCands_Rapidity) / Sum(PFSelection_PFCands_pt)")
-            print(f"\n\nRapidity_wMean column created in {df_name} Dataframe.")
+    #     if "Rapidity_wMean" not in col_names:
+    #         df = df.Define("Rapidity_wMean", "Sum(PFSelection_PFCands_pt * PFSelection_PFCands_Rapidity) / Sum(PFSelection_PFCands_pt)")
+    #         print(f"\n\nRapidity_wMean column created in {df_name} Dataframe.")
 
-        if "Rapidity_wVariance" not in col_names:
-            df = df.Define("Rapidity_wVariance", "Sum(PFSelection_PFCands_pt * (PFSelection_PFCands_Rapidity - Rapidity_wMean) * (PFSelection_PFCands_Rapidity - Rapidity_wMean)) / Sum(PFSelection_PFCands_pt)")
-            print(f"Rapidity_wVariance column created in {df_name} Dataframe.")
+    #     if "Rapidity_wVariance" not in col_names:
+    #         df = df.Define("Rapidity_wVariance", "Sum(PFSelection_PFCands_pt * (PFSelection_PFCands_Rapidity - Rapidity_wMean) * (PFSelection_PFCands_Rapidity - Rapidity_wMean)) / Sum(PFSelection_PFCands_pt)")
+    #         print(f"Rapidity_wVariance column created in {df_name} Dataframe.")
 
-        if "pToverE_wMean" not in col_names:
-            df = df.Define("pToverE_wMean","Sum(PFSelection_PFCands_pt * PFSelection_PFCands_pToverE) / Sum(PFSelection_PFCands_pt)")
-            print(f"pToverE_wMean column created in {df_name} Dataframe.")
+    #     if "pToverE_wMean" not in col_names:
+    #         df = df.Define("pToverE_wMean","Sum(PFSelection_PFCands_pt * PFSelection_PFCands_pToverE) / Sum(PFSelection_PFCands_pt)")
+    #         print(f"pToverE_wMean column created in {df_name} Dataframe.")
         
-        if "pToverE_wVariance" not in col_names:
-            df = df.Define("pToverE_wVariance", "Sum(PFSelection_PFCands_pt * (PFSelection_PFCands_pToverE - pToverE_wMean) * (PFSelection_PFCands_pToverE - pToverE_wMean)) / Sum(PFSelection_PFCands_pt)")
-            print(f"pToverE_wVariance column created in {df_name} Dataframe.")
-    else:
+    #     if "pToverE_wVariance" not in col_names:
+    #         df = df.Define("pToverE_wVariance", "Sum(PFSelection_PFCands_pt * (PFSelection_PFCands_pToverE - pToverE_wMean) * (PFSelection_PFCands_pToverE - pToverE_wMean)) / Sum(PFSelection_PFCands_pt)")
+    #         print(f"pToverE_wVariance column created in {df_name} Dataframe.")
+    # else:
 
-        # Unweighted mean and variance
+    #     # Unweighted mean and variance
 
-        if "Rapidity_Mean" not in col_names:
-            df = df.Define("Rapidity_Mean", "Mean(PFSelection_PFCands_Rapidity)")
-            print(f"\n\nRapidity_Mean column created in {df_name} Dataframe.")
+    #     if "Rapidity_Mean" not in col_names:
+    #         df = df.Define("Rapidity_Mean", "Mean(PFSelection_PFCands_Rapidity)")
+    #         print(f"\n\nRapidity_Mean column created in {df_name} Dataframe.")
 
-        if "Rapidity_Variance" not in col_names:
-            df = df.Define("Rapidity_Variance", "Sum((PFSelection_PFCands_Rapidity - Rapidity_Mean) * (PFSelection_PFCands_Rapidity - Rapidity_Mean)) / (float)PFSelection_PFCands_Rapidity.size()")
-            print(f"Rapidity_Variance column created in {df_name} Dataframe.")
+    #     if "Rapidity_Variance" not in col_names:
+    #         df = df.Define("Rapidity_Variance", "Sum((PFSelection_PFCands_Rapidity - Rapidity_Mean) * (PFSelection_PFCands_Rapidity - Rapidity_Mean)) / (float)PFSelection_PFCands_Rapidity.size()")
+    #         print(f"Rapidity_Variance column created in {df_name} Dataframe.")
 
-        if "pToverE_Mean" not in col_names:
-            df = df.Define("pToverE_Mean","Mean(PFSelection_PFCands_pToverE)")
-            print(f"pToverE_Mean column created in {df_name} Dataframe.")
+    #     if "pToverE_Mean" not in col_names:
+    #         df = df.Define("pToverE_Mean","Mean(PFSelection_PFCands_pToverE)")
+    #         print(f"pToverE_Mean column created in {df_name} Dataframe.")
 
 
-        if "pToverE_Variance" not in col_names:
-            df = df.Define("pToverE_Variance", "Sum((PFSelection_PFCands_pToverE - pToverE_Mean) * (PFSelection_PFCands_pToverE - pToverE_Mean)) / (float)PFSelection_PFCands_pToverE.size()")
-            print(f"pToverE_Variance column created in {df_name} Dataframe.")
+    #     if "pToverE_Variance" not in col_names:
+    #         df = df.Define("pToverE_Variance", "Sum((PFSelection_PFCands_pToverE - pToverE_Mean) * (PFSelection_PFCands_pToverE - pToverE_Mean)) / (float)PFSelection_PFCands_pToverE.size()")
+    #         print(f"pToverE_Variance column created in {df_name} Dataframe.")
 
     
     return df
@@ -1537,193 +1547,72 @@ def AverageObservablesVsZpT(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, 
         canvas.Close()
 
 
-def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, out_suffix, weight):
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+import numpy as np
+
+def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, out_suffix, weight):
 
     df_SingleMuon_var = VarianceCalculation(df_SingleMuon_var, "SingleMuon", weight)
     df_MinBias_var = VarianceCalculation(df_MinBias_var, "MinBias", weight)
     df_MCDYJets_var = VarianceCalculation(df_MCDYJets_var, "MCDYJets", weight)
     df_MCMinBias_var = VarianceCalculation(df_MCMinBias_var, "MCMinBias", weight)
 
-
-    rap_var_col = "Rapidity_wVariance" if weight else "Rapidity_Variance"
-    ptE_var_col = "pToverE_wVariance" if weight else "pToverE_Variance"
-
-    x_label_rap = "Rapidity Variance (weighted)" if weight else "Rapidity Variance"
-    x_label_ptE = "p_{T}/E Variance (weighted)" if weight else "p_{T}/E Variance"
-
-    # Ht_edges = BINNING["PFCands_Ht"]
-    Ht_edges = [
-                0,
-                10,
-                20,
-                30,
-                40,
-                50,
-                60,
-                70,
-                80,
-                90,
-                100,
-                110,
-                120
-                ]
+    Ht_edges = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]
+    Ht_centers = [(Ht_edges[i] + Ht_edges[i+1]) / 2.0 for i in range(len(Ht_edges) - 1)]
     Ht_slices = [(Ht_edges[i], Ht_edges[i+1]) for i in range(len(Ht_edges) - 1)]
 
-    n_cols = 4
-    n_rows = (len(Ht_slices) + n_cols - 1) // n_cols   # ceiling division → 3
-    pad_area_top = 0.95   # top 12 % reserved for the legend strip
-    canvas_left = 0.07    # 5 % margin on each side
-    canvas_right = 0.98
+    color_DY = "#7B2D8B"
+    color_MinBias = "#C84B00"
 
-    canvas = ROOT.TCanvas(f"canvas_{rap_var_col}", "", 1800, 1400)
-    canvas.Draw()
+    datasets = [
+        ("DY", df_SingleMuon_var, color_DY, "-",  "o"),
+        ("MC DY", df_MCDYJets_var, color_DY, "--", "o"),
+        ("MinBias", df_MinBias_var, color_MinBias, "-", "s"),
+        ("MC MinBias", df_MCMinBias_var, color_MinBias, "--", "s"),
+    ]
 
-    all_hists = []
-    pads = []
-    pad_legends = []
-    axis_labels = []
+    fig, ax = plt.subplots(figsize=(9, 5))
 
-    pad_width = (canvas_right - canvas_left) / n_cols
+    # Add dotted grey lines to the Ht bins
+    for edge in Ht_edges:
+        ax.axvline(edge, color='grey', linestyle='--', linewidth=0.5)
 
-    dummy = ROOT.TObject()  # Dummy object for legend entries
+    # Change the x labels to show the bin ranges instead of the bin edges and make them central to the bins
+    ax.set_xticks([(Ht_edges[i] + Ht_edges[i+1]) / 2.0 for i in range(len(Ht_edges) - 1)])
+    ax.set_xticklabels([f"{Ht_edges[i]}-{Ht_edges[i+1]}" for i in range(len(Ht_edges) - 1)])
 
-    for idx, (low, high) in enumerate(Ht_slices):
-        col = idx % n_cols
-        row = idx // n_cols
-        is_left = (col == 0)
-        is_right = (col == n_cols - 1)
-        is_bottom = (row == n_rows - 1)
+    for name, df, color, ls, marker in datasets:
+        variances = []
+        for low, high in Ht_slices:
+            cut   = f"PFSelection_PFCands_Ht >= {low} && PFSelection_PFCands_Ht < {high}"
+            stats = df.Filter(cut).Stats("PFSelection_PFCands_EventRapidity").GetValue()
+            if stats.GetVar() == 0:
+                print(f"Warning: Variance is zero for {name} in Ht range [{low}, {high})")
+            variances.append(1 / stats.GetVar() if stats.GetVar() != 0 else 0)
 
-        x_lo = canvas_left + col * pad_width
-        x_hi = canvas_left + (col + 1) * pad_width
-        row_height = 0.3
-        y_lo = pad_area_top - (row + 1) * row_height
-        y_hi = pad_area_top - row * row_height
+        ax.plot(Ht_centers, variances, color=color, linestyle=ls, marker=marker, linewidth=1.8, markersize=6, label=name)
 
-        pad = ROOT.TPad(f"pad_{rap_var_col}_{idx}", "", x_lo, y_lo, x_hi, y_hi)
-        pad.SetLeftMargin(0.15 if is_left else 0.12)
-        pad.SetRightMargin(0.08 if is_right else 0.02)
-        pad.SetTopMargin(0.04)
-        pad.SetBottomMargin(0.1)
-        pad.SetFillStyle(0)
-        pad.Draw()
-        pads.append(pad)
-        pad.cd()
+    ax.set_xlabel(r"$H_T$ [GeV]", fontsize=13)
+    ax.set_ylabel(r"Rapidity Variance per $H_{T}$ Bin", fontsize=13)
+    ax.set_xlim(Ht_edges[0] - 2, Ht_edges[-1] + 2)
+    ax.set_ylim(bottom=0)
+    ax.legend(frameon=False, fontsize=11, ncol=2)
+    ax.tick_params(axis='y', labelsize=10)
 
-        cut = f"PFSelection_PFCands_Ht >= {low} && PFSelection_PFCands_Ht < {high}"
-        label = f"Ht{low}_{high}"
-        print(f"Applying cut: {cut}")
+    
 
-        DY_hist = df_SingleMuon_var.Filter(cut).Histo1D((f"h_DY_{rap_var_col}_{label}", "", 10, 0, 5), rap_var_col).GetValue().Clone()
-        MCDY_hist = df_MCDYJets_var.Filter(cut).Histo1D((f"h_MCDY_{rap_var_col}_{label}", "", 10, 0, 5), rap_var_col).GetValue().Clone()
-        MinBias_hist = df_MinBias_var.Filter(cut).Histo1D((f"h_MinBias_{rap_var_col}_{label}", "", 10, 0, 5), rap_var_col).GetValue().Clone()
-        MCMinBias_hist = df_MCMinBias_var.Filter(cut).Histo1D((f"h_MCMinBias_{rap_var_col}_{label}", "", 10, 0, 5), rap_var_col).GetValue().Clone()
+    fig.tight_layout()
+
+    output_dir = "new_plots"
+    os.makedirs(output_dir, exist_ok=True)
+    plt.savefig(f"{output_dir}/EventRapidityVariance{out_suffix}.pdf", bbox_inches='tight')
+    plt.close(fig)
+    print(f"\nSaved plot: {output_dir}/EventRapidityVariance{out_suffix}.pdf")
 
 
-        NormaliseHist(DY_hist, True)
-        NormaliseHist(MCDY_hist, True)
-        NormaliseHist(MinBias_hist, True)
-        NormaliseHist(MCMinBias_hist, True)
-
-        all_hists.append([DY_hist, MCDY_hist, MinBias_hist, MCMinBias_hist])
-
-        for h in [DY_hist, MCDY_hist, MinBias_hist, MCMinBias_hist]:
-            h.SetTitle("")
-            h.GetXaxis().SetTitle("")
-            h.GetXaxis().SetTitleSize(0.09)
-            h.GetXaxis().SetLabelSize(0.07)
-            h.GetXaxis().SetNdivisions(5)
-            h.GetYaxis().SetTitle("")
-            h.GetYaxis().SetTitleSize(0.09)
-            h.GetYaxis().SetLabelSize(0.07)
-            h.GetYaxis().SetTitleOffset(1.0)
-
-        DY_hist.SetLineColor(ROOT.kViolet - 6)
-        # DY_hist.SetLineWidth(2)
-
-        MCDY_hist.SetLineColor(ROOT.kViolet - 6)
-        # MCDY_hist.SetLineWidth(2)
-        MCDY_hist.SetLineStyle(2)
-
-        MinBias_hist.SetLineColor(ROOT.kOrange + 5)
-        # MinBias_hist.SetLineWidth(2)
-
-        MCMinBias_hist.SetLineColor(ROOT.kOrange + 5)
-        # MCMinBias_hist.SetLineWidth(2)
-        MCMinBias_hist.SetLineStyle(2)
-
-        DY_hist.SetMaximum(max(DY_hist.GetMaximum(), MCDY_hist.GetMaximum(), MinBias_hist.GetMaximum(), MCMinBias_hist.GetMaximum()) * 1.5)
-
-        DY_hist.Draw("hist e")
-        MCDY_hist.Draw("hist e same")
-        MinBias_hist.Draw("hist e same")
-        MCMinBias_hist.Draw("hist e same")
-
-        # Per-pad Ht range label
-        pad_legend = ROOT.TLegend(0.15, 0.87, 0.98, 0.90)
-        pad_legend.SetBorderSize(0)
-        pad_legend.SetFillStyle(0)
-        pad_legend.SetTextSize(0.07)
-        pad_legend.SetMargin(0)
-        pad_legend.AddEntry(0, f"#bf{{{low} GeV #leq H_{{T}} < {high} GeV}}", "")
-        pad_legend.Draw()
-        pad_legends.append(pad_legend)
-
-        canvas.cd()
-
-    # Single legend in the top strip, all four entries in one row
-    legend = ROOT.TLegend(0.1, 0.95, 0.95, 0.97)
-    legend.SetBorderSize(0)
-    legend.SetFillStyle(0)
-    legend.SetTextSize(0.04)
-    legend.SetNColumns(4)
-    legend.SetMargin(0.2)
-
-    # Create dummy for each histogram
-    dummy_DY = ROOT.TGraph()
-    dummy_DY.SetLineColor(ROOT.kViolet - 6)
-    dummy_DY.SetLineWidth(3)
-
-    dummy_MCDY = ROOT.TGraph()
-    dummy_MCDY.SetLineColor(ROOT.kViolet - 6)
-    dummy_MCDY.SetLineStyle(2)
-    dummy_MCDY.SetLineWidth(3)
-
-    dummy_MinBias = ROOT.TGraph()
-    dummy_MinBias.SetLineColor(ROOT.kOrange + 5)
-    dummy_MinBias.SetLineWidth(3)
-
-    dummy_MCMinBias = ROOT.TGraph()
-    dummy_MCMinBias.SetLineColor(ROOT.kOrange + 5)
-    dummy_MCMinBias.SetLineStyle(2)
-    dummy_MCMinBias.SetLineWidth(3)
-
-    legend.AddEntry(dummy_DY, "#bf{DY}", "l")
-    legend.AddEntry(dummy_MinBias, "#bf{MinBias}", "l")
-    legend.AddEntry(dummy_MCDY, "#bf{MC DY}", "l")
-    legend.AddEntry(dummy_MCMinBias, "#bf{MC MinBias}", "l")
-    legend.Draw()
-
-    # Shared x-axis label at bottom center of canvas
-    x_title = ROOT.TLatex()
-    x_title.SetNDC()
-    x_title.SetTextSize(0.04)
-    x_title.SetTextAlign(22)
-    x_title.DrawLatex(0.5, 0.03, x_label_rap)
-    axis_labels.append(x_title)
-
-    # Shared y-axis label on the upper left side of canvas (rotated)
-    y_title = ROOT.TLatex()
-    y_title.SetNDC()
-    y_title.SetTextSize(0.04)
-    y_title.SetTextAlign(22)
-    y_title.SetTextAngle(90)
-    y_title.DrawLatex(0.04, 0.55, "Density #frac{1}{N} #frac{dN}{dx} (normalised)")
-    axis_labels.append(y_title)
-
-    canvas.SaveAs(f"new_plots/VarianceSlice_{rap_var_col}{out_suffix}.pdf")
-    del all_hists, axis_labels, pad_legends
-    canvas.Clear()
 
 
 
@@ -6800,7 +6689,7 @@ def main():
         AverageObservablesVsZpT(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix)
     
     if args.mode in ["variancemethod", "all"]:
-        RapidityVarianceMethod(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix, args.weight)
+        RapidityVarianceMethod(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.output_suffix, args.weight)
 
     end = time.time()
     elapsed_time = end - start
