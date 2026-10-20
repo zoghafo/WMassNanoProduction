@@ -171,13 +171,16 @@ def PVSelection(df, dataset_name):
 
 
 def PFCandidateSelection(df, elec_charge):
+    df = df.Define("PFCands_E", "sqrt(PFCands_mass * PFCands_mass + PFCands_pt * PFCands_pt * cosh(PFCands_eta) * cosh(PFCands_eta))")
+
     df = df.Define(
         "PF",
         f"""
         (abs(PFCands_charge) == {elec_charge}) &&
         (PFCands_vertexRef == PFCands_vertexRefRandom) &&
         ((PFCands_pvAssocQuality == 6) || (PFCands_pvAssocQuality == 7)) &&
-        (abs(PFCands_pdgId) != 13)
+        (abs(PFCands_pdgId) != 13) &&
+        (PFCands_E > 0.5)
         """,
     )
     df = df.Filter("ROOT::VecOps::Sum(PF != 0.f) >= 2")
@@ -254,7 +257,9 @@ def ObservablesCalculation(df):
 
 def SaveSelectedEvents(df_SingleMuon, df_MinBias, df_MCDY, df_MCMinBias, out_path="", output_suffix=""):
 
-    variables_list_MinBias = [f"PFSelection_{var}" for var in VARIABLES.keys()]
+    PFCands_branches = [str(col) for col in df.GetColumnNames() if str(col).startswith("PFCands")]
+
+    variables_list_MinBias = [f"PFSelection_{var}" for var in VARIABLES.keys()] + PFCands_branches
     variables_list_SingleMuon = ["DiMuon_pt"] + variables_list_MinBias + ["DiMuon_P", "DiMuon_Mass", "DiMuon_Rapidity", "DiMuon_xmaxll", "DiMuon_xminll", "DiMuon_Eta", "DiMuon_Pt", "DiMuon_Phi", "DiMuon_E"]
 
 
