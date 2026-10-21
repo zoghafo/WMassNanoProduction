@@ -13,7 +13,7 @@ set -x
 
 start_time=$(date +%s)
 
-source_dir="/scratch/zoghafoo"
+source_dir=/scratch/$USER/$SLURM_JOB_ID
 DESTDIR=/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents_new
 DATASET="$1"
 OUTPUTSUFFIX="$2"
@@ -34,6 +34,12 @@ python3 NanoAOD_EventSelection.py \
   --output-suffix "$OUTPUTSUFFIX" \
   --nthreads "$NTHREADS"
   # --maxevents $MAXEVENTS
+status=$?
+if [ $status -ne 0 ]; then
+  echo "Python script failed with exit code $status, not copying output"
+  rm -rf "$source_dir"
+  exit $status
+fi
 
 echo "Finished the python script"
 echo "voms proxy info:"
@@ -46,14 +52,14 @@ echo "From "$source_dir"/"$DATASET"_SelectedEvents_$OUTPUTSUFFIX.root"
 echo "To root://t3dcachedb03.psi.ch:1094//"$DESTDIR
 
 echo "Analyze scratch"
+ls -l "$source_dir"
 cd /scratch
 pwd
 ls
 xrdcp -f -N $source_dir/$DATASET"_SelectedEvents_$OUTPUTSUFFIX.root" root://t3dcachedb03.psi.ch:1094//$DESTDIR
 xrdcp -f -N $source_dir/$DATASET"_TotalEvents_$OUTPUTSUFFIX.txt" root://t3dcachedb03.psi.ch:1094//$DESTDIR
 
-rm $source_dir/$DATASET"_SelectedEvents_$OUTPUTSUFFIX.root"
-rm $source_dir/$DATASET"_TotalEvents_$OUTPUTSUFFIX.txt"
+rm -rf "$source_dir"
 
 end_time=$(date +%s)
 elapsed=$((end_time - start_time))
