@@ -14,7 +14,8 @@ set -x
 start_time=$(date +%s)
 
 DIRECTORY=/t3home/zoghafoo/WMassNanoProduction
-source_dir="/scratch/zoghafoo"
+source_dir=/scratch/$USER/${SLURM_JOB_ID:?not running under Slurm}
+export SCRATCH_DIR="$source_dir"
 PNFS_DESTDIR=/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents
 
 mkdir -p "$source_dir"

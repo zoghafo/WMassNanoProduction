@@ -18,7 +18,7 @@ ROOT.gROOT.SetBatch(True)
 
 
 
-path = "/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents"
+path = "/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents_new"
 
 scratch_path = os.environ.get("SCRATCH_DIR", "/scratch/zoghafoo")
 print(f"Using scratch path: {scratch_path}")
@@ -31,10 +31,10 @@ DATASETS = [
            ]
 
 FILES = [
-         f"{path}/SingleMuon_SelectedEvents_RunII2016FGH.root",
-         f"{path}/MinBias_SelectedEvents_RunII2016FGH.root",
-         f"{path}/MCDY_SelectedEvents.root",
-         f"{path}/MCMinBias_SelectedEvents.root"
+         f"{path}/SingleMuon_SelectedEvents_RunIIFGH2016.root",
+         f"{path}/MinBias_SelectedEvents_RunIIFGH2016.root",
+         f"{path}/MCDY_SelectedEvents_RunII2.root",
+         f"{path}/MCMinBias_SelectedEvents_RunII2.root"
         ]
 
 VARIABLES = {
@@ -96,7 +96,7 @@ BINNING = {
     "PFCands_eta": [20, -2.4, 2.4],
     "PFCands_phi": [20, -3.14, 3.14],
     # "PFCands_InvariantMass": [0, 2, 5, 10, 15, 20, 25, 35, 45, 60, 80, 120, 160],
-    "PFCands_InvariantMass": [0, 15, 20, 30, 40, 50, 60, 70, 86, 96, 100, 110, 120, 130, 140, 150, 160],
+    "PFCands_InvariantMass": [0, 10, 20, 30, 40, 50, 60, 70, 86, 96, 100, 110, 120, 130, 140, 150, 160],
     "PFCands_pvAssocQuality": [9, 0, 9],
     "nPFCands": [3.0, 5.0, 8.0, 11.0, 15.0, 20.0, 27.0, 34.0, 43.0, 54.0, 65.0, 90.0, 130.0, 160.0],
     # "PFCands_Ht": [0, 5, 10, 15, 20, 30, 50, 70, 90, 110, 130, 150, 170, 200, 230, 260, 300, 350, 370],
@@ -574,7 +574,7 @@ def VarianceCalculation(df, df_name, weight = False):
 
     if "PFSelection_PFCands_E" not in col_names:
         df = df.Define("PFSelection_PFCands_E", "PFSelection_PFCands_pt * cosh(PFSelection_PFCands_eta)")
-        print(f"PFSelection_PFCands_E column created in {df_name} Dataframe.")
+        # print(f"PFSelection_PFCands_E column created in {df_name} Dataframe.")
 
     if "PFSelection_PFCands_P" not in col_names:
         df = df.Define("PFSelection_PFCands_P",
@@ -583,20 +583,22 @@ def VarianceCalculation(df, df_name, weight = False):
             PFSelection_PFCands_eta,
             PFSelection_PFCands_phi,
             PFSelection_PFCands_E)""")
-        print(f"PFSelection_PFCands_P column created in {df_name} Dataframe.")
+        # print(f"PFSelection_PFCands_P column created in {df_name} Dataframe.")
 
     if "PFSelection_PFCands_SumP" not in col_names:
         df = df.Define("PFSelection_PFCands_SumP", "ROOT::VecOps::Sum(PFSelection_PFCands_P, ROOT::Math::PtEtaPhiEVector())")
-        print(f"PFSelection_PFCands_SumP column created in {df_name} Dataframe.")
+        # print(f"PFSelection_PFCands_SumP column created in {df_name} Dataframe.")
 
     if "PFSelection_PFCands_EventRapidity" not in col_names:
         df = df.Define("PFSelection_PFCands_EventRapidity", "PFSelection_PFCands_SumP.Rapidity()")
-        print(f"PFSelection_PFCands_EventRapidity column created in {df_name} Dataframe.")
+        # print(f"PFSelection_PFCands_EventRapidity column created in {df_name} Dataframe.")
 
 
     if "PFSelection_PFCands_pToverE" not in col_names:
         df = df.Define("PFSelection_PFCands_pToverE", "PFSelection_PFCands_pt / PFSelection_PFCands_E")
-        print(f"PFSelection_PFCands_pToverE column created in {df_name} Dataframe.")
+        # print(f"PFSelection_PFCands_pToverE column created in {df_name} Dataframe.")
+
+    print(f"Variance calculation columns created in {df_name} Dataframe.")
 
     return df
 
@@ -683,16 +685,16 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
                 (7, 8), 
                 (8, 9), 
                 (9, 10), 
-                # (10, 11), 
-                # (11, 12), 
-                # (12, 13), 
-                # (13, 14), 
-                # (14, 15), 
-                # (15, 16), 
-                # (16, 17), 
-                # (17, 18), 
-                # (18, 19), 
-                # (19, 20)
+                (10, 11), 
+                (11, 12), 
+                (12, 13), 
+                (13, 14), 
+                (14, 15), 
+                (15, 16), 
+                (16, 17), 
+                (17, 18), 
+                (18, 19), 
+                (19, 20)
         ]
     rapidity = [
                 (-2.4, -2),
@@ -832,33 +834,31 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
 
 # --------------- PLOT -----------------
 
-        if axis == "raw" and not skip_minbias:
-            h_MinBias_ptr = MakeHist(df_MinBias_var, var, label, y_title_pad1, bins, f"h_MinBias_{var}", axis="raw")
-            h_MCMinBias_ptr = MakeHist(df_MCMinBias_var, var, label, y_title_pad1, bins, f"h_MCMinBias_{var}", axis="raw")
+        if not skip_minbias:
+            if axis == "raw":
+                h_MinBias_ptr = MakeHist(df_MinBias_var, var, label, y_title_pad1, bins, f"h_MinBias_{var}", axis="raw")
+                h_MCMinBias_ptr = MakeHist(df_MCMinBias_var, var, label, y_title_pad1, bins, f"h_MCMinBias_{var}", axis="raw")
 
-        elif axis == "quantile":
-            BuildQuantile(df_MinBias_var, var, "MinBias")
-            BuildQuantile(df_MCMinBias_var, var, "MCMinBias")
+            elif axis == "quantile":
+                BuildQuantile(df_MinBias_var, var, "MinBias")
+                BuildQuantile(df_MCMinBias_var, var, "MCMinBias")
 
-            if not skip_minbias:
                 df_MinBias_var_q = ApplyQuantileAndIP(df_MinBias_var, var, "MinBias")
                 df_MCMinBias_var_q = ApplyQuantileAndIP(df_MCMinBias_var, var, "MCMinBias")
 
                 h_MinBias_ptr = MakeHist(df_MinBias_var_q, var, label, y_title_pad1, bins, f"h_MinBias_{var}", axis="quantile")
                 h_MCMinBias_ptr = MakeHist(df_MCMinBias_var_q, var, label, y_title_pad1, bins, f"h_MCMinBias_{var}", axis="quantile")
 
-        elif axis == "IP":
-            BuildQuantile(df_MinBias_var, var, "MinBias")
-            BuildQuantile(df_MCMinBias_var, var, "MCMinBias")
+            elif axis == "IP":
+                BuildQuantile(df_MinBias_var, var, "MinBias")
+                BuildQuantile(df_MCMinBias_var, var, "MCMinBias")
 
-            if not skip_minbias:
                 df_MinBias_var_q = ApplyQuantileAndIP(df_MinBias_var, var, "MinBias")
                 df_MCMinBias_var_q = ApplyQuantileAndIP(df_MCMinBias_var, var, "MCMinBias")
 
                 h_MinBias_ptr = MakeHist(df_MinBias_var_q, var, label, y_title_pad1, bins, f"h_MinBias_{var}", axis="IP")
                 h_MCMinBias_ptr = MakeHist(df_MCMinBias_var_q, var, label, y_title_pad1, bins, f"h_MCMinBias_{var}", axis="IP")
 
-        if not skip_minbias:
             h_MinBias = h_MinBias_ptr.GetValue()
             h_MCMinBias = h_MCMinBias_ptr.GetValue()
 
@@ -908,7 +908,7 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
             
             for spec, fbin in zip(filter_specs, combo):
                 filter_conditions.append(f"{spec['col']} >= {fbin[0]} && {spec['col']} < {fbin[1]}")
-                name_parts.append(f"{spec['name']}{fbin[0]}-{fbin[1]}")
+                name_parts.append(f"{spec['name'].capitalize()}{fbin[0]}-{fbin[1]}")
                 unit = " GeV" if spec["name"] in ("pt", "mass", "Ht") else ""
                 legend_parts.append(f"{fbin[0]}{unit} #leq {spec['label']} < {fbin[1]}{unit}")
 
@@ -948,6 +948,9 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
             # pad2.SetLogy()
             pad2.SetGridy()
 
+            if skip_minbias:
+                pad1.SetLogy()
+
 
             # --------------- LEGEND -----------------
             if kin_filter:
@@ -963,6 +966,10 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
                     legend = ROOT.TLegend(0.16, 0.67, 0.3, 0.92)
                 legend.SetMargin(0.28)
 
+            if skip_minbias:
+                legend = ROOT.TLegend(0.16, 0.65, 0.3, 0.92)
+                legend.SetMargin(0.28)
+
             legend.SetBorderSize(0)
             legend.SetFillStyle(0)
             legend.SetTextSize(0.06)
@@ -976,9 +983,6 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
             # elif kin_filter != "mass":
             #     legend.AddEntry(dummy, f"#color[{ROOT.kViolet - 6}]{{#bf{{DY}}(86 GeV < m_{{#mu#mu}} < 96 GeV)}}", "")
             # else:
-            
-            
-
 
 
 
@@ -1008,7 +1012,7 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
                 h_SingleMuon_ptr_filtered = MakeHist(df_SingleMuon_var_filtered, var, label, y_title_pad1, bins, hist_name_DY, axis="raw")
                 h_MCDYJets_ptr_filtered = MakeHist(df_MCDYJets_var_filtered, var, label, y_title_pad1, bins, hist_name_MCDY, axis="raw")
 
-            elif axis == "quantile" or axis == "IP":
+            elif (axis == "quantile" or axis == "IP") and not skip_minbias:
                 df_SingleMuon_var_filtered = ApplyQuantileAndIP(df_SingleMuon_var_filtered, var, "MinBias")
                 df_MCDYJets_var_filtered = ApplyQuantileAndIP(df_MCDYJets_var_filtered, var, "MCMinBias")
 
@@ -1076,7 +1080,10 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
                 width_adjustment = max_text_length * 0.006
 
                 if axis in ["raw", "quantile"]:
-                    x1, x2 = 0.55, 0.8
+                    if not skip_minbias:
+                        x1, x2 = 0.55, 0.8
+                    else:
+                        x1, x2 = 0.16, 0.3
                     new_x2 = x1 + width_adjustment
                     legend.SetX1(x1)
                     legend.SetX2(new_x2)
@@ -1097,7 +1104,8 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
 
 
             ratios_DY = h_SingleMuon_filtered.Clone(f"ratio_{var}")
-            ratios_MCDY = h_MCDYJets_filtered.Clone(f"ratio_{var}")
+            ratios_MCDY = h_MCDYJets_filtered.Clone(f"ratio_MC_{var}")
+
 
             if ratio == "DYMinBias" and not skip_minbias:
 
@@ -1117,12 +1125,10 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
                 ratios_MCDY.SetLineStyle(2)
 
             elif ratio == "DataMC":
+                ratios_DY.Divide(h_MCDYJets_filtered)
                 if not skip_minbias:
                     ratios_MinBias.Draw("hist e")
                 ratios_DY.Draw("hist e same" if not skip_minbias else "hist e")
-
-            # elif ratio == "DYZ":
-
 
             ratios_DY.SetTitle("")
             ratios_DY.SetMarkerStyle(20)
@@ -1148,14 +1154,15 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
                 ratios_MCDY.Draw("hist e same")
             elif ratio == "DYMinBias" and skip_minbias:
                 ratios_DY.Divide(ratios_MCDY)
-                ratios_DY.GetYaxis().SetTitle("#frac{Data}{MC}")
+                # ratios_DY.GetYaxis().SetTitle("#frac{Data}{MC}")
                 ratios_DY.Draw("hist e")
-            elif ratio == "DataMC":
-                if not skip_minbias:
-                    ratios_MinBias.Draw("hist e")
-                ratios_DY.Draw("hist e same" if not skip_minbias else "hist e")
-            
-            ratios_DY.SetMaximum(max(ratios_DY.GetMaximum(), ratios_MCDY.GetMaximum()) * 1.2)
+
+            # fixed y range of pad 2, set on the histogram drawn first there, as it defines the axes
+            frame = ratios_MinBias if ratio == "DataMC" and not skip_minbias else ratios_DY
+            frame.SetMinimum(0.8)
+            frame.SetMaximum(1.8)
+
+
 
             if ratio == "DYMinBias" and not skip_minbias:
                 legend_ratios.AddEntry(ratios_DY, f"#color[{ROOT.kBlack}]{{#bf{{Data}}}}", "lpe")
@@ -1165,7 +1172,7 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
 
 
             kin_filter_tag = "".join(kf.capitalize() for kf in kin_filter) if kin_filter else "NoFilter"
-            path = f"new_plots/{var}/{axis.capitalize() if axis in ["raw", "quantile"] else axis}/{kin_filter_tag}"
+            path = f"new_plots/{var}/{axis.capitalize() if axis in ['raw', 'quantile'] else axis}/{kin_filter_tag}"
             output_name = f"{path}/{var}_{axis.capitalize() if axis in ['raw', 'quantile'] else axis}{'_' + name_suffix if name_suffix else ''}_{ratio}{out_suffix}.pdf"
 
             os.makedirs(path, exist_ok=True)
@@ -1317,19 +1324,41 @@ def AverageObservablesVsZpT(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, 
         canvas.Close()
 
 
-def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, out_suffix, weight):
+def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, out_suffix, weight):
 
     df_SingleMuon_var = VarianceCalculation(df_SingleMuon_var, "SingleMuon", weight)
     df_MinBias_var = VarianceCalculation(df_MinBias_var, "MinBias", weight)
     df_MCDYJets_var = VarianceCalculation(df_MCDYJets_var, "MCDYJets", weight)
     df_MCMinBias_var = VarianceCalculation(df_MCMinBias_var, "MCMinBias", weight)
 
-    df_SingleMuon_var = DiMuonPtCut(df_SingleMuon_var, 2)
-    df_MCDYJets_var = DiMuonPtCut(df_MCDYJets_var, 2)
+    # df_SingleMuon_var = DiMuonPtCut(df_SingleMuon_var, 4)
+    # df_MCDYJets_var = DiMuonPtCut(df_MCDYJets_var, 4)
 
-    Ht_edges = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]
-    Ht_centers = [(Ht_edges[i]+Ht_edges[i+1])/2.0 for i in range(len(Ht_edges)-1)]
-    Ht_slices = [(Ht_edges[i], Ht_edges[i+1]) for i in range(len(Ht_edges)-1)]
+    # Event-activity observables to slice in: bin edges, axis symbol and unit
+    OBS_EDGES = {
+        "PFCands_Ht": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
+        "PFCands_Pt2sum": [0, 10, 20, 30, 40, 50, 60, 70, 100, 150, 200, 250, 300, 350, 400],
+        "PFCands_Psum": [0, 10, 20, 30, 40, 50, 60, 70, 100, 150, 200, 250, 300, 350, 400],
+        "PFCands_P2sum": [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 250, 300, 400, 500, 600, 800, 1000],
+        "nPFCands":[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 25, 30, 40, 50],
+        "PFCands_InvariantMass":[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160],
+    }
+    OBS_LABEL = {
+        "PFCands_Ht": (r"$H_{T}$", "GeV"),
+        "PFCands_Pt2sum":(r"$\sum p^{2}_{T}$", r"GeV$^{2}$"),
+        "PFCands_Psum": (r"$\sum p$", "GeV"),
+        "PFCands_P2sum": (r"$\sum p^{2}$", r"GeV$^{2}$"),
+        "nPFCands": (r"$N^\mathrm{charged}_\mathrm{PF}$", ""),
+        "PFCands_InvariantMass": (r"$m_\mathrm{inv}$", "GeV"),
+    }
+
+    observables = [v for v in variables if v in OBS_EDGES]
+    if not observables:
+        print(f"RapidityVarianceMethod: none of {list(variables)} are supported, choose from {list(OBS_EDGES)}")
+        return
+
+    obs_slices = {var: [(edges[i], edges[i+1]) for i in range(len(edges)-1)] for var, edges in OBS_EDGES.items()}
+    obs_centers = {var: [(lo+hi)/2.0 for lo, hi in slices] for var, slices in obs_slices.items()}
 
     colour_DY = "#7B2D8B"
     colour_MinBias = "#C84B00"
@@ -1355,7 +1384,17 @@ def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, d
         #         (6,7),
         #         (7,8),
         #         (8,9),
-        #         (9,10)
+        #         (9,10),
+        #         (10,11),
+        #         (11,12),
+        #         (12,13),
+        #         (13,14),
+        #         (14,15),
+        #         (15,16),
+        #         (16,17),
+        #         (17,18),
+        #         (18,19),
+        #         (19,20),
         #         ],
         "none": [None],
     }
@@ -1369,8 +1408,8 @@ def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, d
         ("MC MinBias", df_MCMinBias_var,  colour_MinBias, "--", "s"),
     ]
 
-    # Build all result pointers for all cuts × datasets × Ht bins
-    stats_ptrs = {}   # {(kin_axis, cut, name): [ResultPtr, ...]}
+    # Build all result pointers for all observables × cuts × datasets × observable bins
+    stats_ptrs = {}   # {(var, kin_axis, cut, name): [ResultPtr, ...]}
     for kin_axis, cuts in KIN_CUTS.items():
         for cut in cuts:
             for name, df, *_ in datasets:
@@ -1379,74 +1418,86 @@ def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, d
                     df_cut = df.Filter(f"{KIN_COL[kin_axis]} >= {lo} && {KIN_COL[kin_axis]} < {hi}")
                 else:
                     df_cut = df
-                ptrs = []
-                for low, high in Ht_slices:
-                    ht_cut = (f"PFSelection_PFCands_Ht >= {low} && "
-                              f"PFSelection_PFCands_Ht < {high}")
-                    ptrs.append(df_cut.Filter(ht_cut).Stats("PFSelection_PFCands_EventRapidity"))
-                stats_ptrs[(kin_axis, cut, name)] = ptrs
+                for var in observables:
+                    col = f"PFSelection_{var}"
+                    ptrs = []
+                    for low, high in obs_slices[var]:
+                        obs_cut = f"{col} >= {low} && {col} < {high}"
+                        ptrs.append(df_cut.Filter(obs_cut).Stats("PFSelection_PFCands_EventRapidity"))
+                    stats_ptrs[(var, kin_axis, cut, name)] = ptrs
 
     # Single RunGraphs call — one event loop per df
     all_ptrs = [p for ptrs in stats_ptrs.values() for p in ptrs]
     ROOT.RDF.RunGraphs(all_ptrs)
 
-    # Plot (one figure per cut)
-    for kin_axis, cuts in KIN_CUTS.items():
-        
-        for cut in cuts:
-            fig, ax = plt.subplots(figsize=(9, 5))
+    # Plot (one figure per observable × cut)
+    for var in observables:
+        edges = OBS_EDGES[var]
+        obs_symbol, obs_unit = OBS_LABEL[var]
+        if var == "nPFCands":
+            obs_unit = ""
+        if var != "nPFCands":
+            obs_tag = var.replace("PFCands_", "")
+        else:
+            obs_tag = var
 
-            for edge in Ht_edges:
-                ax.axvline(edge, color='grey', linestyle='--', linewidth=0.5)
+        for kin_axis, cuts in KIN_CUTS.items():
 
-            ax.set_xticks(Ht_edges)
-            ax.set_xticklabels(Ht_edges)
+            for cut in cuts:
+                fig, ax = plt.subplots(figsize=(9, 5))
 
-            for name, df, color, ls, marker in datasets:
-                
-                variances = []
-                
-                for i, (low, high) in enumerate(Ht_slices):
-                    
-                    v = stats_ptrs[(kin_axis, cut, name)][i].GetValue().GetVar()
-                    
-                    if v == 0:
-                        print(f"Warning: Var=0 for {name}, Ht [{low},{high})")
-                    variances.append(1/v if v != 0 else 0)
+                for edge in edges:
+                    ax.axvline(edge, color='grey', linestyle='--', linewidth=0.5)
 
-                ax.plot(Ht_centers, variances, color=color, linestyle=ls, marker=marker, linewidth=1.8, markersize=6, label=name)
+                ax.set_xticks(edges)
+                ax.set_xticklabels(edges)
 
-            ax.set_xlabel(r"$H_T$ [GeV]", fontsize=13)
-            ax.set_ylabel(r"Inverse of Rapidity Variance per $H_{T}$ Bin", fontsize=13)
-            ax.set_xlim(Ht_edges[0]-2, Ht_edges[-1]+2)
-            ax.set_ylim(bottom=0)
-            ax.legend(frameon=False, fontsize=11, ncol=2)
-            ax.tick_params(axis='y', labelsize=10)
+                for name, df, color, ls, marker in datasets:
 
-            handles, labels = ax.get_legend_handles_labels()
-            if cut is not None:
-                lo, hi = cut
-                cut_label = f"{KIN_LABEL[kin_axis]} $\\in [{lo},\\,{hi})$ GeV"
-                cut_tag = f"{kin_axis.capitalize()}_{lo}_{hi}"
-            else:
-                # cut_label = "No Kinematic Cut on DY"
-                # cut_tag = "Inclusive"
-                cut_label = "$p^{\\mu\\mu}_{T} < 2$ GeV"
-                cut_tag = "DiMuonPt2GeV"
+                    variances = []
 
-            ax.legend(handles=handles, labels=labels, frameon=False, fontsize=11, ncol=2, loc="upper left", handlelength=2.5, handletextpad=0.4)
-            ax.text(0.015, 0.86, cut_label, transform=ax.transAxes, fontsize=11, color=colour_DY, va='top')
+                    for i, (low, high) in enumerate(obs_slices[var]):
 
-            fig.tight_layout()
+                        v = stats_ptrs[(var, kin_axis, cut, name)][i].GetValue().GetVar()
 
-            output_dir = "new_plots/RapidityVarianceMethod"
-            os.makedirs(output_dir, exist_ok=True)
+                        if v == 0:
+                            print(f"Warning: Var=0 for {name}, {obs_tag} [{low},{high})")
+                        variances.append(1/v if v != 0 else 0)
 
-            output = f"{output_dir}/EventRapidityVariance_{cut_tag}{out_suffix}.pdf"
-            plt.savefig(output, bbox_inches='tight')
-            plt.close(fig)
+                    ax.plot(obs_centers[var], variances, color=color, linestyle=ls, marker=marker, linewidth=1.8, markersize=6, label=name)
 
-            print(f"\nSaved plot: {output}")
+                ax.set_xlabel(f"{obs_symbol} [{obs_unit}]" if var != "nPFCands" else f"{obs_symbol}", fontsize=13)
+                ax.set_ylabel(f"Inverse of Rapidity Variance per {obs_symbol} Bin", fontsize=13)
+                pad = 0.02 * (edges[-1] - edges[0])
+                ax.set_xlim(edges[0]-pad, edges[-1]+pad)
+                ax.set_ylim(bottom=0)
+                ax.legend(frameon=False, fontsize=11, ncol=2)
+                ax.tick_params(axis='y', labelsize=10)
+
+                handles, labels = ax.get_legend_handles_labels()
+                if cut is not None:
+                    lo, hi = cut
+                    cut_label = f"{KIN_LABEL[kin_axis]} $\\in [{lo},\\,{hi})$ GeV"
+                    cut_tag = f"{kin_axis.capitalize()}_{lo}_{hi}"
+                else:
+                    cut_label = "No Kinematic Cut on DY"
+                    cut_tag = "Inclusive"
+                    # cut_label = "$p^{\\mu\\mu}_{T} < 4$ GeV"
+                    # cut_tag = "DiMuonPt4GeV"
+
+                ax.legend(handles=handles, labels=labels, frameon=False, fontsize=11, ncol=2, loc="upper left", handlelength=2.5, handletextpad=0.4)
+                ax.text(0.015, 0.86, cut_label, transform=ax.transAxes, fontsize=11, color=colour_DY, va='top')
+
+                fig.tight_layout()
+
+                output_dir = f"new_plots/RapidityVarianceMethod/{obs_tag}/{kin_axis.capitalize()}"
+                os.makedirs(output_dir, exist_ok=True)
+
+                output = f"{output_dir}/EventRapidityVariance_{obs_tag}_{cut_tag}{out_suffix}.pdf"
+                plt.savefig(output, bbox_inches='tight')
+                plt.close(fig)
+
+                print(f"\nSaved plot: {output}")
 
 
 
@@ -1461,7 +1512,8 @@ def RapidityVarianceKinematics3D(df_SingleMuon_var, df_MCDYJets_var, out_suffix,
 
     Only DY datasets are used because MinBias has no di-muon kinematics.
     """
-
+    # df_SingleMuon_var = DiMuonPtCut(df_SingleMuon_var, 4)
+    # df_MCDYJets_var = DiMuonPtCut(df_MCDYJets_var, 4)
 
     df_SingleMuon_var = VarianceCalculation(df_SingleMuon_var, "SingleMuon", weight)
     df_MCDYJets_var   = VarianceCalculation(df_MCDYJets_var,   "MCDYJets",   weight)
@@ -1638,7 +1690,7 @@ def RapidityVarianceKinematics3D(df_SingleMuon_var, df_MCDYJets_var, out_suffix,
                     var = stats_ptrs[(kin_axis, name)][i][j].GetValue().GetVar()
                     if var == 0:
                         print(f"Warning: Var=0 for {name}, {kin_axis} in [{kin_low},{kin_high}), Ht in [{ht_low},{ht_high})")
-                    grid[i, j] = 1 / var if var != 0 else 0.0
+                    grid[i, j] = 1 / var if var != 0 else "None"
             return grid
 
         Data_grid = extract_grid("DY")
@@ -3148,6 +3200,119 @@ def MassRapPt3D(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias
 
 
 
+# def PocketFormulaRatio(df_SingleMuon_var, df_MCDYJets_var, df_NoMPI_var, cz_cuts, out_suffix, jet_pt_col="Jet_pt", jet_eta_col="Jet_eta"):
+#     """
+#     r_{x/2} ratio of arXiv:2307.05693, Eq. (6):
+
+#         r_{loose/tight}(ptj,min) = <n(ptj,min)>^{pure-MPI}_{loose} / <n(ptj,min)>^{pure-MPI}_{tight}
+
+#     <n(ptj,min)>_{C_Z} is the average number of jets with p_T > ptj,min per event with p^{mumu}_T < C_Z (Eq. 2).
+#     The pure-MPI part is <n>_{C_Z} minus <n>_{C_Z} of a DY sample without MPI (Eq. 3), subtracted from both
+#     Data and MC as in Eq. (A16). Without a no-MPI sample the inclusive ratio is plotted instead.
+#     The pocket formula predicts r = 1.
+#     """
+
+#     cz_tight, cz_loose = sorted(cz_cuts)
+#     mass_window = (66, 116)
+#     jet_eta_max = 2.0                        # paper uses |y_j| < 2
+#     ptj_min_values = list(range(20, 62, 2))  # NanoAOD jets are only stored above 15 GeV
+
+#     colour_tight = "#7B2D8B"
+#     colour_loose = "#C84B00"
+#     LINESTYLE = {"DY": "-", "MC DY": "--", "MC DY (no MPI)": ":"}
+
+#     datasets = [("DY", df_SingleMuon_var), ("MC DY", df_MCDYJets_var)]
+#     if df_NoMPI_var is not None:
+#         datasets.append(("MC DY (no MPI)", df_NoMPI_var))
+#     else:
+#         print("WARNING: no no-MPI sample given (--nompi-file), plotting the inclusive ratio without the pure-MPI subtraction.")
+
+#     for name, df in datasets:
+#         if jet_pt_col not in list(df.GetColumnNames()):
+#             print(f"Warning: column '{jet_pt_col}' not found in {name} DataFrame, skipping PocketFormulaRatio.")
+#             return
+
+#     # Build all result pointers for all datasets × C_Z cuts × ptj,min thresholds
+#     stats_ptrs = {}   # {(name, cz): [ResultPtr, ...]}
+#     for name, df in datasets:
+#         df = df.Filter(f"DiMuon_Mass > {mass_window[0]} && DiMuon_Mass < {mass_window[1]}")
+#         for ptj_min in ptj_min_values:
+#             df = df.Define(f"nJets_ptjmin{ptj_min}", f"Sum({jet_pt_col} > {ptj_min} && abs({jet_eta_col}) < {jet_eta_max})")
+
+#         for cz in (cz_tight, cz_loose):
+#             df_cz = DiMuonPtCut(df, cz)
+#             stats_ptrs[(name, cz)] = [df_cz.Stats(f"nJets_ptjmin{ptj_min}") for ptj_min in ptj_min_values]
+
+#     # Single RunGraphs call — one event loop per df
+#     all_ptrs = [p for ptrs in stats_ptrs.values() for p in ptrs]
+#     ROOT.RDF.RunGraphs(all_ptrs)
+
+#     # <n(ptj,min)>_{C_Z} and its statistical error for every (name, cz)
+#     n_jets = {}
+#     for (name, cz), ptrs in stats_ptrs.items():
+#         stats = [ptr.GetValue() for ptr in ptrs]
+#         n_jets[(name, cz)] = (np.array([s.GetMean() for s in stats]), np.array([s.GetMeanErr() for s in stats]))
+#         print(f"{name}: {stats[0].GetN()} events with p_T^mumu < {cz:g} GeV")
+
+#     def pure_mpi(name, cz):
+#         mean, err = n_jets[(name, cz)]
+#         if df_NoMPI_var is None:
+#             return mean, err
+#         mean_noMPI, err_noMPI = n_jets[("MC DY (no MPI)", cz)]
+#         return mean - mean_noMPI, np.sqrt(err**2 + err_noMPI**2)
+
+#     def ratio(name):
+#         num, num_err = pure_mpi(name, cz_loose)
+#         den, den_err = pure_mpi(name, cz_tight)
+#         den = np.where(den != 0, den, np.nan)
+#         # Errors treated as uncorrelated (conservative: the tight selection is a subset of the loose one)
+#         r = num / den
+#         r_err = np.sqrt((num_err / den)**2 + (num * den_err / den**2)**2)
+#         return r, r_err
+
+#     fig, (ax_n, ax_r) = plt.subplots(2, 1, figsize=(9, 7), sharex=True, gridspec_kw={"height_ratios": [2, 1], "hspace": 0.05})
+
+#     # Top: <n(ptj,min)>_{C_Z} for both C_Z cuts
+#     for cz, colour in ((cz_tight, colour_tight), (cz_loose, colour_loose)):
+#         for name, _ in datasets:
+#             mean, err = n_jets[(name, cz)]
+#             ax_n.errorbar(ptj_min_values, mean, yerr=err, color=colour, linestyle=LINESTYLE[name], marker="o", linewidth=1.8, markersize=4, label=f"{name}, $p^{{\\mu\\mu}}_T < {cz:g}$ GeV")
+
+#     ax_n.set_yscale("log")
+#     ax_n.set_ylabel(r"$\langle n(p_{T,j}^{\mathrm{min}}) \rangle_{C_Z}$", fontsize=13)
+#     ax_n.legend(frameon=False, fontsize=10, ncol=2, loc="lower left")
+#     ax_n.text(0.98, 0.95, f"AK4 jets, $|\\eta_j| < {jet_eta_max:g}$\n${mass_window[0]} < m_{{\\mu\\mu}} < {mass_window[1]}$ GeV", transform=ax_n.transAxes, fontsize=11, ha="right", va="top")
+
+#     # Bottom: r_{loose/tight}
+#     if df_NoMPI_var is not None:
+#         r_label = rf"$r_{{{cz_loose:g}/{cz_tight:g}}}$"
+#     else:
+#         r_label = rf"$r^{{\mathrm{{incl}}}}_{{{cz_loose:g}/{cz_tight:g}}}$"
+
+#     ax_r.axhline(1, color="black", linestyle="--", linewidth=0.8)
+#     for name, colour, ls in (("DY", "black", "-"), ("MC DY", "dimgrey", "--")):
+#         r, r_err = ratio(name)
+#         ax_r.errorbar(ptj_min_values, r, yerr=r_err, color=colour, linestyle=ls, marker="o", linewidth=1.8, markersize=4, label=name)
+
+#     ax_r.set_xlabel(r"$p_{T,j}^{\mathrm{min}}$ [GeV]", fontsize=13)
+#     ax_r.set_ylabel(r_label, fontsize=13)
+#     ax_r.set_xlim(ptj_min_values[0] - 1, ptj_min_values[-1] + 1)
+#     if df_NoMPI_var is not None:
+#         ax_r.set_ylim(0, 2)
+#     else:
+#         ax_r.set_ylim(bottom=0)
+#     ax_r.legend(frameon=False, fontsize=10, ncol=2, loc="upper left")
+
+#     output_dir = "new_plots/PocketFormulaRatio"
+#     os.makedirs(output_dir, exist_ok=True)
+
+#     tag = "PureMPI" if df_NoMPI_var is not None else "Inclusive"
+#     output = f"{output_dir}/r{cz_loose:g}over{cz_tight:g}_{tag}{out_suffix}.pdf"
+#     plt.savefig(output, bbox_inches='tight')
+#     plt.close(fig)
+
+#     print(f"\nSaved plot: {output}")
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -3214,7 +3379,7 @@ def parse_args():
         "--q-bins",
         type=float,
         nargs="+",
-        default=None,
+        default=[0, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.07, 0.075, 0.08, 0.085, 0.09, 0.095, 0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 1],
         help="Custom bin edges for quantile histograms (alternative to --quantile-bins)",
     )
     parser.add_argument(
@@ -3297,6 +3462,18 @@ def parse_args():
         action = "store_true",
         help = "If passed, apply weight to variance method",
     )        
+    # parser.add_argument(
+    #     "--cz-cuts",
+    #     type=float,
+    #     nargs=2,
+    #     default=[2, 15],
+    #     help="Tight and loose p^{mumu}_T cuts C_Z (GeV) for the r_{loose/tight} pocket-formula ratio (default: 2 15)",
+    # )
+    # parser.add_argument(
+    #     "--nompi-file",
+    #     default=None,
+    #     help="DY MC file produced without MPI, used for the pure-MPI subtraction in the pocket-formula ratio",
+    # )
     return parser.parse_args()
     
 
@@ -3350,7 +3527,6 @@ def main():
         print("Selections finished. Plotting disabled by --no-plot.")
         return
 
-
     if args.mode in ["momentumfractions", "all"]:
         MomentumFractions(df_SingleMuon, df_MCDYJets, args.pt_cuts, args.output_suffix)
 
@@ -3358,13 +3534,13 @@ def main():
         MassRapidity(df_SingleMuon, df_MCDYJets, args.pt_cuts, args.output_suffix)
 
     if args.mode in ["sigmaeff", "all"]:
-        SigmaEff(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, args.quantile_bins, args.b_bins, args.binweight, args.mass_rapidity)
+        SigmaEff(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, args.q_bins, args.b_bins, args.binweight, args.mass_rapidity)
     
     if args.mode in ["enhfactorratiotoz", "all"]:
-        EnhancementFactorRatioToZ(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, args.quantile_bins, args.b_bins, args.binweight, args.mass_rapidity)
+        EnhancementFactorRatioToZ(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.pt_cuts, args.output_suffix, args.q_bins, args.b_bins, args.binweight, args.mass_rapidity)
 
     if args.mode in ["massrappt", "all"]:
-        MassRapPt3D(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix, args.quantile_bins, args.b_bins, args.binweight, args.axes)
+        MassRapPt3D(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix, args.q_bins, args.b_bins, args.binweight, args.axes)
     
     if args.mode in ["histograms", "all"]:
         Histograms(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.kin_filter, args.ratio, args.axis, args.output_suffix, args.q_bins, args.b_bins)
@@ -3373,10 +3549,18 @@ def main():
         AverageObservablesVsZpT(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix)
     
     if args.mode in ["variancemethod", "all"]:
-        RapidityVarianceMethod(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.output_suffix, args.weight)
+        RapidityVarianceMethod(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix, args.weight)
 
     if args.mode in ["rapidityvariancekinematics3d", "all"]:
         RapidityVarianceKinematics3D(df_SingleMuon, df_MCDYJets, args.output_suffix, args.weight)
+
+    # if args.mode in ["pocketformularatio", "all"]:
+    #     df_NoMPI = None
+    #     if args.nompi_file is not None:
+    #         df_NoMPI = ROOT.RDataFrame("Events", args.nompi_file)
+    #         if args.maxevents is not None:
+    #             df_NoMPI = df_NoMPI.Range(args.maxevents)
+    #     PocketFormulaRatio(df_SingleMuon, df_MCDYJets, df_NoMPI, args.cz_cuts, args.output_suffix)
 
     end = time.time()
     elapsed_time = end - start
