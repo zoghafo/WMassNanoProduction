@@ -33,8 +33,8 @@ DATASETS = [
 FILES = [
          f"{path}/SingleMuon_SelectedEvents_RunIIFGH2016.root",
          f"{path}/MinBias_SelectedEvents_RunIIFGH2016.root",
-         f"{path}/MCDY_SelectedEvents_RunII2.root",
-         f"{path}/MCMinBias_SelectedEvents_RunII2.root"
+         f"{path}/MCDY_SelectedEvents_RunII2_Weights.root",
+         f"{path}/MCMinBias_SelectedEvents_RunII2_Weights.root"
         ]
 
 VARIABLES = {
@@ -126,6 +126,9 @@ def MakeDataframes(maxevents=None):
         df_MinBias = df_MinBias.Range(maxevents)
         df_MCDYJets = df_MCDYJets.Range(maxevents)
         df_MCMinBias = df_MCMinBias.Range(maxevents)
+
+    # One MC DY event has genWeight ~3e16 (all others < 1e5): veto generator weight outliers
+    df_MCDYJets = df_MCDYJets.Filter("std::abs(genWeight) < 1e6", "genWeight outlier veto")
 
     return df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias
 
@@ -290,14 +293,6 @@ def DiMuonPtCut(df, pt_cut):
     df = df.Filter(f"DiMuon_Pt < {pt_cut}")
     return df
 
-# def MakeHist(df, var, label, y_title, bins, hist_name):
-#     title = f"; {label}; {y_title}"
-#     if len(bins) == 3:
-#         return df.Histo1D((hist_name, title, bins[0], bins[1], bins[2]), f"PFSelection_{var}")
-
-#     edges = array.array("d", bins)
-#     return df.Histo1D((hist_name, title, len(edges) - 1, edges), f"PFSelection_{var}")
-
 def MakeHist(df, var, label, y_title, bins, hist_name, axis="raw"):
     
     # Detect binning format
@@ -306,19 +301,22 @@ def MakeHist(df, var, label, y_title, bins, hist_name, axis="raw"):
         if axis == "raw":
             h = df.Histo1D(
                 (hist_name, label, int(bins[0]), bins[1], bins[2]),
-                f"PFSelection_{var}" if not var.startswith("DiMuon_") else var
+                f"PFSelection_{var}" if not var.startswith("DiMuon_") else var,
+                *(["genWeight"] if "genWeight" in df.GetColumnNames() else [])
             )
         elif axis == "quantile":
             q_column = f"{var}_InvQ"
             h = df.Histo1D(
                 (hist_name, label, int(bins[0]), bins[1], bins[2]),
-                q_column
+                q_column,
+                *(["genWeight"] if "genWeight" in df.GetColumnNames() else [])
             )
         elif axis == "IP":
             b_column = f"{var}_b"
             h = df.Histo1D(
                 (hist_name, label, int(bins[0]), bins[1], bins[2]),
-                b_column
+                b_column,
+                *(["genWeight"] if "genWeight" in df.GetColumnNames() else [])
             )
     else:
         if not isinstance(bins, array.array):
@@ -327,19 +325,22 @@ def MakeHist(df, var, label, y_title, bins, hist_name, axis="raw"):
         if axis == "raw":
             h = df.Histo1D(
                 (hist_name, label, len(bins) - 1, bins),
-                f"PFSelection_{var}" if not var.startswith("DiMuon_") else var
+                f"PFSelection_{var}" if not var.startswith("DiMuon_") else var,
+                *(["genWeight"] if "genWeight" in df.GetColumnNames() else [])
             )
         elif axis == "quantile":
             q_column = f"{var}_InvQ"
             h = df.Histo1D(
                 (hist_name, label, len(bins) - 1, bins),
-                q_column
+                q_column,
+                *(["genWeight"] if "genWeight" in df.GetColumnNames() else [])
             )
         elif axis == "IP":
             b_column = f"{var}_b"
             h = df.Histo1D(
                 (hist_name, label, len(bins) - 1, bins),
-                b_column
+                b_column,
+                *(["genWeight"] if "genWeight" in df.GetColumnNames() else [])
             )
     
     return h
@@ -948,8 +949,8 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
             # pad2.SetLogy()
             pad2.SetGridy()
 
-            if skip_minbias:
-                pad1.SetLogy()
+            # if skip_minbias:
+            #     pad1.SetLogy()
 
 
             # --------------- LEGEND -----------------
@@ -1152,15 +1153,13 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
             if ratio == "DYMinBias" and not skip_minbias:
                 ratios_DY.Draw("hist e")
                 ratios_MCDY.Draw("hist e same")
-            elif ratio == "DYMinBias" and skip_minbias:
-                ratios_DY.Divide(ratios_MCDY)
-                # ratios_DY.GetYaxis().SetTitle("#frac{Data}{MC}")
-                ratios_DY.Draw("hist e")
-
-            # fixed y range of pad 2, set on the histogram drawn first there, as it defines the axes
-            frame = ratios_MinBias if ratio == "DataMC" and not skip_minbias else ratios_DY
-            frame.SetMinimum(0.8)
-            frame.SetMaximum(1.8)
+                ratios_DY.SetMaximum(max(ratios_DY.GetMaximum(), ratios_MCDY.GetMaximum()) * 1.1)
+                ratios_DY.SetMinimum(min(ratios_DY.GetMinimum(), ratios_MCDY.GetMinimum()) * 0.9)
+            elif ratio == "DataMC":
+                # fixed y range of pad 2, set on the histogram drawn first there, as it defines the axes
+                frame = ratios_MinBias if not skip_minbias else ratios_DY
+                frame.SetMinimum(0.8)
+                frame.SetMaximum(1.8)
 
 
 
@@ -1366,36 +1365,36 @@ def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, d
     KIN_COL = {"mass": "DiMuon_Mass", "pt": "DiMuon_Pt"}
     KIN_LABEL = {"mass": r"$m_{\mu\mu}$", "pt": r"$p^{\mu\mu}_T$"}
     KIN_CUTS = {
-        # "mass": [
-        #         (50,70),
-        #         (70,86),
-        #         (86,96),
-        #         (96,110),
-        #         (110,130),
-        #         (130,150)
-        #         ],
-        # "pt":   [
-        #         (0,1),
-        #         (1,2),
-        #         (2,3),
-        #         (3,4),
-        #         (4,5),
-        #         (5,6),
-        #         (6,7),
-        #         (7,8),
-        #         (8,9),
-        #         (9,10),
-        #         (10,11),
-        #         (11,12),
-        #         (12,13),
-        #         (13,14),
-        #         (14,15),
-        #         (15,16),
-        #         (16,17),
-        #         (17,18),
-        #         (18,19),
-        #         (19,20),
-        #         ],
+        "mass": [
+                (50,70),
+                (70,86),
+                (86,96),
+                (96,110),
+                (110,130),
+                (130,150)
+                ],
+        "pt":   [
+                (0,1),
+                (1,2),
+                (2,3),
+                (3,4),
+                (4,5),
+                (5,6),
+                (6,7),
+                (7,8),
+                (8,9),
+                (9,10),
+                (10,11),
+                (11,12),
+                (12,13),
+                (13,14),
+                (14,15),
+                (15,16),
+                (16,17),
+                (17,18),
+                (18,19),
+                (19,20),
+                ],
         "none": [None],
     }
 
@@ -1444,60 +1443,80 @@ def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, d
         for kin_axis, cuts in KIN_CUTS.items():
 
             for cut in cuts:
-                fig, ax = plt.subplots(figsize=(9, 5))
 
-                for edge in edges:
-                    ax.axvline(edge, color='grey', linestyle='--', linewidth=0.5)
-
-                ax.set_xticks(edges)
-                ax.set_xticklabels(edges)
-
-                for name, df, color, ls, marker in datasets:
-
-                    variances = []
-
+                inv_vars = {}
+                for name, *_ in datasets:
+                    inv_vars[name] = []
                     for i, (low, high) in enumerate(obs_slices[var]):
 
                         v = stats_ptrs[(var, kin_axis, cut, name)][i].GetValue().GetVar()
 
                         if v == 0:
                             print(f"Warning: Var=0 for {name}, {obs_tag} [{low},{high})")
-                        variances.append(1/v if v != 0 else 0)
+                        inv_vars[name].append(1/v if v != 0 else 0)
 
-                    ax.plot(obs_centers[var], variances, color=color, linestyle=ls, marker=marker, linewidth=1.8, markersize=6, label=name)
+                # <1/Var>_MB = sum_i (N_i/N_MB) * 1/Var_i over every observable bin, i.e. 1/Var averaged over MinBias events.
+                # Same MinBias-weighted mean as Omega^h(obs), which is 1 by construction. Data and MC use their own MinBias.
+                mean_inv_var = {}
+                for mb_name in ("MinBias", "MC MinBias"):
+                    mb_stats = [p.GetValue() for p in stats_ptrs[(var, kin_axis, cut, mb_name)]]
+                    mb_stats = [s for s in mb_stats if s.GetVar() > 0]
+                    mean_inv_var[mb_name] = sum(s.GetN() / s.GetVar() for s in mb_stats) / sum(s.GetN() for s in mb_stats)
+                    print(f"<1/Var>_{mb_name} over {obs_tag} bins = {mean_inv_var[mb_name]:.4f}")
 
-                ax.set_xlabel(f"{obs_symbol} [{obs_unit}]" if var != "nPFCands" else f"{obs_symbol}", fontsize=13)
-                ax.set_ylabel(f"Inverse of Rapidity Variance per {obs_symbol} Bin", fontsize=13)
-                pad = 0.02 * (edges[-1] - edges[0])
-                ax.set_xlim(edges[0]-pad, edges[-1]+pad)
-                ax.set_ylim(bottom=0)
-                ax.legend(frameon=False, fontsize=11, ncol=2)
-                ax.tick_params(axis='y', labelsize=10)
+                for normalise in (False, True):
+                    fig, ax = plt.subplots(figsize=(9, 5))
 
-                handles, labels = ax.get_legend_handles_labels()
-                if cut is not None:
-                    lo, hi = cut
-                    cut_label = f"{KIN_LABEL[kin_axis]} $\\in [{lo},\\,{hi})$ GeV"
-                    cut_tag = f"{kin_axis.capitalize()}_{lo}_{hi}"
-                else:
-                    cut_label = "No Kinematic Cut on DY"
-                    cut_tag = "Inclusive"
-                    # cut_label = "$p^{\\mu\\mu}_{T} < 4$ GeV"
-                    # cut_tag = "DiMuonPt4GeV"
+                    for edge in edges:
+                        ax.axvline(edge, color='grey', linestyle='--', linewidth=0.5)
 
-                ax.legend(handles=handles, labels=labels, frameon=False, fontsize=11, ncol=2, loc="upper left", handlelength=2.5, handletextpad=0.4)
-                ax.text(0.015, 0.86, cut_label, transform=ax.transAxes, fontsize=11, color=colour_DY, va='top')
+                    ax.set_xticks(edges)
+                    ax.set_xticklabels(edges)
 
-                fig.tight_layout()
+                    for name, df, color, ls, marker in datasets:
+                        mb_name = "MC MinBias" if name.startswith("MC") else "MinBias"
+                        norm = mean_inv_var[mb_name] if normalise else 1.0
+                        ax.plot(obs_centers[var], [x / norm for x in inv_vars[name]], color=color, linestyle=ls, marker=marker, linewidth=1.8, markersize=6, label=name)
 
-                output_dir = f"new_plots/RapidityVarianceMethod/{obs_tag}/{kin_axis.capitalize()}"
-                os.makedirs(output_dir, exist_ok=True)
+                    if normalise:
+                        ax.axhline(1.0, color='grey', linestyle='-', linewidth=0.8)
 
-                output = f"{output_dir}/EventRapidityVariance_{obs_tag}_{cut_tag}{out_suffix}.pdf"
-                plt.savefig(output, bbox_inches='tight')
-                plt.close(fig)
+                    ax.set_xlabel(f"{obs_symbol} [{obs_unit}]" if var != "nPFCands" else f"{obs_symbol}", fontsize=13)
+                    if normalise:
+                        ax.set_ylabel(r"$\mathrm{Var}^{-1}(y_\mathrm{had})\ /\ \langle \mathrm{Var}^{-1} \rangle_\mathrm{MB}$", fontsize=13)
+                    else:
+                        ax.set_ylabel(f"Inverse of Rapidity Variance per {obs_symbol} Bin", fontsize=13)
+                    pad = 0.02 * (edges[-1] - edges[0])
+                    ax.set_xlim(edges[0]-pad, edges[-1]+pad)
+                    ax.set_ylim(bottom=0)
+                    ax.legend(frameon=False, fontsize=11, ncol=2)
+                    ax.tick_params(axis='y', labelsize=10)
 
-                print(f"\nSaved plot: {output}")
+                    handles, labels = ax.get_legend_handles_labels()
+                    if cut is not None:
+                        lo, hi = cut
+                        cut_label = f"{KIN_LABEL[kin_axis]} $\\in [{lo},\\,{hi})$ GeV"
+                        cut_tag = f"{kin_axis.capitalize()}_{lo}_{hi}"
+                    else:
+                        cut_label = "No Kinematic Cut on DY"
+                        cut_tag = "Inclusive"
+                        # cut_label = "$p^{\\mu\\mu}_{T} < 4$ GeV"
+                        # cut_tag = "DiMuonPt4GeV"
+
+                    ax.legend(handles=handles, labels=labels, frameon=False, fontsize=11, ncol=2, loc="upper left", handlelength=2.5, handletextpad=0.4)
+                    ax.text(0.015, 0.86, cut_label, transform=ax.transAxes, fontsize=11, color=colour_DY, va='top')
+
+                    fig.tight_layout()
+
+                    output_dir = f"new_plots/RapidityVarianceMethod/{obs_tag}/{kin_axis.capitalize()}"
+                    os.makedirs(output_dir, exist_ok=True)
+
+                    norm_tag = "_Normalised" if normalise else ""
+                    output = f"{output_dir}/EventRapidityVariance_{obs_tag}_{cut_tag}{norm_tag}{out_suffix}.pdf"
+                    plt.savefig(output, bbox_inches='tight')
+                    plt.close(fig)
+
+                    print(f"\nSaved plot: {output}")
 
 
 

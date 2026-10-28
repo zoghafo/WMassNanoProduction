@@ -264,11 +264,22 @@ def SaveSelectedEvents(df_SingleMuon, df_MinBias, df_MCDY, df_MCMinBias, out_pat
 
     df_SingleMuon.Snapshot("Events", f"{out_path}/Data_SingleMuon_SelectedEvents_{output_suffix}.root", variables_list_SingleMuon)
     df_MinBias.Snapshot("Events", f"{out_path}/Data_MinBias_SelectedEvents_{output_suffix}.root", variables_list_MinBias)
-    df_MCDY.Snapshot("Events", f"{out_path}/MC_DY_SelectedEvents_{output_suffix}.root", variables_list_SingleMuon)
-    df_MCMinBias.Snapshot("Events", f"{out_path}/MC_MinBias_SelectedEvents_{output_suffix}.root", variables_list_MinBias)
+    df_MCDY.Snapshot("Events", f"{out_path}/MC_DY_SelectedEvents_{output_suffix}.root", variables_list_SingleMuon + ["genWeight"])
+    df_MCMinBias.Snapshot("Events", f"{out_path}/MC_MinBias_SelectedEvents_{output_suffix}.root", variables_list_MinBias + ["genWeight"])
+
+def SaveRunsTree(dataset_name, output_file):
+    # Gen-level sums live in Runs (one entry per run per input file); data has none.
+    if dataset_name not in {"MCDY", "MCMinBias"}:
+        return
+    opts = ROOT.RDF.RSnapshotOptions()
+    opts.fMode = "UPDATE"
+    ROOT.RDataFrame("Runs", DATASET_FILES[dataset_name]).Snapshot("Runs", output_file, ["run", "genEventCount_", "genEventSumw_", "genEventSumw2_"], opts)
+
 
 def SnapshotColumns(dataset_name):
     variables_list_minbias = [f"PFSelection_{var}" for var in VARIABLES.keys()]
+    if dataset_name in {"MCDY", "MCMinBias"}:
+        variables_list_minbias += ["genWeight"]
     if dataset_name in {"SingleMuon", "MCDY"}:
         return ["DiMuon_pt"] + variables_list_minbias + ["DiMuon_P", "DiMuon_Mass", "DiMuon_Rapidity", "DiMuon_xmaxll", "DiMuon_xminll", "DiMuon_Eta", "DiMuon_Pt", "DiMuon_Phi", "DiMuon_E"]
     return variables_list_minbias
@@ -347,7 +358,7 @@ def main():
             dataframe = VetoMuons(dataframe)
             dataframe = GoodMuons(dataframe)
             dataframe = DiMuonSelection(dataframe)
-            dataframe = addDiMuon4Vector(dataframe, args.dataset)
+            dataframe = addDiMuon4Vector(dataframe, dataset_name)
 
         dataframe = PVSelection(dataframe, dataset_name)
         dataframe = PFCandidateSelection(dataframe, args.charge)
@@ -368,6 +379,7 @@ def main():
         dataset_name = args.dataset
         output_file = os.path.join(args.output_dir, f"{dataset_name}_SelectedEvents_{args.output_suffix}.root")
         processed_dataframes[dataset_name].Snapshot("Events", output_file, SnapshotColumns(dataset_name))
+        SaveRunsTree(dataset_name, output_file)
 
 
 if __name__ == "__main__":

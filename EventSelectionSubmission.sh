@@ -13,6 +13,11 @@ set -x
 
 start_time=$(date +%s)
 
+if ! voms-proxy-info --exists --valid 24:00; then
+  echo "Grid proxy missing or valid for less than 24h, run voms-proxy-init --voms cms --valid 192:00"
+  exit 1
+fi
+
 source_dir=/scratch/$USER/$SLURM_JOB_ID
 DESTDIR=/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents_new
 DATASET="$1"
@@ -56,10 +61,15 @@ ls -l "$source_dir"
 cd /scratch
 pwd
 ls
-xrdcp -f -N $source_dir/$DATASET"_SelectedEvents_$OUTPUTSUFFIX.root" root://t3dcachedb03.psi.ch:1094//$DESTDIR
-xrdcp -f -N $source_dir/$DATASET"_TotalEvents_$OUTPUTSUFFIX.txt" root://t3dcachedb03.psi.ch:1094//$DESTDIR
 
-rm -rf "$source_dir"
+if xrdcp -f -N "$source_dir/${DATASET}_SelectedEvents_${OUTPUTSUFFIX}.root" root://t3dcachedb03.psi.ch:1094//$DESTDIR && \
+   xrdcp -f -N "$source_dir/${DATASET}_TotalEvents_${OUTPUTSUFFIX}.txt" root://t3dcachedb03.psi.ch:1094//$DESTDIR; then
+  rm -rf "$source_dir"
+else
+  echo "Copy failed, output kept in $source_dir on $(hostname)"
+  exit 1
+fi
+
 
 end_time=$(date +%s)
 elapsed=$((end_time - start_time))
