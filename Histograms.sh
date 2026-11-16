@@ -6,13 +6,13 @@ k=${1:-1}   # max number of kin filters per combination, from the command line (
 source ~/.bashrc
 
 kin_filters=("pt" "mass" "rapidity" "Ht")
-# axes=("raw" "quantile" "IP")
-axes="raw"
+axes=("raw" "quantile" "IP")
+# axes="raw"
 
-# vars=("PFCands_Ht" "PFCands_InvariantMass" "nPFCands" "PFCands_Pt2sum" "PFCands_P2sum")
-# ratio="DYMinBias"
-vars=("DiMuon_Mass" "DiMuon_Pt")
-ratio="DataMC"
+vars=("PFCands_Ht" "PFCands_InvariantMass" "nPFCands" "PFCands_Pt2sum" "PFCands_P2sum")
+ratio="DYMinBias"
+# vars=("DiMuon_Mass" "DiMuon_Pt")
+# ratio="DataMC"
 slurm_flag="--slurm"
 nthreads="32"
 
@@ -41,7 +41,7 @@ for (( mask=0; mask<(1<<n); mask++ )); do
             "${kf_args[@]}" \
             --ratio "$ratio" \
             --axis "$axis" \
-            --output-suffix _LogY \
+            --output-suffix _Weighted_NewSelection \
             "$slurm_flag" \
             --nthreads "$nthreads"
     done

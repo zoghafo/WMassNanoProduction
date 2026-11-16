@@ -33,11 +33,19 @@ echo "Output suffix: "$OUTPUTSUFFIX
 echo "Number of threads: "$NTHREADS
 # echo "Max events: "$MAXEVENTS
 
-python3 NanoAOD_EventSelection.py \
-  --dataset "$DATASET" \
-  --output-dir "$source_dir" \
-  --output-suffix "$OUTPUTSUFFIX" \
-  --nthreads "$NTHREADS"
+# the muon calibration and the MC weights come from WRemnants: run python in its container
+# (--cleanenv keeps the LCG environment of this shell out of the container)
+WREMNANTS_IMAGE=/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/bendavid/cmswmassdocker/wmassdevrolling:v68
+WREMNANTS_DIR=/work/zoghafoo/WRemnants
+
+singularity exec --cleanenv -B /work -B /pnfs -B /t3home -B /scratch "$WREMNANTS_IMAGE" bash -c "
+  source $WREMNANTS_DIR/setup.sh > /dev/null
+  python3 NanoAOD_EventSelection2.py \
+    --dataset $DATASET \
+    --output-dir $source_dir \
+    --output-suffix $OUTPUTSUFFIX \
+    --nthreads $NTHREADS
+"
   # --maxevents $MAXEVENTS
 status=$?
 if [ $status -ne 0 ]; then

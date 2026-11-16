@@ -15,6 +15,7 @@ from matplotlib.ticker import LogLocator
 import matplotlib.lines as mlines
 
 ROOT.gROOT.SetBatch(True)
+ROOT.TGaxis.SetMaxDigits(3)
 
 
 
@@ -31,11 +32,77 @@ DATASETS = [
            ]
 
 FILES = [
-         f"{path}/SingleMuon_SelectedEvents_RunIIFGH2016.root",
-         f"{path}/MinBias_SelectedEvents_RunIIFGH2016.root",
-         f"{path}/MCDY_SelectedEvents_RunII2_Weights.root",
-         f"{path}/MCMinBias_SelectedEvents_RunII2_Weights.root"
+         # with the 2016H v4 production of 6 Nov (16.81 /fb), job 569861
+         f"{path}/SingleMuon_SelectedEvents_NewSelection_MuPtAbove15_NoMllCut_WRemnantsCorrections2.root",
+         f"{path}/MinBias_SelectedEvents_NewSelection_WRemnantsCorrections.root",
+         f"{path}/MCDY_SelectedEvents_NewSelection_MuPtAbove15_NoMllCut_WRemnantsCorrections.root",
+         f"{path}/MCMinBias_SelectedEvents_NewSelection_WRemnantsCorrections.root"
         ]
+
+# FILES = [
+#          f"{path}/SingleMuon_SelectedEvents_RunII2016FGH_OldSelection_NoPFPtCut_NoWeights.root",
+#          f"{path}/MinBias_SelectedEvents_RunII2016FGH_OldSelection_NoPFPtCut_NoWeights.root",
+#          f"{path}/MCDY_SelectedEvents_OldSelection_NoPFPtCut_NoWeights.root",
+#          f"{path}/MCMinBias_SelectedEvents_OldSelection_NoPFPtCut_NoWeights.root"
+#         ]
+
+# Absolute DY MC normalisation as WRemnants (datagroups.py): MC * xsec * lumi * 1000 / weight_sum
+XSEC_DY = 2001.9  # pb, DY -> mumu in WRemnants (utilities/common.py, xsec_DYJetsToLL)
+# *_TotalEvents_*.txt of the selection run that produced FILES: "lumi" row (/fb) of SingleMuon, "weight_sum" row of MCDY
+NORMALISATION_FILES = {
+    "SingleMuon": "/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents_new/SingleMuon_TotalEvents_NewSelection_MuPtAbove15_NoMllCut_WRemnantsCorrections2.txt",
+    "MCDY": "/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/selEvents_new/MCDY_TotalEvents_NewSelection_MuPtAbove15_NoMllCut_WRemnantsCorrections.txt",
+}
+
+# Z -> tautau: at least one tau -> mu or e, BR_TAUToMU = 0.1739 and BR_TAUToE = 0.1782 (utilities/common.py Z_TAU_TO_LEP_RATIO)
+Z_TAU_TO_LEP_RATIO = 1.0 - (1.0 - 0.1739 - 0.1782) ** 2
+# Backgrounds stacked below the DY MC, the first one at the bottom. "samples": selection dataset name and cross section [pb]
+# of WRemnants (datasetDict_2016PostVFP.py, utilities/common.py); each sample is normalised to xsec * lumi * 1000 / its
+# weight_sum as the DY MC, and the samples of one background are summed. Colours of utilities/styles/styles.py.
+# "variables": the plots they are added to
+BACKGROUND_SUFFIX = "NewSelection_MuPtAbove15_NoMllCut_WRemnantsCorrections"  # output suffix of their selection run
+BACKGROUNDS = {
+    "TTbar": {
+        "samples": {"MCTTbar": 88.29},  # TTLeptonic_2016PostVFP (group "Top")
+        "label": "t#bar{t}",
+        "colour": "#008000",  # "green"
+        "variables": ["DiMuon_Mass"],
+    },
+    "Ztautau": {
+        "samples": {"MCZtautau": XSEC_DY * Z_TAU_TO_LEP_RATIO},  # 1161.6 pb, Ztautau_2016PostVFP
+        "label": "Z #rightarrow #tau#tau",
+        "colour": "#964a8b",
+        "variables": ["DiMuon_Mass", "DiMuon_Pt"],
+    },
+    "Diboson": {
+        "samples": {  # group "Diboson"
+            "MCWWTo2L2Nu": 12.6,
+            "MCWWTo1L1Nu2Q": 52.146,
+            "MCWZTo3LNu": 4.91,
+            "MCWZTo2Q2L": 5.4341,
+            "MCWZTo1L1Nu2Q": 11.781,
+            "MCZZTo2L2Nu": 0.60,
+            "MCZZTo2Q2L": 5.1,
+        },
+        "label": "Di-Boson",
+        "colour": "#7A21DD",
+        "variables": ["DiMuon_Mass"],
+    },
+}
+# selected events and normalisation file of each background sample
+BACKGROUND_FILES = {}
+for _background in BACKGROUNDS.values():
+    for _sample in _background["samples"]:
+        BACKGROUND_FILES[_sample] = f"{path}/{_sample}_SelectedEvents_{BACKGROUND_SUFFIX}.root"
+        NORMALISATION_FILES[_sample] = f"{path}/{_sample}_TotalEvents_{BACKGROUND_SUFFIX}.txt"
+
+# muon pT window of the WRemnants Z analyses (utilities/common.py get_default_ptbins, muon_selections.select_good_muons):
+# 26 < corrected pT < 60 GeV for both muons
+MUON_PT_CUT = (26, 60)
+# dimuon mass window of the WRemnants Z analyses (utilities/common.py get_default_mz_window, muon_selections.select_z_candidate):
+# 60 <= mll < 120 GeV, applied to the DiMuon_Mass plot
+MASS_WINDOW = (60, 120)
+
 
 VARIABLES = {
     "PFCands_pt": "p_{T} [GeV]",
@@ -104,7 +171,8 @@ BINNING = {
     "PFCands_Pt2sum": [0, 10, 20, 30, 40, 50, 70, 90, 120, 140, 160, 200, 250, 300, 350, 400],
     "PFCands_Psum": [0, 10, 20, 30, 40, 50, 60, 70, 100, 150, 200, 250, 300, 350, 400],
     "PFCands_P2sum": [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 250, 300, 400, 500, 600, 800, 1000],
-    "DiMuon_Mass": [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140],
+    # "DiMuon_Mass": [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140],
+    "DiMuon_Mass": [60, 70, 75, 78, 80, 82, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 100, 102, 105, 110, 120],
     "DiMuon_Pt": [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60],
     "DiMuon_P": [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60],
     "DiMuon_xmaxll": [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
@@ -302,21 +370,21 @@ def MakeHist(df, var, label, y_title, bins, hist_name, axis="raw"):
             h = df.Histo1D(
                 (hist_name, label, int(bins[0]), bins[1], bins[2]),
                 f"PFSelection_{var}" if not var.startswith("DiMuon_") else var,
-                *(["genWeight"] if "genWeight" in df.GetColumnNames() else [])
+                *(["nominal_weight"] if "nominal_weight" in df.GetColumnNames() else [])
             )
         elif axis == "quantile":
             q_column = f"{var}_InvQ"
             h = df.Histo1D(
                 (hist_name, label, int(bins[0]), bins[1], bins[2]),
                 q_column,
-                *(["genWeight"] if "genWeight" in df.GetColumnNames() else [])
+                *(["nominal_weight"] if "nominal_weight" in df.GetColumnNames() else [])
             )
         elif axis == "IP":
             b_column = f"{var}_b"
             h = df.Histo1D(
                 (hist_name, label, int(bins[0]), bins[1], bins[2]),
                 b_column,
-                *(["genWeight"] if "genWeight" in df.GetColumnNames() else [])
+                *(["nominal_weight"] if "nominal_weight" in df.GetColumnNames() else [])
             )
     else:
         if not isinstance(bins, array.array):
@@ -326,21 +394,21 @@ def MakeHist(df, var, label, y_title, bins, hist_name, axis="raw"):
             h = df.Histo1D(
                 (hist_name, label, len(bins) - 1, bins),
                 f"PFSelection_{var}" if not var.startswith("DiMuon_") else var,
-                *(["genWeight"] if "genWeight" in df.GetColumnNames() else [])
+                *(["nominal_weight"] if "nominal_weight" in df.GetColumnNames() else [])
             )
         elif axis == "quantile":
             q_column = f"{var}_InvQ"
             h = df.Histo1D(
                 (hist_name, label, len(bins) - 1, bins),
                 q_column,
-                *(["genWeight"] if "genWeight" in df.GetColumnNames() else [])
+                *(["nominal_weight"] if "nominal_weight" in df.GetColumnNames() else [])
             )
         elif axis == "IP":
             b_column = f"{var}_b"
             h = df.Histo1D(
                 (hist_name, label, len(bins) - 1, bins),
                 b_column,
-                *(["genWeight"] if "genWeight" in df.GetColumnNames() else [])
+                *(["nominal_weight"] if "nominal_weight" in df.GetColumnNames() else [])
             )
     
     return h
@@ -358,6 +426,36 @@ def NormaliseHist(hist, width=False):
     else:
         print(f"Warning: histogram '{hist.GetName()}' has zero integral; skipping normalization")
     hist.SetStats(0)
+
+def MCScale(df_MC, sample="MCDY", xsec=XSEC_DY):
+    # xsec [pb] * lumi [/fb] * 1000 / weight_sum of the MC sample (key of NORMALISATION_FILES), or None (MC is then scaled to the data yield)
+    files = {name: NORMALISATION_FILES[name] for name in ["SingleMuon", sample]}
+    if "nominal_weight" not in df_MC.GetColumnNames():
+        print(f"Absolute MC normalisation off: the {sample} file has no nominal_weight")
+        return None
+    try:
+        lumi = pd.read_csv(files["SingleMuon"], delimiter="\t", index_col=0).loc["lumi"].iloc[0]
+        weight_sum = pd.read_csv(files[sample], delimiter="\t", index_col=0).loc["weight_sum"].iloc[0]
+    except (FileNotFoundError, KeyError):
+        print(f"Absolute MC normalisation off: no lumi / weight_sum row in {files}")
+        return None
+    if pd.isna(lumi) or pd.isna(weight_sum):
+        print(f"Absolute MC normalisation off: empty lumi / weight_sum in {files}")
+        return None
+
+    scale = xsec * float(lumi) * 1000 / float(weight_sum)
+    print(f"Absolute MC normalisation of {sample}: {xsec:.6g} pb * {float(lumi):.4f} /fb * 1000 / {float(weight_sum):.6g} = {scale:.6g}")
+    return scale
+
+
+def LumiLabel():
+    # "<lumi> fb^{-1} (13 TeV)" from the SingleMuon normalisation file, "(13 TeV)" if the lumi is not available
+    try:
+        lumi = pd.read_csv(NORMALISATION_FILES["SingleMuon"], delimiter="\t", index_col=0).loc["lumi"].iloc[0]
+    except (FileNotFoundError, KeyError):
+        return "(13 TeV)"
+    return "(13 TeV)" if pd.isna(lumi) else f"{float(lumi):.1f} fb^{{-1}} (13 TeV)"
+
 
 def parse_pt_cuts(pt_cuts):
     print("parse_pt_cuts called with:", pt_cuts)
@@ -612,7 +710,224 @@ def Cuts(bins):
 
 # ---------------------- PLOTS ----------------------
 
-def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, kin_filter, ratio, axis, out_suffix, q_bins, b_bins, overlay_filters=False):
+def PlotDataMCCMS(h_data, h_mc, var, extra_lines, output_name, cms_extra="Private Work", y_max=None, backgrounds=()):
+    # Data points on top of the filled DY MC, stacked on the backgrounds [(hist, legend label, colour), first one at the bottom],
+    # with a Data / Pred. ratio pad (Pred. = DY MC + backgrounds), in the CMS style.
+    # Fonts 43 / 53 / 63 take their size in pixels, so the text has the same size in both pads.
+    font, extra_font, cms_font = 43, 53, 63
+    label_size, title_size, text_size = 26, 30, 26
+
+    mc_colour = ROOT.TColor.GetColor("#5790fc")
+    unc_colour = ROOT.TColor.GetColor("#c0c0c0")
+
+    x_title = VARIABLES[var].replace("\\", "#").replace("[", "(").replace("]", ")")
+    y_title = "Events / GeV" if "GeV" in VARIABLES[var] else "Events / unit"
+
+    canvas = ROOT.TCanvas(f"c_{h_data.GetName()}", "", 800, 800)
+
+    split = 0.39
+    pad1 = ROOT.TPad("pad1", "pad1", 0, split, 1, 1)
+    pad2 = ROOT.TPad("pad2", "pad2", 0, 0, 1, split)
+    for pad in (pad1, pad2):
+        pad.SetLeftMargin(0.15)
+        pad.SetRightMargin(0.04)
+        pad.SetTickx(1)
+        pad.SetTicky(1)
+        pad.SetFrameLineWidth(2)
+        canvas.cd()
+        pad.Draw()
+    pad1.SetTopMargin(0.09)
+    pad1.SetBottomMargin(0.017)
+    pad2.SetTopMargin(0.026)
+    pad2.SetBottomMargin(0.3)
+
+    def StyleAxes(hist, x_tick_length):
+        for ax in (hist.GetXaxis(), hist.GetYaxis()):
+            ax.SetLabelFont(font)
+            ax.SetLabelSize(label_size)
+            ax.SetTitleFont(font)
+            ax.SetTitleSize(title_size)
+        hist.GetXaxis().SetTickLength(x_tick_length)
+        hist.GetYaxis().SetTickLength(0.02)
+        hist.GetYaxis().SetTitleOffset(1.9)
+
+    # --------------- MAIN PAD -----------------
+
+    pad1.cd()
+
+    # the stack is drawn as cumulative sums: background_sums[i] = backgrounds 0..i, h_pred = DY MC + all backgrounds.
+    # h_pred is drawn first in the DY colour and carries the axes, the background sums are drawn over it from the top down
+    background_sums = []
+    for h_bkg, bkg_label, bkg_colour in backgrounds:
+        h_sum = h_bkg.Clone(f"{h_bkg.GetName()}_stack")
+        if background_sums:
+            h_sum.Add(background_sums[-1][0])
+        h_sum.SetStats(0)
+        h_sum.SetFillColor(ROOT.TColor.GetColor(bkg_colour))
+        h_sum.SetLineColor(ROOT.TColor.GetColor(bkg_colour))
+        background_sums.append((h_sum, bkg_label))
+    h_pred = h_mc.Clone(f"{h_mc.GetName()}_pred")
+    if background_sums:
+        h_pred.Add(background_sums[-1][0])
+    h_mc = h_pred
+
+    h_mc.SetTitle("")
+    h_mc.SetStats(0)
+    h_mc.SetFillColor(mc_colour)
+    h_mc.SetLineColor(mc_colour)
+
+    h_data.SetStats(0)
+    h_data.SetMarkerStyle(20)
+    h_data.SetMarkerSize(1.1)
+    h_data.SetMarkerColor(ROOT.kBlack)
+    h_data.SetLineColor(ROOT.kBlack)
+    h_data.SetLineWidth(2)
+
+    # fixed y_max if given, otherwise from the largest bin with room for the labels:
+    # they fit next to the narrow Z peak, the other variables peak below them
+    if y_max is None:
+        headroom = 1.05 if var == "DiMuon_Mass" else 1.4
+        y_max = headroom * max(max(h_data.GetBinContent(i) + h_data.GetBinError(i), h_mc.GetBinContent(i)) for i in range(1, h_mc.GetNbinsX() + 1))
+    h_mc.SetMinimum(0)
+    h_mc.SetMaximum(y_max)
+
+    # tick lengths are a fraction of the pad height, scaled so they have the same length in both pads
+    StyleAxes(h_mc, 0.03)
+    h_mc.GetXaxis().SetLabelSize(0)
+    h_mc.GetYaxis().SetTitle(y_title)
+
+    h_mc.Draw("hist")
+    for h_sum, _ in reversed(background_sums):
+        h_sum.Draw("hist same")
+    h_data.Draw("pe x0 same")
+    pad1.RedrawAxis()
+
+    # 0.1 of the pad height per entry, in the stack order
+    legend = ROOT.TLegend(0.64, 0.88 - 0.1 * (2 + len(background_sums)), 0.94, 0.88)
+    legend.SetBorderSize(0)
+    legend.SetFillStyle(0)
+    legend.SetTextFont(font)
+    legend.SetTextSize(text_size)
+    legend.AddEntry(h_data, "Data", "pe")
+    legend.AddEntry(h_mc, "Z #rightarrow #mu#mu", "f")
+    for h_sum, bkg_label in reversed(background_sums):
+        legend.AddEntry(h_sum, bkg_label, "f")
+    legend.Draw()
+
+    latex = ROOT.TLatex()
+    latex.SetNDC()
+    latex.SetTextAlign(13)
+    latex.SetTextFont(cms_font)
+    latex.SetTextSize(40)
+    latex.DrawLatex(0.19, 0.87, "CMS")
+    latex.SetTextFont(extra_font)
+    latex.SetTextSize(30)
+    latex.DrawLatex(0.19, 0.78, cms_extra)
+    # selection cuts, one per line below the CMS label
+    latex.SetTextFont(font)
+    latex.SetTextSize(24)
+    for i, text in enumerate(extra_lines):
+        latex.DrawLatex(0.19, 0.70 - 0.065 * i, text)
+    latex.SetTextAlign(31)
+    latex.SetTextFont(font)
+    latex.SetTextSize(text_size)
+    latex.DrawLatex(0.96, 0.93, LumiLabel())
+
+    # --------------- RATIO PAD -----------------
+
+    pad2.cd()
+
+    # Data / Pred. with the data stat. unc. on the points, MC stat. unc. as the band around 1
+    ratio = h_data.Clone(f"{h_data.GetName()}_ratio")
+    band = h_mc.Clone(f"{h_mc.GetName()}_unc")
+    for i in range(1, h_mc.GetNbinsX() + 1):
+        mc = h_mc.GetBinContent(i)
+        band.SetBinContent(i, 1.0)
+        if mc > 0:
+            ratio.SetBinContent(i, h_data.GetBinContent(i) / mc)
+            ratio.SetBinError(i, h_data.GetBinError(i) / mc)
+            band.SetBinError(i, h_mc.GetBinError(i) / mc)
+        else:
+            ratio.SetBinContent(i, 0)
+            ratio.SetBinError(i, 0)
+            band.SetBinError(i, 0)
+
+    # 0.975 - 1.025: labels at 0.98, 1.00, 1.02 (two decimals), minor ticks every 0.005
+    band.SetMinimum(0.975)
+    band.SetMaximum(1.025)
+
+    band.SetFillColor(unc_colour)
+    band.SetFillStyle(1001)
+    band.SetLineColor(unc_colour)
+    band.SetMarkerSize(0)
+    StyleAxes(band, 0.03 * (1 - split) / split)
+    band.GetXaxis().SetTitle(x_title)
+    band.GetXaxis().SetTitleOffset(1.1)
+    band.GetYaxis().SetTitle("Data / Pred.")
+    band.GetYaxis().CenterTitle()
+    band.GetYaxis().SetNdivisions(403)
+    band.GetYaxis().SetDecimals(True)
+
+    band.Draw("e2")
+
+    line = ROOT.TLine(band.GetXaxis().GetXmin(), 1, band.GetXaxis().GetXmax(), 1)
+    line.SetLineColor(ROOT.kGray + 2)
+    line.SetLineWidth(2)
+    line.Draw()
+
+    ratio.Draw("pe x0 same")
+    pad2.RedrawAxis()
+
+    legend_ratio = ROOT.TLegend(0.64, 0.82, 0.94, 0.95)
+    legend_ratio.SetBorderSize(0)
+    legend_ratio.SetFillStyle(0)
+    legend_ratio.SetTextFont(font)
+    legend_ratio.SetTextSize(text_size)
+    legend_ratio.AddEntry(band, "MC stat. unc.", "f")
+    legend_ratio.Draw()
+
+    canvas.SaveAs(output_name)
+    canvas.Close()
+
+
+def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, kin_filter, ratio, axis, out_suffix, q_bins, b_bins, overlay_filters=False, maxevents=None):
+
+    mc_scale_DY = MCScale(df_MCDYJets_var, "MCDY", XSEC_DY)
+
+    # both muons inside the muon pT window of the WRemnants Z analyses (corrected pT, saved by NanoAOD_EventSelection2.py)
+    muon_pt_filter = " && ".join(f"{muons}_pt0 > {MUON_PT_CUT[0]} && {muons}_pt0 < {MUON_PT_CUT[1]}" for muons in ["trigMuons", "nonTrigMuons"])
+    muon_pt_label = f"{MUON_PT_CUT[0]} GeV < p^{{#mu}}_{{T}} < {MUON_PT_CUT[1]} GeV"
+    df_SingleMuon_var = df_SingleMuon_var.Filter(muon_pt_filter, "WRemnants muon pT")
+    df_MCDYJets_var = df_MCDYJets_var.Filter(muon_pt_filter, "WRemnants muon pT")
+
+    # backgrounds (BACKGROUNDS), only for the plots of their "variables", with the same cuts and weights as the DY MC.
+    # Only with the absolute normalisation: if the DY MC is scaled to the data yield, the plots show the DY MC alone
+    # A background is shown only if all its samples are there
+    df_backgrounds = {}  # name: {sample: (dataframe, scale)}
+    for bkg_name, bkg in BACKGROUNDS.items():
+        if not any(var in bkg["variables"] for var in variables):
+            continue
+        samples = {}
+        for sample, xsec in bkg["samples"].items():
+            if not os.path.exists(BACKGROUND_FILES[sample]):
+                print(f"{bkg_name} background off: {BACKGROUND_FILES[sample]} not found")
+                break
+            df_bkg = ROOT.RDataFrame("Events", BACKGROUND_FILES[sample])
+            if maxevents is not None:
+                df_bkg = df_bkg.Range(maxevents)
+            df_bkg = df_bkg.Filter("std::abs(genWeight) < 1e6", "genWeight outlier veto")  # as the DY MC (MakeDataframes)
+            df_bkg = df_bkg.Filter(muon_pt_filter, "WRemnants muon pT")
+            mc_scale_bkg = MCScale(df_bkg, sample, xsec)
+            if mc_scale_DY is None or mc_scale_bkg is None:
+                print(f"{bkg_name} background off: no absolute normalisation of the DY MC or of {sample}")
+                break
+            samples[sample] = (df_bkg, mc_scale_bkg)
+        else:
+            df_backgrounds[bkg_name] = samples
+
+    # dimuon mass window of the WRemnants Z analyses, only for the DiMuon_Mass plot
+    mass_window_filter = f"DiMuon_Mass >= {MASS_WINDOW[0]} && DiMuon_Mass < {MASS_WINDOW[1]}"
+    mass_window_label = f"{MASS_WINDOW[0]} GeV #leq m_{{#mu#mu}} < {MASS_WINDOW[1]} GeV"
 
     RATIOS = {
         "DYMinBias": "#frac{DY}{MinBias}",
@@ -793,6 +1108,10 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
 
         skip_minbias = var.startswith("DiMuon_")
 
+        if skip_minbias and axis != "raw":
+            print(f"Skipping {var}: the {axis} axis comes from the MinBias quantile maps, DiMuon variables only have the raw axis")
+            continue
+
         if axis == "raw":
             label = VARIABLES[var]
             bins = array.array('d', BINNING[var])
@@ -919,8 +1238,56 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
 
             print(f"\n\nApplying filter(s): {filter_expr if filter_expr else 'none'}\n")
 
+            kin_filter_tag = "".join(kf.capitalize() for kf in kin_filter) if kin_filter else "NoFilter"
+            path = f"new_plots/{var}/{axis.capitalize() if axis in ['raw', 'quantile'] else axis}/{kin_filter_tag}"
+            output_name = f"{path}/{var}_{axis.capitalize() if axis in ['raw', 'quantile'] else axis}{'_' + name_suffix if name_suffix else ''}_{ratio}{out_suffix}.pdf"
 
+            os.makedirs(path, exist_ok=True)
 
+            if skip_minbias:
+                # Data vs. DY MC in the CMS style, in Events / GeV: MC normalised to xsec * lumi as WRemnants,
+                # otherwise to the data yield, then both divided by the bin width
+                df_SingleMuon_var_filtered = df_SingleMuon_var.Filter(filter_expr) if filter_expr else df_SingleMuon_var
+                df_MCDYJets_var_filtered = df_MCDYJets_var.Filter(filter_expr) if filter_expr else df_MCDYJets_var
+                extra_lines = [muon_pt_label] + legend_parts
+                
+                df_SingleMuon_var_filtered = df_SingleMuon_var_filtered.Filter(mass_window_filter, "WRemnants mass window")
+                df_MCDYJets_var_filtered = df_MCDYJets_var_filtered.Filter(mass_window_filter, "WRemnants mass window")
+                extra_lines.append(mass_window_label)
+
+                h_SingleMuon_filtered = MakeHist(df_SingleMuon_var_filtered, var, label, y_title_pad1, bins, f"h_SingleMuon_{var}_{name_suffix}", axis="raw").GetValue()
+                h_MCDYJets_filtered = MakeHist(df_MCDYJets_var_filtered, var, label, y_title_pad1, bins, f"h_MCDYJets_{var}_{name_suffix}", axis="raw").GetValue()
+
+                if mc_scale_DY is not None:
+                    h_MCDYJets_filtered.Scale(mc_scale_DY)
+                elif h_MCDYJets_filtered.Integral() > 0:
+                    h_MCDYJets_filtered.Scale(h_SingleMuon_filtered.Integral() / h_MCDYJets_filtered.Integral())
+                h_SingleMuon_filtered.Scale(1.0, "width")
+                h_MCDYJets_filtered.Scale(1.0, "width")
+
+                # stacked backgrounds, with the same filters as the DY MC
+                backgrounds = []
+                for bkg_name, samples in df_backgrounds.items():
+                    if var not in BACKGROUNDS[bkg_name]["variables"]:
+                        continue
+                    # each sample scaled to its own xsec * lumi, then summed
+                    h_bkg_filtered = None
+                    for sample, (df_bkg, mc_scale_bkg) in samples.items():
+                        df_bkg_filtered = df_bkg.Filter(filter_expr) if filter_expr else df_bkg
+                        df_bkg_filtered = df_bkg_filtered.Filter(mass_window_filter, "WRemnants mass window")
+                        h_sample = MakeHist(df_bkg_filtered, var, label, y_title_pad1, bins, f"h_{sample}_{var}_{name_suffix}", axis="raw").GetValue()
+                        h_sample.Scale(mc_scale_bkg)
+                        if h_bkg_filtered is None:
+                            h_bkg_filtered = h_sample.Clone(f"h_{bkg_name}_{var}_{name_suffix}")
+                        else:
+                            h_bkg_filtered.Add(h_sample)
+                    h_bkg_filtered.Scale(1.0, "width")
+                    backgrounds.append((h_bkg_filtered, BACKGROUNDS[bkg_name]["label"], BACKGROUNDS[bkg_name]["colour"]))
+
+                # fixed upper pad range for the full Z peak, the kinematic slices keep the automatic range
+                PlotDataMCCMS(h_SingleMuon_filtered, h_MCDYJets_filtered, var, extra_lines, output_name,
+                              y_max=1.2e6 if var == "DiMuon_Mass" and not filter_expr else None, backgrounds=backgrounds)
+                continue
 
 
             # --------------- CANVAS -----------------
@@ -967,10 +1334,6 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
                     legend = ROOT.TLegend(0.16, 0.67, 0.3, 0.92)
                 legend.SetMargin(0.28)
 
-            if skip_minbias:
-                legend = ROOT.TLegend(0.16, 0.65, 0.3, 0.92)
-                legend.SetMargin(0.28)
-
             legend.SetBorderSize(0)
             legend.SetFillStyle(0)
             legend.SetTextSize(0.06)
@@ -987,17 +1350,13 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
 
 
 
-
-
-
             # --------------- PLOT -----------------
 
             canvas.cd()
             pad1.cd()
 
-            if not skip_minbias:
-                h_MinBias.Draw("hist e")
-                h_MCMinBias.Draw("hist e same")
+            h_MinBias.Draw("hist e")
+            h_MCMinBias.Draw("hist e same")
 
             
 
@@ -1013,7 +1372,7 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
                 h_SingleMuon_ptr_filtered = MakeHist(df_SingleMuon_var_filtered, var, label, y_title_pad1, bins, hist_name_DY, axis="raw")
                 h_MCDYJets_ptr_filtered = MakeHist(df_MCDYJets_var_filtered, var, label, y_title_pad1, bins, hist_name_MCDY, axis="raw")
 
-            elif (axis == "quantile" or axis == "IP") and not skip_minbias:
+            elif axis == "quantile" or axis == "IP":
                 df_SingleMuon_var_filtered = ApplyQuantileAndIP(df_SingleMuon_var_filtered, var, "MinBias")
                 df_MCDYJets_var_filtered = ApplyQuantileAndIP(df_MCDYJets_var_filtered, var, "MCMinBias")
 
@@ -1031,23 +1390,18 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
             h_SingleMuon_filtered = h_SingleMuon_ptr_filtered.GetValue()
             h_MCDYJets_filtered = h_MCDYJets_ptr_filtered.GetValue()
 
+            h_SingleMuon_filtered.SetStats(0)
+            h_MCDYJets_filtered.SetStats(0)
+
+            # NormaliseHist(h_SingleMuon_filtered, True)
+            # NormaliseHist(h_MCDYJets_filtered, True)
+
             NormaliseHist(h_SingleMuon_filtered, True)
             NormaliseHist(h_MCDYJets_filtered, True)
 
-            if skip_minbias:
-                h_SingleMuon_filtered.SetTitle("")
-                h_SingleMuon_filtered.GetXaxis().SetTitle(VARIABLES[var])
-                h_SingleMuon_filtered.GetYaxis().SetTitle(y_title_pad1)
-                h_SingleMuon_filtered.GetYaxis().SetLabelSize(0.048)
-                h_SingleMuon_filtered.GetYaxis().SetTitleSize(0.06)
-                h_SingleMuon_filtered.GetYaxis().SetTitleOffset(0.9)
-                h_SingleMuon_filtered.GetYaxis().SetNdivisions(510)
-                h_SingleMuon_filtered.GetXaxis().SetLabelSize(0)
-        
             h_SingleMuon_filtered.SetLineColor(ROOT.kViolet - 6)
             h_SingleMuon_filtered.SetLineWidth(2)
-            draw_opt = "hist e same" if not skip_minbias else "hist e"
-            h_SingleMuon_filtered.Draw(draw_opt)
+            h_SingleMuon_filtered.Draw("hist e same")
 
             h_MCDYJets_filtered.SetLineColor(ROOT.kViolet - 6)
             h_MCDYJets_filtered.SetLineWidth(2)
@@ -1056,16 +1410,12 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
 
             # h_MinBias.SetMaximum(max(h_SingleMuon_filtered.GetMaximum(), h_MinBias.GetMaximum(), h_MCDYJets_filtered.GetMaximum(), h_MCMinBias.GetMaximum()) * 1.02 if axis in ["raw", "quantile"] else max(h_SingleMuon_filtered.GetMaximum(), h_MinBias.GetMaximum(), h_MCDYJets_filtered.GetMaximum(), h_MCMinBias.GetMaximum()) * 1.05)
             scale = 1.02 if axis in ["raw", "quantile"] else 1.05
-            all_maxima = [h_SingleMuon_filtered.GetMaximum(), h_MCDYJets_filtered.GetMaximum()]
-            if not skip_minbias:
-                all_maxima += [h_MinBias.GetMaximum(), h_MCMinBias.GetMaximum()]
-            top_hist = h_SingleMuon_filtered if skip_minbias else h_MinBias
-            top_hist.SetMaximum(max(all_maxima) * scale)
+            all_maxima = [h_SingleMuon_filtered.GetMaximum(), h_MCDYJets_filtered.GetMaximum(), h_MinBias.GetMaximum(), h_MCMinBias.GetMaximum()]
+            h_MinBias.SetMaximum(max(all_maxima) * scale)
 
 
             legend.AddEntry(dummy, f"#color[{ROOT.kViolet - 6}]{{#bf{{DY}} ({legend_text})}}" if legend_text else f"#color[{ROOT.kViolet - 6}]{{#bf{{DY}}}}", "")
-            if not skip_minbias:
-                legend.AddEntry(dummy, f"#color[{ROOT.kOrange + 5}]{{#bf{{MinBias}}}}", "")
+            legend.AddEntry(dummy, f"#color[{ROOT.kOrange + 5}]{{#bf{{MinBias}}}}", "")
 
 
             if kin_filter:
@@ -1081,10 +1431,7 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
                 width_adjustment = max_text_length * 0.006
 
                 if axis in ["raw", "quantile"]:
-                    if not skip_minbias:
-                        x1, x2 = 0.55, 0.8
-                    else:
-                        x1, x2 = 0.16, 0.3
+                    x1, x2 = 0.55, 0.8
                     new_x2 = x1 + width_adjustment
                     legend.SetX1(x1)
                     legend.SetX2(new_x2)
@@ -1106,9 +1453,13 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
 
             ratios_DY = h_SingleMuon_filtered.Clone(f"ratio_{var}")
             ratios_MCDY = h_MCDYJets_filtered.Clone(f"ratio_MC_{var}")
+            # clones inherit the SetMaximum of pad 1 (h_MinBias), reset so GetMinimum/GetMaximum use the ratio values
+            for h in (ratios_DY, ratios_MCDY):
+                h.SetMinimum()
+                h.SetMaximum()
 
 
-            if ratio == "DYMinBias" and not skip_minbias:
+            if ratio == "DYMinBias":
 
                 if axis == "raw":
                     legend_ratios = ROOT.TLegend(0.15, 0.7, 0.24, 0.94)
@@ -1127,9 +1478,8 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
 
             elif ratio == "DataMC":
                 ratios_DY.Divide(h_MCDYJets_filtered)
-                if not skip_minbias:
-                    ratios_MinBias.Draw("hist e")
-                ratios_DY.Draw("hist e same" if not skip_minbias else "hist e")
+                ratios_MinBias.Draw("hist e")
+                ratios_DY.Draw("hist e same")
 
             ratios_DY.SetTitle("")
             ratios_DY.SetMarkerStyle(20)
@@ -1150,31 +1500,39 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
             ratios_MCDY.SetMarkerStyle(20)
             ratios_MCDY.SetMarkerSize(0.8)
 
-            if ratio == "DYMinBias" and not skip_minbias:
+            # if ratio == "DYMinBias" and not skip_minbias:
+            #     ratios_DY.Draw("hist e")
+            #     ratios_MCDY.Draw("hist e same")
+            #     ratios_DY.SetMaximum(max(ratios_DY.GetMaximum(), ratios_MCDY.GetMaximum()) * 1.1)
+            #     ratios_DY.SetMinimum(min(ratios_DY.GetMinimum(), ratios_MCDY.GetMinimum()) * 0.9)
+            # elif ratio == "DataMC":
+            #     # fixed y range of pad 2, set on the histogram drawn first there, as it defines the axes
+            #     frame = ratios_MinBias if not skip_minbias else ratios_DY
+            #     frame.SetMinimum(0.94)
+            #     frame.SetMaximum(1.1)
+
+            frame = None
+            if ratio == "DYMinBias":
                 ratios_DY.Draw("hist e")
                 ratios_MCDY.Draw("hist e same")
-                ratios_DY.SetMaximum(max(ratios_DY.GetMaximum(), ratios_MCDY.GetMaximum()) * 1.1)
-                ratios_DY.SetMinimum(min(ratios_DY.GetMinimum(), ratios_MCDY.GetMinimum()) * 0.9)
+                frame, shown = ratios_DY, [ratios_DY, ratios_MCDY]
             elif ratio == "DataMC":
-                # fixed y range of pad 2, set on the histogram drawn first there, as it defines the axes
-                frame = ratios_MinBias if not skip_minbias else ratios_DY
-                frame.SetMinimum(0.8)
-                frame.SetMaximum(1.8)
+                # the histogram drawn first in pad 2 defines the axes
+                frame, shown = ratios_MinBias, [ratios_MinBias, ratios_DY]
+
+            if frame is not None:
+                # GetMinimum(0) skips empty bins, which are 0 after Divide
+                frame.SetMinimum(min(h.GetMinimum(0) for h in shown) * 0.95)
+                frame.SetMaximum(max(h.GetMaximum() for h in shown) * 1.05)
 
 
 
-            if ratio == "DYMinBias" and not skip_minbias:
+            if ratio == "DYMinBias":
                 legend_ratios.AddEntry(ratios_DY, f"#color[{ROOT.kBlack}]{{#bf{{Data}}}}", "lpe")
                 legend_ratios.AddEntry(ratios_MCDY, f"#color[{ROOT.kGray + 2}]{{#bf{{MC}}}}", "lpe")
 
                 legend_ratios.Draw()
 
-
-            kin_filter_tag = "".join(kf.capitalize() for kf in kin_filter) if kin_filter else "NoFilter"
-            path = f"new_plots/{var}/{axis.capitalize() if axis in ['raw', 'quantile'] else axis}/{kin_filter_tag}"
-            output_name = f"{path}/{var}_{axis.capitalize() if axis in ['raw', 'quantile'] else axis}{'_' + name_suffix if name_suffix else ''}_{ratio}{out_suffix}.pdf"
-
-            os.makedirs(path, exist_ok=True)
             canvas.SaveAs(output_name)
             canvas.Close()
 
@@ -1323,6 +1681,105 @@ def AverageObservablesVsZpT(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, 
         canvas.Close()
 
 
+def WeightDistributions(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, out_suffix):
+
+    # genWeight of the MiNNLO DY sample is about +-2350, of MinBias MC exactly 1; data has no genWeight
+    WEIGHTS = {
+        "genWeight": [121, -3025, 3025],
+        "nominal_weight": [201, -2.01, 2.01],
+    }
+    SAMPLES = [
+        (df_SingleMuon_var, "SingleMuon", "Data DY", ROOT.kViolet - 6, 1),
+        (df_MCDYJets_var, "MCDY", "MC DY", ROOT.kViolet - 6, 2),
+        (df_MinBias_var, "MinBias", "Data MinBias", ROOT.kOrange + 5, 1),
+        (df_MCMinBias_var, "MCMinBias", "MC MinBias", ROOT.kOrange + 5, 2),
+    ]
+
+    # book everything before the first GetValue, so every sample is read only once
+    h_ptrs = {}
+    for weight, bins in WEIGHTS.items():
+        for df, name, _, _, _ in SAMPLES:
+            if weight in df.GetColumnNames():
+                h_ptrs[(weight, name)] = df.Histo1D((f"h_{name}_{weight}", "", int(bins[0]), bins[1], bins[2]), weight)
+
+    for (weight, name), h_ptr in h_ptrs.items():
+        h = h_ptr.GetValue()
+
+        # move under/overflow into the edge bins so the weight tails stay visible
+        n_bins = h.GetNbinsX()
+        h.SetBinContent(1, h.GetBinContent(1) + h.GetBinContent(0))
+        h.SetBinContent(n_bins, h.GetBinContent(n_bins) + h.GetBinContent(n_bins + 1))
+        h.SetBinContent(0, 0)
+        h.SetBinContent(n_bins + 1, 0)
+
+    # one plot with the number of events, one normalised to unit area
+    for normalise in (False, True):
+        norm_tag = "_Normalised" if normalise else ""
+
+        canvas = ROOT.TCanvas(f"c_weights{norm_tag}", "", 1600, 700)
+        canvas.Divide(2, 1)
+        # PyROOT deletes objects without a Python reference, keep the drawn ones until SaveAs
+        keep = []
+
+        for i, weight in enumerate(WEIGHTS, start=1):
+            pad = canvas.cd(i)
+            pad.SetLogy()
+            pad.SetLeftMargin(0.13)
+            pad.SetRightMargin(0.06)
+            pad.SetBottomMargin(0.12)
+            pad.SetTopMargin(0.2)
+
+            # legend above the frame, so the y range can end just above the highest peak
+            legend = ROOT.TLegend(0.13, 0.82, 0.94, 0.97)
+            legend.SetNColumns(2)
+            legend.SetBorderSize(0)
+            legend.SetFillStyle(0)
+            legend.SetTextSize(0.04)
+            keep.append(legend)
+
+            hists = []
+            for _, name, label, colour, style in SAMPLES:
+                if (weight, name) not in h_ptrs:
+                    continue
+                h = h_ptrs[(weight, name)].GetValue().Clone(f"h_{name}_{weight}{norm_tag}")
+                if normalise:
+                    NormaliseHist(h)
+                h.SetStats(0)
+
+                h.SetLineColor(colour)
+                h.SetLineStyle(style)
+                h.SetLineWidth(2)
+                hists.append(h)
+                keep.append(h)
+
+                legend.AddEntry(h, f"#bf{{{label}}}", "l")
+
+            if weight == "genWeight":
+                legend.AddEntry(ROOT.nullptr, "Data: no genWeight", "")
+
+            frame = hists[0]
+            frame.SetTitle("")
+            frame.GetXaxis().SetTitle(f"{weight} (edge bins include under/overflow)")
+            frame.GetXaxis().SetTitleSize(0.045)
+            frame.GetYaxis().SetTitle("Number of Events (normalised)" if normalise else "Number of Events")
+            frame.GetYaxis().SetTitleSize(0.045)
+            frame.GetYaxis().SetTitleOffset(1.3)
+            frame.SetMinimum(min(h.GetMinimum(0) for h in hists) * 0.5)
+            frame.SetMaximum(max(h.GetMaximum() for h in hists) * 2)
+
+            frame.Draw("hist")
+            for h in hists[1:]:
+                h.Draw("hist same")
+            legend.Draw()
+
+        path = "new_plots/Weights"
+        output_name = f"{path}/WeightDistributions{norm_tag}{out_suffix}.pdf"
+
+        os.makedirs(path, exist_ok=True)
+        canvas.SaveAs(output_name)
+        canvas.Close()
+
+
 def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, out_suffix, weight):
 
     df_SingleMuon_var = VarianceCalculation(df_SingleMuon_var, "SingleMuon", weight)
@@ -1330,8 +1787,8 @@ def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, d
     df_MCDYJets_var = VarianceCalculation(df_MCDYJets_var, "MCDYJets", weight)
     df_MCMinBias_var = VarianceCalculation(df_MCMinBias_var, "MCMinBias", weight)
 
-    # df_SingleMuon_var = DiMuonPtCut(df_SingleMuon_var, 4)
-    # df_MCDYJets_var = DiMuonPtCut(df_MCDYJets_var, 4)
+    df_SingleMuon_var = DiMuonPtCut(df_SingleMuon_var, 4)
+    df_MCDYJets_var = DiMuonPtCut(df_MCDYJets_var, 4)
 
     # Event-activity observables to slice in: bin edges, axis symbol and unit
     OBS_EDGES = {
@@ -1365,36 +1822,36 @@ def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, d
     KIN_COL = {"mass": "DiMuon_Mass", "pt": "DiMuon_Pt"}
     KIN_LABEL = {"mass": r"$m_{\mu\mu}$", "pt": r"$p^{\mu\mu}_T$"}
     KIN_CUTS = {
-        "mass": [
-                (50,70),
-                (70,86),
-                (86,96),
-                (96,110),
-                (110,130),
-                (130,150)
-                ],
-        "pt":   [
-                (0,1),
-                (1,2),
-                (2,3),
-                (3,4),
-                (4,5),
-                (5,6),
-                (6,7),
-                (7,8),
-                (8,9),
-                (9,10),
-                (10,11),
-                (11,12),
-                (12,13),
-                (13,14),
-                (14,15),
-                (15,16),
-                (16,17),
-                (17,18),
-                (18,19),
-                (19,20),
-                ],
+        # "mass": [
+        #         (50,70),
+        #         (70,86),
+        #         (86,96),
+        #         (96,110),
+        #         (110,130),
+        #         (130,150)
+        #         ],
+        # "pt":   [
+        #         (0,1),
+        #         (1,2),
+        #         (2,3),
+        #         (3,4),
+        #         (4,5),
+        #         (5,6),
+        #         (6,7),
+        #         (7,8),
+        #         (8,9),
+        #         (9,10),
+        #         (10,11),
+        #         (11,12),
+        #         (12,13),
+        #         (13,14),
+        #         (14,15),
+        #         (15,16),
+        #         (16,17),
+        #         (17,18),
+        #         (18,19),
+        #         (19,20),
+        #         ],
         "none": [None],
     }
 
@@ -1498,10 +1955,10 @@ def RapidityVarianceMethod(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, d
                         cut_label = f"{KIN_LABEL[kin_axis]} $\\in [{lo},\\,{hi})$ GeV"
                         cut_tag = f"{kin_axis.capitalize()}_{lo}_{hi}"
                     else:
-                        cut_label = "No Kinematic Cut on DY"
-                        cut_tag = "Inclusive"
-                        # cut_label = "$p^{\\mu\\mu}_{T} < 4$ GeV"
-                        # cut_tag = "DiMuonPt4GeV"
+                        # cut_label = "No Kinematic Cut on DY"
+                        # cut_tag = "Inclusive"
+                        cut_label = "$p^{\\mu\\mu}_{T} < 4$ GeV"
+                        cut_tag = "DiMuonPt4GeV"
 
                     ax.legend(handles=handles, labels=labels, frameon=False, fontsize=11, ncol=2, loc="upper left", handlelength=2.5, handletextpad=0.4)
                     ax.text(0.015, 0.86, cut_label, transform=ax.transAxes, fontsize=11, color=colour_DY, va='top')
@@ -2094,6 +2551,11 @@ def MassRapidity(df_SingleMuon_var, df_MCDYJets_var, pt_cuts, out_suffix):
 
 
 def SigmaEff(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_var, variables, pt_cuts, out_suffix, bins, b_bins, binweight, mass_rapidity):
+
+    df_SingleMuon_var = df_SingleMuon_var.Filter("PFCands_pt > 0.5")
+    df_MinBias_var = df_MinBias_var.Filter("PFCands_pt > 0.5")
+    df_MCDYJets_var = df_MCDYJets_var.Filter("PFCands_pt > 0.5")
+    df_MCMinBias_var = df_MCMinBias_var.Filter("PFCands_pt > 0.5")
 
     if mass_rapidity not in ["mass", "rapidity"]:
         raise ValueError("the flag \"--mass-rapidity\" must be either 'mass' or 'rapidity'")
@@ -3339,7 +3801,7 @@ def parse_args():
     )
     parser.add_argument(
         "--mode",
-        choices=["compare", "compare-quantilebinning", "ptscan", "ptscan-quantilebinning", "quantile", "quantile-ptscan", "quantile-all", "DYMinBias", "quantile-all-ptscan", "quantiles", "momentumfractions", "mllyll", "sigmaeff", "enhfactorratiotoz", "massrappt", "histograms", "averageobservablesvszpt", "variancemethod", "rapidityvariancekinematics3d", "all"],
+        choices=["compare", "compare-quantilebinning", "ptscan", "ptscan-quantilebinning", "quantile", "quantile-ptscan", "quantile-all", "DYMinBias", "quantile-all-ptscan", "quantiles", "momentumfractions", "mllyll", "sigmaeff", "enhfactorratiotoz", "massrappt", "histograms", "averageobservablesvszpt", "variancemethod", "rapidityvariancekinematics3d", "weights", "all"],
         default="all",
         help="Run compare plots, diMuon pT scan plots, quantile plots, quantile pT scan plots, all-together quantile plots, all-together quantile pT-cut plots, or all",
     )
@@ -3562,7 +4024,7 @@ def main():
         MassRapPt3D(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix, args.q_bins, args.b_bins, args.binweight, args.axes)
     
     if args.mode in ["histograms", "all"]:
-        Histograms(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.kin_filter, args.ratio, args.axis, args.output_suffix, args.q_bins, args.b_bins)
+        Histograms(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.kin_filter, args.ratio, args.axis, args.output_suffix, args.q_bins, args.b_bins, maxevents=args.maxevents)
 
     if args.mode in ["averageobservablesvszpt", "all"]:
         AverageObservablesVsZpT(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.vars, args.output_suffix)
@@ -3572,6 +4034,9 @@ def main():
 
     if args.mode in ["rapidityvariancekinematics3d", "all"]:
         RapidityVarianceKinematics3D(df_SingleMuon, df_MCDYJets, args.output_suffix, args.weight)
+
+    if args.mode in ["weights", "all"]:
+        WeightDistributions(df_SingleMuon, df_MinBias, df_MCDYJets, df_MCMinBias, args.output_suffix)
 
     # if args.mode in ["pocketformularatio", "all"]:
     #     df_NoMPI = None
