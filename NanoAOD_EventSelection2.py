@@ -43,11 +43,21 @@ DIBOSON_SAMPLES = {
 }
 for _name, (_wrem_name, _production) in DIBOSON_SAMPLES.items():
     WREM_DATASETS[_name] = types.SimpleNamespace(name=_wrem_name, is_data=False, group="Diboson")
+# photon-induced samples, WRemnants group "PhotonInduced" (datasetDict_2016PostVFP.py): dataset name: (WRemnants name, NanoAOD production)
+PHOTON_INDUCED_SAMPLES = {
+    "MCGGToLL": ("GGToLL_2016PostVFP", "GGToLL_TuneCP5_13TeV-pythia8/NanoV9MCPostVFP_GGToLL_16112026"),
+    "MCQGToDYQTo2L": ("QGToDYQTo2L_2016PostVFP", "QGToDYQTo2L_TuneCP5_13TeV-pythia8-photos/NanoV9MCPostVFP_QGToDYQTo2L_16112026"),
+}
+for _name, (_wrem_name, _production) in PHOTON_INDUCED_SAMPLES.items():
+    WREM_DATASETS[_name] = types.SimpleNamespace(name=_wrem_name, is_data=False, group="PhotonInduced")
+# MC samples that are neither W/Z nor ttbar, all treated the same way
+OTHER_MC_SAMPLES = {**DIBOSON_SAMPLES, **PHOTON_INDUCED_SAMPLES}
 # samples with the Z -> mumu selection and the MC weights, and SingleMuon data. As WRemnants: the Z samples (common.zprocs)
-# get the muon calibration with smearing, the CT18Z PDF weight and the theory correction; ttbar and the dibosons keep the
-# uncorrected muons, central_pdf_weight and theory_corr_weight are 1, and uT uses all prompt gen leptons, photons and neutrinos
+# get the muon calibration with smearing, the CT18Z PDF weight and the theory correction; ttbar, the dibosons and the
+# photon-induced samples keep the uncorrected muons, central_pdf_weight and theory_corr_weight are 1, and uT uses all
+# prompt gen leptons, photons and neutrinos
 Z_MC = {"MCDY", "MCZtautau"}
-DIMUON_MC = Z_MC | {"MCTTbar"} | set(DIBOSON_SAMPLES)
+DIMUON_MC = Z_MC | {"MCTTbar"} | set(OTHER_MC_SAMPLES)
 DIMUON_DATASETS = {"SingleMuon"} | DIMUON_MC
 
 ROOT.gStyle.SetOptStat(0)
@@ -111,7 +121,7 @@ WEIGHT_COLUMNS = {
                 "weight_fullMuonSF_withTrackingReco", "exp_weight", "central_pdf_weight", "theory_corr_weight", "nominal_weight"],
     "MCMinBias": ["genWeight", "genWeight_sign", "weight_newMuonPrefiringSF", "L1PreFiringWeight_ECAL_Nom", "nominal_weight"],
 }
-WEIGHT_COLUMNS.update({name: WEIGHT_COLUMNS["MCTTbar"] for name in DIBOSON_SAMPLES})
+WEIGHT_COLUMNS.update({name: WEIGHT_COLUMNS["MCTTbar"] for name in OTHER_MC_SAMPLES})
 
 
 # WRemnants helpers, built once and only for the samples that need them, as at the top of mz_dilepton.py
@@ -172,9 +182,9 @@ print(f"Number of MC_Ztautau files: {len(FILE_NAMES_MCZTAUTAU)}\n")
 FILE_NAMES_MCTTBAR = glob.glob("/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NanoV9MCPostVFP_TTTo2L2Nu_06112026/*/*/*.root")
 print(f"Number of MC_TTbar files: {len(FILE_NAMES_MCTTBAR)}\n")
 
-FILE_NAMES_MCDIBOSON = {name: glob.glob(f"/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/{production}/*/*/*.root")
-                        for name, (_, production) in DIBOSON_SAMPLES.items()}
-for name, files in FILE_NAMES_MCDIBOSON.items():
+FILE_NAMES_MCOTHER = {name: glob.glob(f"/pnfs/psi.ch/cms/trivcat/store/user/zoghafoo/crabsubmission_files/{production}/*/*/*.root")
+                      for name, (_, production) in OTHER_MC_SAMPLES.items()}
+for name, files in FILE_NAMES_MCOTHER.items():
     print(f"Number of {name} files: {len(files)}")
 print()
 
@@ -188,7 +198,7 @@ DATASET_FILES = {
     "MCDY": FILE_NAMES_MCDY,
     "MCZtautau": FILE_NAMES_MCZTAUTAU,
     "MCTTbar": FILE_NAMES_MCTTBAR,
-    **FILE_NAMES_MCDIBOSON,
+    **FILE_NAMES_MCOTHER,
     "MCMinBias": FILE_NAMES_MCZEROBIAS,
 }
 
@@ -749,7 +759,7 @@ def main():
             out_path=args.output_dir,
             output_suffix=args.output_suffix,
         )
-        for dataset_name in DIBOSON_SAMPLES:
+        for dataset_name in OTHER_MC_SAMPLES:
             processed_dataframes[dataset_name].Snapshot("Events", f"{args.output_dir}/MC_{dataset_name[2:]}_SelectedEvents_{args.output_suffix}.root", SnapshotColumns(dataset_name))
     else:
         dataset_name = args.dataset

@@ -88,6 +88,15 @@ BACKGROUNDS = {
         "colour": "#7A21DD",
         "variables": ["DiMuon_Mass"],
     },
+    "PhotonInduced": {
+        "samples": {  # group "PhotonInduced"
+            "MCGGToLL": 14.93,  # GGToLL_2016PostVFP
+            "MCQGToDYQTo2L": 1.373,  # QGToDYQTo2L_2016PostVFP
+        },
+        "label": "Photon Induced",
+        "colour": "#FFD700",  # "gold"
+        "variables": ["DiMuon_Mass"],
+    },
 }
 # selected events and normalisation file of each background sample
 BACKGROUND_FILES = {}
