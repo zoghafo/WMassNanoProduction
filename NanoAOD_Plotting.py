@@ -733,6 +733,9 @@ def PlotDataMCCMS(h_data, h_mc, var, extra_lines, output_name, cms_extra="Privat
     y_title = "Events / GeV" if "GeV" in VARIABLES[var] else "Events / unit"
 
     canvas = ROOT.TCanvas(f"c_{h_data.GetName()}", "", 800, 800)
+    # 800 x 800 is the window size, the drawing area is 796 x 772 (window decorations, also in batch mode). Being wider
+    # than tall, ROOT would write it as a landscape PDF page (/Rotate 90), shown sideways by some viewers
+    canvas.SetCanvasSize(800, 800)
 
     split = 0.39
     pad1 = ROOT.TPad("pad1", "pad1", 0, split, 1, 1)
@@ -1292,6 +1295,19 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
                             h_bkg_filtered.Add(h_sample)
                     h_bkg_filtered.Scale(1.0, "width")
                     backgrounds.append((h_bkg_filtered, BACKGROUNDS[bkg_name]["label"], BACKGROUNDS[bkg_name]["colour"]))
+
+                # dimuon mass as SMP-23-002 Fig. B.1 ("Prefit (normalized)", WRemnants makeDataMCStackPlot.py --normToData):
+                # the total prediction (DY MC + backgrounds) and its uncertainty scaled to the number of data events, so only
+                # the shapes are compared. The histograms are per GeV here, Integral("width") gives back the event counts
+                if var == "DiMuon_Mass":
+                    pred_hists = [h_MCDYJets_filtered] + [h_bkg for h_bkg, _, _ in backgrounds]
+                    pred_yield = sum(h.Integral("width") for h in pred_hists)
+                    if pred_yield > 0:
+                        norm_to_data = h_SingleMuon_filtered.Integral("width") / pred_yield
+                        print(f"{var} {name_suffix}: prediction scaled to the data yield by {norm_to_data:.5f}")
+                        for h in pred_hists:
+                            h.Scale(norm_to_data)
+                        extra_lines.append("Normalised to Data")
 
                 # fixed upper pad range for the full Z peak, the kinematic slices keep the automatic range
                 PlotDataMCCMS(h_SingleMuon_filtered, h_MCDYJets_filtered, var, extra_lines, output_name,
