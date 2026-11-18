@@ -1,5 +1,6 @@
 import argparse
 import array
+import ctypes
 import ROOT
 import glob
 import pandas as pd
@@ -111,6 +112,22 @@ MUON_PT_CUT = (26, 60)
 # dimuon mass window of the WRemnants Z analyses (utilities/common.py get_default_mz_window, muon_selections.select_z_candidate):
 # 60 <= mll < 120 GeV, applied to the DiMuon_Mass plot
 MASS_WINDOW = (60, 120)
+
+# Yields printed in the terminal for these plots, as the WRemnants plotting logs ("Yield information for Stacked/Unstacked
+# processes", makeDataMCStackPlot.py and postfitPlots.py, datagroups.make_yields_df)
+YIELD_VARIABLES = ["DiMuon_Mass"]
+# CMS m(mumu) plot of SMP-23-002 Fig. B.1: log of postfitPlots.py (13 Sep 2024, --prefit --normToData --processGrouping z_dilepton).
+# Prediction normalised to data; uncertainties from the fit (statistical and systematic). The label "Z/gamma*->mumu/tautau"
+# means Z -> tautau is in the Z group, so "Other" holds the remaining backgrounds
+CMS_YIELDS_MLL = {
+    "Z/gamma*->mumu/tautau": (7498434.83, 12952.16),
+    "Other": (26159.17, 1443.71),
+    "Data": (7524594.0, 2743.10),
+}
+CMS_GROUPS_MLL = {
+    "Z/gamma*->mumu/tautau": ["Zmumu", "Ztautau"],
+    "Other": ["TTbar", "Diboson", "PhotonInduced"],
+}
 
 
 VARIABLES = {
@@ -464,6 +481,60 @@ def LumiLabel():
     except (FileNotFoundError, KeyError):
         return "(13 TeV)"
     return "(13 TeV)" if pd.isna(lumi) else f"{float(lumi):.1f} fb^{{-1}} (13 TeV)"
+
+
+def YieldAndError(hist):
+    # number of events and its uncertainty in the plotted range; the histograms are per GeV, so integrate with the bin widths
+    error = ctypes.c_double(0.0)
+    value = hist.IntegralAndError(1, hist.GetNbinsX(), error, "width")
+    return value, error.value
+
+
+def PrintYields(var, h_data, mc_hists, selection):
+    # Yields in the terminal as the WRemnants plotting logs: stacked processes (each MC process) and unstacked processes
+    # (data and the total prediction), with the absolute normalisation (xsec * lumi) and normalised to data as the CMS plot,
+    # then grouped as the CMS plot next to the CMS yields. mc_hists: {process: histogram per GeV}, stacked from the first one.
+    # Uncertainties: sqrt(N) for data, MC statistical only for the prediction (CMS: from the fit, with systematics)
+    line = "-" * 80
+    data, data_unc = YieldAndError(h_data)
+    yields = {name: YieldAndError(h) for name, h in mc_hists.items()}
+    pred = sum(value for value, _ in yields.values())
+    pred_unc = math.sqrt(sum(error ** 2 for _, error in yields.values()))
+    if data <= 0 or pred <= 0:
+        print(f"{var}: no yields to print (data {data}, prediction {pred})")
+        return
+    norm_to_data = data / pred
+
+    def table(rows):
+        df = pd.DataFrame(rows, columns=["Process", "Yield", "Uncertainty"])
+        df["Ratio to Data (%)"] = df["Yield"] / data * 100
+        return df.to_string(float_format=lambda x: f"{x:.2f}")
+
+    print(f"\n{line}\nYields of the {var} plot: {selection}\n"
+          f"Uncertainties: data sqrt(N), prediction MC statistical only\n{line}")
+    for title, scale in [("prediction normalised to xsec * lumi", 1.0),
+                         (f"prediction normalised to data (x {norm_to_data:.5f}), as the CMS plot", norm_to_data)]:
+        print(f"{line}\nYield information for Stacked processes, {title}\n{line}")
+        print(table([(name, value * scale, error * scale) for name, (value, error) in yields.items()]))
+        print(f"\nYield information for Unstacked processes, {title}\n{line}")
+        print(table([("Data", data, data_unc), ("Inclusive", pred * scale, pred_unc * scale)]))
+        print(f"\n===> Sum unstacked to data is {pred * scale / data * 100:.2f}%")
+
+    # grouped as the CMS plot, both normalised to data: compare the shares of the prediction, since the data samples differ
+    rows = []
+    for group, members in CMS_GROUPS_MLL.items():
+        found = [name for name in members if name in yields]
+        value = sum(yields[name][0] for name in found) * norm_to_data
+        error = math.sqrt(sum(yields[name][1] ** 2 for name in found)) * norm_to_data
+        cms_value, cms_error = CMS_YIELDS_MLL[group]
+        missing = [name for name in members if name not in yields]
+        rows.append((group + (f" (without {', '.join(missing)})" if missing else ""), value, error, value / data * 100,
+                     cms_value, cms_error, cms_value / CMS_YIELDS_MLL["Data"][0] * 100))
+    rows.append(("Data", data, data_unc, 100.0, *CMS_YIELDS_MLL["Data"], 100.0))
+    df = pd.DataFrame(rows, columns=["Process", "Yield", "Uncertainty", "Share (%)", "CMS yield", "CMS uncertainty", "CMS share (%)"])
+    print(f"\n{line}\nComparison with the CMS plot (SMP-23-002 Fig. B.1), grouped as CMS, prediction normalised to data\n{line}")
+    print(df.to_string(float_format=lambda x: f"{x:.2f}"))
+    print(f"\n===> Data / CMS data = {data / CMS_YIELDS_MLL['Data'][0] * 100:.2f}%\n{line}\n")
 
 
 def parse_pt_cuts(pt_cuts):
@@ -1279,6 +1350,7 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
 
                 # stacked backgrounds, with the same filters as the DY MC
                 backgrounds = []
+                background_hists = {}  # name: histogram, for the yields
                 for bkg_name, samples in df_backgrounds.items():
                     if var not in BACKGROUNDS[bkg_name]["variables"]:
                         continue
@@ -1295,6 +1367,13 @@ def Histograms(df_SingleMuon_var, df_MinBias_var, df_MCDYJets_var, df_MCMinBias_
                             h_bkg_filtered.Add(h_sample)
                     h_bkg_filtered.Scale(1.0, "width")
                     backgrounds.append((h_bkg_filtered, BACKGROUNDS[bkg_name]["label"], BACKGROUNDS[bkg_name]["colour"]))
+                    background_hists[bkg_name] = h_bkg_filtered
+
+                # yields in the terminal, before the normalisation to data below (it prints both)
+                if var in YIELD_VARIABLES:
+                    selection = (f"{MUON_PT_CUT[0]} < pT(mu) < {MUON_PT_CUT[1]} GeV, {MASS_WINDOW[0]} <= m(mumu) < {MASS_WINDOW[1]} GeV"
+                                 + (f", {filter_expr}" if filter_expr else ""))
+                    PrintYields(var, h_SingleMuon_filtered, {**background_hists, "Zmumu": h_MCDYJets_filtered}, selection)
 
                 # dimuon mass as SMP-23-002 Fig. B.1 ("Prefit (normalized)", WRemnants makeDataMCStackPlot.py --normToData):
                 # the total prediction (DY MC + backgrounds) and its uncertainty scaled to the number of data events, so only
