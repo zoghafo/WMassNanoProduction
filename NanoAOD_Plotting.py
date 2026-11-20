@@ -69,6 +69,18 @@ BACKGROUNDS = {
         "colour": "#008000",  # "green"
         "variables": ["DiMuon_Mass"],
     },
+    "SingleTop": {
+        "samples": {  # group "Top", like ttbar
+            "MCSingleTschanLepDecays": 3.609,  # SingleTschanLepDecays_2016PostVFP
+            "MCSingleTtWAntitop": 19.55,  # SingleTtWAntitop_2016PostVFP
+            "MCSingleTtWTop": 19.55,  # SingleTtWTop_2016PostVFP
+            "MCSingleTtchanAntitop": 80.0,  # SingleTtchanAntitop_2016PostVFP
+            "MCSingleTtchanTop": 134.2,  # SingleTtchanTop_2016PostVFP
+        },
+        "label": "Single top",
+        "colour": "#90EE90",  # "lightgreen", next to the ttbar green
+        "variables": ["DiMuon_Mass"],
+    },
     "Ztautau": {
         "samples": {"MCZtautau": XSEC_DY * Z_TAU_TO_LEP_RATIO},  # 1161.6 pb, Ztautau_2016PostVFP
         "label": "Z #rightarrow #tau#tau",
@@ -126,7 +138,7 @@ CMS_YIELDS_MLL = {
 }
 CMS_GROUPS_MLL = {
     "Z/gamma*->mumu/tautau": ["Zmumu", "Ztautau"],
-    "Other": ["TTbar", "Diboson", "PhotonInduced"],
+    "Other": ["TTbar", "SingleTop", "Diboson", "PhotonInduced"],
 }
 
 

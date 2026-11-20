@@ -50,12 +50,22 @@ PHOTON_INDUCED_SAMPLES = {
 }
 for _name, (_wrem_name, _production) in PHOTON_INDUCED_SAMPLES.items():
     WREM_DATASETS[_name] = types.SimpleNamespace(name=_wrem_name, is_data=False, group="PhotonInduced")
+# single top samples, WRemnants group "Top" like ttbar (datasetDict_2016PostVFP.py): dataset name: (WRemnants name, NanoAOD production)
+SINGLE_TOP_SAMPLES = {
+    "MCSingleTschanLepDecays": ("SingleTschanLepDecays_2016PostVFP", "ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/NanoV9MCPostVFP_ST_s-channel_17112026"),
+    "MCSingleTtWAntitop": ("SingleTtWAntitop_2016PostVFP", "ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/NanoV9MCPostVFP_ST_tW_antitop_17112026"),
+    "MCSingleTtWTop": ("SingleTtWTop_2016PostVFP", "ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/NanoV9MCPostVFP_ST_tW_top_17112026"),
+    "MCSingleTtchanAntitop": ("SingleTtchanAntitop_2016PostVFP", "ST_t-channel_antitop_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/NanoV9MCPostVFP_ST_t-channel_antitop_17112026"),
+    "MCSingleTtchanTop": ("SingleTtchanTop_2016PostVFP", "ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/NanoV9MCPostVFP_ST_t-channel_top_17112026"),
+}
+for _name, (_wrem_name, _production) in SINGLE_TOP_SAMPLES.items():
+    WREM_DATASETS[_name] = types.SimpleNamespace(name=_wrem_name, is_data=False, group="Top")
 # MC samples that are neither W/Z nor ttbar, all treated the same way
-OTHER_MC_SAMPLES = {**DIBOSON_SAMPLES, **PHOTON_INDUCED_SAMPLES}
+OTHER_MC_SAMPLES = {**DIBOSON_SAMPLES, **PHOTON_INDUCED_SAMPLES, **SINGLE_TOP_SAMPLES}
 # samples with the Z -> mumu selection and the MC weights, and SingleMuon data. As WRemnants: the Z samples (common.zprocs)
-# get the muon calibration with smearing, the CT18Z PDF weight and the theory correction; ttbar, the dibosons and the
-# photon-induced samples keep the uncorrected muons, central_pdf_weight and theory_corr_weight are 1, and uT uses all
-# prompt gen leptons, photons and neutrinos
+# get the muon calibration with smearing, the CT18Z PDF weight and the theory correction; ttbar, single top, the dibosons
+# and the photon-induced samples keep the uncorrected muons, central_pdf_weight and theory_corr_weight are 1, and uT uses
+# all prompt gen leptons, photons and neutrinos
 Z_MC = {"MCDY", "MCZtautau"}
 DIMUON_MC = Z_MC | {"MCTTbar"} | set(OTHER_MC_SAMPLES)
 DIMUON_DATASETS = {"SingleMuon"} | DIMUON_MC
